@@ -6,3 +6,5 @@
 !.gitignore
 # Allow all Java files to be tracked.
 !*.java
+# Ignore all hidden directories.
+.*/
