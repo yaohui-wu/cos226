@@ -1,4 +1,8 @@
 public class HelloGoodbye {
+    /**
+     * Takes two names as command-line arguments and prints hello and goodbye
+     * messages.
+     */
     public static void main(String[] args) {
         String firstName = args[0];
         String secondName = args[1];
