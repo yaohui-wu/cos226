@@ -1,0 +1,8 @@
+# Ignore everything by default.
+*
+# Allow Git to check inside all directories for exceptions.
+!**/
+# Ensure this .gitignore file is always tracked.
+!.gitignore
+# Allow all Java files to be tracked.
+!*.java
