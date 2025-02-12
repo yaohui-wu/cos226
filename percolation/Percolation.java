@@ -4,9 +4,10 @@ public class Percolation {
     private int size;
     private boolean[][] sites;
     private int open;
-    private WeightedQuickUnionUF connections;
+    private WeightedQuickUnionUF opens;
     private int top;
     private int bottom;
+    private WeightedQuickUnionUF fulls;
 
     // creates n-by-n grid, with all sites initially blocked
     public Percolation(int n) {
@@ -19,9 +20,15 @@ public class Percolation {
             }
         }
         open = 0;
-        connections = new WeightedQuickUnionUF(size * size + 2);
+        opens = new WeightedQuickUnionUF(size * size + 2);
         top = 0;
         bottom = size * size + 1;
+        fulls = new WeightedQuickUnionUF(size * size + 1);
+        for (int col = 1; col <= size; col += 1) {
+            int element = xyTo1D(1, col);
+            opens.union(element, top);
+            fulls.union(element, top);
+        }
     }
 
     private void validateSize(int n) {
@@ -29,6 +36,10 @@ public class Percolation {
             String error = "Invalid grid size " + n;
             throw new IllegalArgumentException(error);
         }
+    }
+
+    private int xyTo1D(int x, int y) {
+        return size * (x - 1) + y;
     }
 
     // opens the site (row, col) if it is not open already
@@ -39,16 +50,14 @@ public class Percolation {
         }
         sites[row - 1][col - 1] = true;
         open += 1;
-        connect(row, col, row, col - 1); // Left
-        connect(row, col, row, col + 1); // Right
-        connect(row, col, row - 1, col); // Up
-        connect(row, col, row + 1, col); // Down
         int element = xyTo1D(row, col);
-        if (row == 1) {
-            connections.union(element, top);
-        } else if (row == size) {
-            connections.union(element, bottom);
+        if (row == size) {
+            opens.union(element, bottom);
         }
+        connect(row, col, row, col - 1); // Left.
+        connect(row, col, row, col + 1); // Right.
+        connect(row, col, row - 1, col); // Up.
+        connect(row, col, row + 1, col); // Down.
     }
 
     private void validateSite(int row, int col) {
@@ -63,10 +72,6 @@ public class Percolation {
         }
     }
 
-    private int xyTo1D(int x, int y) {
-        return size * (x - 1) + y;
-    }
-
     private boolean validSite(int row, int col) {
         return validIndex(row) && validIndex(col);
     }
@@ -79,12 +84,9 @@ public class Percolation {
         if (validSite(row2, col2) && isOpen(row2, col2)) {
             int element1 = xyTo1D(row1, col1);
             int element2 = xyTo1D(row2, col2);
-            connections.union(element1, element2);
+            opens.union(element1, element2);
+            fulls.union(element1, element2);
         }
-    }
-
-    private boolean connected(int p, int q) {
-        return connections.find(p) == connections.find(q);
     }
 
     // is the site (row, col) open?
@@ -97,17 +99,17 @@ public class Percolation {
     public boolean isFull(int row, int col) {
         validateSite(row, col);
         int element = xyTo1D(row, col);
-        return isOpen(row, col) && connected(element, top);
+        return isOpen(row, col) && fulls.find(element) == fulls.find(top);
     }
 
     // returns the number of open sites
-    public int numberOfopen() {
+    public int numberOfOpenSites() {
         return open;
     }
 
     // does the system percolate?
     public boolean percolates() {
-        return connected(top, bottom);
+        return opens.find(top) == opens.find(bottom);
     }
 
     // test client (optional)
