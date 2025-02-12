@@ -28,6 +28,9 @@ public class Percolation {
 
     // opens the site (row, col) if it is not open already
     public void open(int row, int col) {
+        if (isOpen(row, col)) {
+            return;
+        }
         validateSite(row, col);
         sites[row - 1][col - 1] = true;
         openSites += 1;
