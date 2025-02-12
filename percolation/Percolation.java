@@ -115,8 +115,8 @@ public class Percolation {
     }
     
     private void connectBottom(int row, int col) {
-        int element = xyTo1D(row, col);
         if (row == size) {
+            int element = xyTo1D(row, col);
             connect(element, size * size + 1);
         }
     }
