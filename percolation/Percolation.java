@@ -65,6 +65,7 @@ public class Percolation {
         if (row == size) {
             opens.union(element, bottom);
         }
+        // Connect to adjacent open sites.
         connect(row, col, row, col - 1); // Left.
         connect(row, col, row, col + 1); // Right.
         connect(row, col, row - 1, col); // Up.
