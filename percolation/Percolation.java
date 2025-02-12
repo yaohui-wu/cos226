@@ -52,6 +52,8 @@ public class Percolation {
     // is the site (row, col) full?
     public boolean isFull(int row, int col) {
         validateSite(row, col);
+        int element = xyTo1D(row, col);
+        return connections.find(0) == connections.find(element);
     }
 
     // returns the number of open sites
@@ -83,6 +85,6 @@ public class Percolation {
     }
 
     private int xyTo1D(int x, int y) {
-        return (x - 1) * size + y - 1;
+        return size * (x - 1) + y;
     }
 }
