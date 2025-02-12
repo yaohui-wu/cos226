@@ -36,7 +36,14 @@ public class PercolationStats {
     }
 
     // sample mean of percolation threshold
-    public double mean() {}
+    public double mean() {
+        double mean = 0.0;
+        for (double threshold : thresholds) {
+            mean += threshold;
+        }
+        mean /= thresholds.length;
+        return mean;
+    }
 
     // sample standard deviation of percolation threshold
     public double stddev() {}
