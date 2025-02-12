@@ -80,7 +80,7 @@ public class Percolation {
     private void validateIndex(int index) {
         if (index <= 0 || index > size) {
             String error = "Index " + index + " out of bounds";
-            throw new IndexOutOfBoundsException(error);
+            throw new IllegalArgumentException(error);
         }
     }
 
