@@ -70,8 +70,8 @@ public class Percolation {
         }
     }
     private void connectBottom(int row, int col) {
-        if (row == size) {
-            int element = xyTo1D(row, col);
+        int element = xyTo1D(row, col);
+        if (row == size && connected(0, element)) {
             connect(size * size + 1, element);
         }
     }
