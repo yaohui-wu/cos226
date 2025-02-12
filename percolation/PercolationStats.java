@@ -1,6 +1,6 @@
 import edu.princeton.cs.algs4.StdRandom;
 import edu.princeton.cs.algs4.StdStats;
-import edu.princeton.cs.algs4.WeightedQuickUnionUF;
+import edu.princeton.cs.algs4.StdOut;
 
 public class PercolationStats {
     private double[] thresholds;
@@ -62,7 +62,12 @@ public class PercolationStats {
 
     // test client (see below)
     public static void main(String[] args) {
-        PercolationStats stats = new PercolationStats(args[0], args[1]);
-
+        int n = StdIn.readInt();
+        int trials = StdIn.readInt();
+        PercolationStats stats = new PercolationStats(n, trials);
+        StdOut.println("mean = " + stats.mean());
+        StdOut.println("stddev = " + stats.stddev());
+        StdOut.println("95% confidence interval = [" + stats.confidenceLo()
+            + ", " + stats.confidenceHi() + "]");
     }
 }
