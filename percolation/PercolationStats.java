@@ -9,9 +9,8 @@ public class PercolationStats {
     public PercolationStats(int n, int trials) {
         validate(n, trials);
         thresholds = new double[trials];
-        Percolation percolation = new Percolation(n);
         for (int i = 0; i < trials; i += 1) {
-            double threshold = experiment(percolation);
+            double threshold = experiment(n);
             thresholds[i] = threshold;
         }
     }
@@ -37,15 +36,15 @@ public class PercolationStats {
         }
     }
 
-    private double experiment(Percolation percolation) {
-        int size = percolation.size();
+    private double experiment(int n) {
+        Percolation percolation = new Percolation(n);
         while (!percolation.percolates()) {
-            int row = StdRandom.uniformInt(1, size + 1);
-            int col = StdRandom.uniformInt(1, size + 1);
+            int row = StdRandom.uniformInt(1, n + 1);
+            int col = StdRandom.uniformInt(1, n + 1);
             percolation.open(row, col);
         }
         int open = percolation.numberOfOpenSites();
-        double threshold = (double) open / (size * size);
+        double threshold = (double) open / (n * n);
         return threshold;
     }
 }
