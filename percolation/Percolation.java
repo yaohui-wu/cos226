@@ -1,15 +1,17 @@
 import edu.princeton.cs.algs4.WeightedQuickUnionUF;
 
 public class Percolation {
-    private int size;
-    private boolean[][] sites;
-    private int open;
-    private WeightedQuickUnionUF opens;
-    private int top;
-    private int bottom;
-    private WeightedQuickUnionUF fulls;
+    private int size; // Grid size.
+    private boolean[][] sites; // True: open, false: blocked.
+    private int open; // Number of open sites.
+    private WeightedQuickUnionUF opens; // Open sites.
+    private int top; // Virtual top site.
+    private int bottom; // Virtual bottom site.
+    private WeightedQuickUnionUF fulls; // Full sites.
 
-    // creates n-by-n grid, with all sites initially blocked
+    /**
+     * Creates n-by-n grid, with all sites initially blocked.
+     */
     public Percolation(int n) {
         validateSize(n);
         size = n;
@@ -20,10 +22,13 @@ public class Percolation {
             }
         }
         open = 0;
+        // Virtual top and bottom sites to check percolation.
         opens = new WeightedQuickUnionUF(size * size + 2);
         top = 0;
         bottom = size * size + 1;
+        // Only virtual top site to avoid backwash.
         fulls = new WeightedQuickUnionUF(size * size + 1);
+        // Connect top row to virtual top site.
         for (int col = 1; col <= size; col += 1) {
             int element = xyTo1D(1, col);
             opens.union(element, top);
@@ -38,11 +43,16 @@ public class Percolation {
         }
     }
 
+    /**
+     * Converts 2D coordinates to 1D coordinates.
+     */
     private int xyTo1D(int x, int y) {
         return size * (x - 1) + y;
     }
 
-    // opens the site (row, col) if it is not open already
+    /**
+     * Opens the site (row, col) if it is not open already.
+     */
     public void open(int row, int col) {
         validateSite(row, col);
         if (isOpen(row, col)) {
@@ -51,6 +61,7 @@ public class Percolation {
         sites[row - 1][col - 1] = true;
         open += 1;
         int element = xyTo1D(row, col);
+        // Connect to virtual bottom site.
         if (row == size) {
             opens.union(element, bottom);
         }
@@ -80,6 +91,9 @@ public class Percolation {
         return index > 0 && index <= size;
     }
 
+    /**
+     * Connects two sites if the second site is open.
+     */
     private void connect(int row1, int col1, int row2, int col2) {
         if (validSite(row2, col2) && isOpen(row2, col2)) {
             int element1 = xyTo1D(row1, col1);
@@ -89,29 +103,34 @@ public class Percolation {
         }
     }
 
-    // is the site (row, col) open?
+    /**
+     * Returns true if the site (row, col) is open.
+     */
     public boolean isOpen(int row, int col) {
         validateSite(row, col);
         return sites[row - 1][col - 1];
     }
 
-    // is the site (row, col) full?
+    /**
+     * Returns true if the site (row, col) is full.
+     */
     public boolean isFull(int row, int col) {
         validateSite(row, col);
         int element = xyTo1D(row, col);
         return isOpen(row, col) && fulls.find(element) == fulls.find(top);
     }
 
-    // returns the number of open sites
+    /**
+     * Returns the number of open sites.
+     */
     public int numberOfOpenSites() {
         return open;
     }
 
-    // does the system percolate?
+    /**
+     * Returns true if the system percolates.
+     */
     public boolean percolates() {
         return opens.find(top) == opens.find(bottom);
     }
-
-    // test client (optional)
-    public static void main(String[] args) {}
 }
