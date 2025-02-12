@@ -37,6 +37,9 @@ public class PercolationStats {
 
     // sample mean of percolation threshold
     public double mean() {
+        if (thresholds.length == 1) {
+            return Double.NaN;
+        }
         return StdStats.mean(thresholds);
     }
 
