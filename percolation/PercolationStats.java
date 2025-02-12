@@ -15,24 +15,11 @@ public class PercolationStats {
         }
     }
 
-    // sample mean of percolation threshold
-    public double mean() {}
-
-    // sample standard deviation of percolation threshold
-    public double stddev() {}
-
-    // low endpoint of 95% confidence interval
-    public double confidenceLo() {}
-
-    // high endpoint of 95% confidence interval
-    public double confidenceHi() {}
-
-    // test client (see below)
-    public static void main(String[] args) {}
-
     private void validate(int n, int trials) {
         if (n <= 0 || trials <= 0) {
-            throw new IllegalArgumentException();
+            String error = "Invalid grid size " + n + " or number of trials "
+                + trials;
+            throw new IllegalArgumentException(error);
         }
     }
 
@@ -47,4 +34,19 @@ public class PercolationStats {
         double threshold = (double) open / (n * n);
         return threshold;
     }
+
+    // sample mean of percolation threshold
+    public double mean() {}
+
+    // sample standard deviation of percolation threshold
+    public double stddev() {}
+
+    // low endpoint of 95% confidence interval
+    public double confidenceLo() {}
+
+    // high endpoint of 95% confidence interval
+    public double confidenceHi() {}
+
+    // test client (see below)
+    public static void main(String[] args) {}
 }
