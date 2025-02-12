@@ -46,7 +46,15 @@ public class PercolationStats {
     }
 
     // sample standard deviation of percolation threshold
-    public double stddev() {}
+    public double stddev() {
+        double stddev = 0.0;
+        for (double threshold : thresholds) {
+            stddev += Math.pow(threshold - mean(), 2);
+        }
+        stddev /= thresholds.length - 1;
+        stddev = Math.sqrt(stddev);
+        return stddev;
+    }
 
     // low endpoint of 95% confidence interval
     public double confidenceLo() {}
