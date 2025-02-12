@@ -3,21 +3,21 @@ import edu.princeton.cs.algs4.StdStats;
 import edu.princeton.cs.algs4.WeightedQuickUnionUF;
 
 public class Percolation {
-    private int length;
+    private int size;
     private boolean[][] sites;
     private WeightedQuickUnionUF unionFind;
 
     // creates n-by-n grid, with all sites initially blocked
     public Percolation(int n) {
-        validateN(n);
-        length = n;
-        sites = new boolean[length][length];
-        for (int row = 0; row < length; row += 1) {
-            for (int col = 0; col < length; col += 1) {
+        validateSize(n);
+        size = n;
+        sites = new boolean[size][size];
+        for (int row = 0; row < size; row += 1) {
+            for (int col = 0; col < size; col += 1) {
                 sites[row][col] = false;
             }
         }
-        unionFind = new WeightedQuickUnionUF(length * length);
+        unionFind = new WeightedQuickUnionUF(size * size);
     }
 
     // opens the site (row, col) if it is not open already
@@ -44,7 +44,7 @@ public class Percolation {
     // test client (optional)
     public static void main(String[] args) {}
 
-    private void validateN(int n) {
+    private void validateSize(int n) {
         if (n <= 0) {
             String error = "Invalid grid size " + n;
             throw new IllegalArgumentException(error);
@@ -57,7 +57,7 @@ public class Percolation {
     }
 
     private void validateIndex(int index) {
-        if (index <= 0 || index > length) {
+        if (index <= 0 || index > size) {
             String error = "Index " + index + " out of bounds";
             throw new IndexOutOfBoundsException(error);
         }
