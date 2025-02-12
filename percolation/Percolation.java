@@ -3,8 +3,10 @@ import edu.princeton.cs.algs4.WeightedQuickUnionUF;
 public class Percolation {
     private int size;
     private boolean[][] sites;
-    private int openSites;
+    private int open;
     private WeightedQuickUnionUF connections;
+    private int top;
+    private int bottom;
 
     // creates n-by-n grid, with all sites initially blocked
     public Percolation(int n) {
@@ -16,8 +18,10 @@ public class Percolation {
                 sites[row][col] = false;
             }
         }
-        openSites = 0;
+        open = 0;
         connections = new WeightedQuickUnionUF(size * size + 2);
+        top = 0;
+        bottom = size * size + 1;
     }
 
     private void validateSize(int n) {
@@ -34,13 +38,17 @@ public class Percolation {
             return;
         }
         sites[row - 1][col - 1] = true;
-        openSites += 1;
-        connectLeft(row, col);
-        connectRight(row, col);
-        connectUp(row, col);
-        connectDown(row, col);
-        connectTop(row, col);
-        connectBottom(row, col);
+        open += 1;
+        connect(row, col, row, col - 1); // Left
+        connect(row, col, row, col + 1); // Right
+        connect(row, col, row - 1, col); // Up
+        connect(row, col, row + 1, col); // Down
+        int element = xyTo1D(row, col);
+        if (row == 1) {
+            connections.union(element, top);
+        } else if (row == size) {
+            connections.union(element, bottom);
+        }
     }
 
     private void validateSite(int row, int col) {
@@ -59,14 +67,6 @@ public class Percolation {
         return size * (x - 1) + y;
     }
 
-    private void connect(int p, int q) {
-        connections.union(p, q);
-    }
-
-    private boolean connected(int p, int q) {
-        return connections.find(p) == connections.find(q);
-    }
-
     private boolean validSite(int row, int col) {
         return validIndex(row) && validIndex(col);
     }
@@ -75,50 +75,16 @@ public class Percolation {
         return index > 0 && index <= size;
     }
 
-    private void connectLeft(int row, int col) {
-        if (validSite(row, col - 1) && isOpen(row, col - 1)) {
-            int element = xyTo1D(row, col);
-            int left = xyTo1D(row, col - 1);
-            connect(element, left);
+    private void connect(int row1, int col1, int row2, int col2) {
+        if (validSite(row2, col2) && isOpen(row2, col2)) {
+            int element1 = xyTo1D(row1, col1);
+            int element2 = xyTo1D(row2, col2);
+            connections.union(element1, element2);
         }
     }
 
-    private void connectRight(int row, int col) {
-        if (validSite(row, col + 1) && isOpen(row, col + 1)) {
-            int element = xyTo1D(row, col);
-            int right = xyTo1D(row, col + 1);
-            connect(element, right);
-        }
-    }
-
-    private void connectUp(int row, int col) {
-        if (validSite(row - 1, col) && isOpen(row - 1, col)) {
-            int element = xyTo1D(row, col);
-            int up = xyTo1D(row - 1, col);
-            connect(element, up);
-        }
-    }
-
-    private void connectDown(int row, int col) {
-        if (validSite(row + 1, col) && isOpen(row + 1, col)) {
-            int element = xyTo1D(row, col);
-            int down = xyTo1D(row + 1, col);
-            connect(element, down);
-        }
-    }
-
-    private void connectTop(int row, int col) {
-        if (row == 1) {
-            int element = xyTo1D(row, col);
-            connect(element, 0);
-        }
-    }
-    
-    private void connectBottom(int row, int col) {
-        if (row == size) {
-            int element = xyTo1D(row, col);
-            connect(element, size * size + 1);
-        }
+    private boolean connected(int p, int q) {
+        return connections.find(p) == connections.find(q);
     }
 
     // is the site (row, col) open?
@@ -131,17 +97,17 @@ public class Percolation {
     public boolean isFull(int row, int col) {
         validateSite(row, col);
         int element = xyTo1D(row, col);
-        return isOpen(row, col) && connected(element, 0);
+        return isOpen(row, col) && connected(element, top);
     }
 
     // returns the number of open sites
-    public int numberOfOpenSites() {
-        return openSites;
+    public int numberOfopen() {
+        return open;
     }
 
     // does the system percolate?
     public boolean percolates() {
-        return connected(0, size * size + 1);
+        return connected(top, bottom);
     }
 
     // test client (optional)
