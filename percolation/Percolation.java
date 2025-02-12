@@ -35,12 +35,12 @@ public class Percolation {
         }
         sites[row - 1][col - 1] = true;
         openSites += 1;
-        connectTop(row, col);
-        connectBottom(row, col);
         connectLeft(row, col);
         connectRight(row, col);
         connectUp(row, col);
         connectDown(row, col);
+        connectTop(row, col);
+        connectBottom(row, col);
     }
 
     private void validateSite(int row, int col) {
@@ -63,17 +63,8 @@ public class Percolation {
         connections.union(p, q);
     }
 
-    private void connectTop(int row, int col) {
-        if (row == 1) {
-            int element = xyTo1D(row, col);
-            connect(0, element);
-        }
-    }
-    private void connectBottom(int row, int col) {
-        int element = xyTo1D(row, col);
-        if (row == size && connected(0, element)) {
-            connect(size * size + 1, element);
-        }
+    private boolean connected(int p, int q) {
+        return connections.find(p) == connections.find(q);
     }
 
     private boolean validSite(int row, int col) {
@@ -116,6 +107,20 @@ public class Percolation {
         }
     }
 
+    private void connectTop(int row, int col) {
+        if (row == 1) {
+            int element = xyTo1D(row, col);
+            connect(element, 0);
+        }
+    }
+    
+    private void connectBottom(int row, int col) {
+        int element = xyTo1D(row, col);
+        if (row == size) {
+            connect(element, size * size + 1);
+        }
+    }
+
     // is the site (row, col) open?
     public boolean isOpen(int row, int col) {
         validateSite(row, col);
@@ -126,11 +131,7 @@ public class Percolation {
     public boolean isFull(int row, int col) {
         validateSite(row, col);
         int element = xyTo1D(row, col);
-        return isOpen(row, col) && connected(0, element);
-    }
-
-    private boolean connected(int p, int q) {
-        return connections.find(p) == connections.find(q);
+        return isOpen(row, col) && connected(element, 0);
     }
 
     // returns the number of open sites
