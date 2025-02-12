@@ -44,19 +44,19 @@ public class Percolation {
         sites[row - 1][col - 1] = true;
         openSites += 1;
         int element = xyTo1D(row, col);
-        if (isOpen(row, col - 1)) {
+        if (validSite(row, col - 1) && isOpen(row, col - 1)) {
             int left = xyTo1D(row, col - 1);
             connect(element, left);
         }
-        if (isOpen(row, col + 1)) {
+        if (validSite(row, col + 1) && isOpen(row, col + 1)) {
             int right = xyTo1D(row, col + 1);
             connect(element, right);
         }
-        if (isOpen(row - 1, col)) {
+        if (validSite(row - 1, col) && isOpen(row - 1, col)) {
             int up = xyTo1D(row - 1, col);
             connect(element, up);
         }
-        if (isOpen(row + 1, col)) {
+        if (validSite(row + 1, col) && isOpen(row + 1, col)) {
             int down = xyTo1D(row + 1, col);
             connect(element, down);
         }
@@ -74,6 +74,14 @@ public class Percolation {
         }
     }
 
+    private boolean validSite(int row, int col) {
+        return validIndex(row) && validIndex(col);
+    }
+
+    private boolean validIndex(int index) {
+        return index > 0 && index <= size;
+    }
+
     private int xyTo1D(int x, int y) {
         return size * (x - 1) + y;
     }
@@ -88,7 +96,7 @@ public class Percolation {
     public boolean isFull(int row, int col) {
         validateSite(row, col);
         int element = xyTo1D(row, col);
-        return connected(0, element);
+        return isOpen(row, col) && connected(0, element);
     }
 
     private boolean connected(int p, int q) {
