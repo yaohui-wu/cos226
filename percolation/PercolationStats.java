@@ -48,19 +48,28 @@ public class PercolationStats {
     // sample standard deviation of percolation threshold
     public double stddev() {
         double stddev = 0.0;
+        double mean = mean();
         for (double threshold : thresholds) {
-            stddev += Math.pow(threshold - mean(), 2);
+            stddev += Math.pow(threshold - mean, 2);
         }
-        stddev /= thresholds.length - 1;
-        stddev = Math.sqrt(stddev);
+        stddev = Math.sqrt(stddev / (thresholds.length - 1));
         return stddev;
     }
 
     // low endpoint of 95% confidence interval
-    public double confidenceLo() {}
+    public double confidenceLo() {
+        return mean() - confidence();
+    }
 
     // high endpoint of 95% confidence interval
-    public double confidenceHi() {}
+    public double confidenceHi() {
+        return mean() + confidence();
+    }
+
+    private double confidence() {
+        double confidence = 1.96 * stddev() / Math.sqrt(thresholds.length);
+        return confidence;
+    }
 
     // test client (see below)
     public static void main(String[] args) {}
