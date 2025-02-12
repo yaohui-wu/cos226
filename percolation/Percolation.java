@@ -18,10 +18,6 @@ public class Percolation {
         }
         openSites = 0;
         connections = new WeightedQuickUnionUF(size * size + 2);
-        for (int i = 1; i <= size; i += 1) {
-            connect(0, i);
-            connect(size * size + 1, size * size + 1 - i);
-        }
     }
 
     private void validateSize(int n) {
@@ -29,10 +25,6 @@ public class Percolation {
             String error = "Invalid grid size " + n;
             throw new IllegalArgumentException(error);
         }
-    }
-
-    private void connect(int p, int q) {
-        connections.union(p, q);
     }
 
     // opens the site (row, col) if it is not open already
@@ -43,23 +35,12 @@ public class Percolation {
         }
         sites[row - 1][col - 1] = true;
         openSites += 1;
-        int element = xyTo1D(row, col);
-        if (validSite(row, col - 1) && isOpen(row, col - 1)) {
-            int left = xyTo1D(row, col - 1);
-            connect(element, left);
-        }
-        if (validSite(row, col + 1) && isOpen(row, col + 1)) {
-            int right = xyTo1D(row, col + 1);
-            connect(element, right);
-        }
-        if (validSite(row - 1, col) && isOpen(row - 1, col)) {
-            int up = xyTo1D(row - 1, col);
-            connect(element, up);
-        }
-        if (validSite(row + 1, col) && isOpen(row + 1, col)) {
-            int down = xyTo1D(row + 1, col);
-            connect(element, down);
-        }
+        connectTop(row, col);
+        connectBottom(row, col);
+        connectLeft(row, col);
+        connectRight(row, col);
+        connectUp(row, col);
+        connectDown(row, col);
     }
 
     private void validateSite(int row, int col) {
@@ -74,6 +55,27 @@ public class Percolation {
         }
     }
 
+    private int xyTo1D(int x, int y) {
+        return size * (x - 1) + y;
+    }
+
+    private void connect(int p, int q) {
+        connections.union(p, q);
+    }
+
+    private void connectTop(int row, int col) {
+        if (row == 1) {
+            int element = xyTo1D(row, col);
+            connect(0, element);
+        }
+    }
+    private void connectBottom(int row, int col) {
+        if (row == size) {
+            int element = xyTo1D(row, col);
+            connect(size * size + 1, element);
+        }
+    }
+
     private boolean validSite(int row, int col) {
         return validIndex(row) && validIndex(col);
     }
@@ -82,8 +84,36 @@ public class Percolation {
         return index > 0 && index <= size;
     }
 
-    private int xyTo1D(int x, int y) {
-        return size * (x - 1) + y;
+    private void connectLeft(int row, int col) {
+        if (validSite(row, col - 1) && isOpen(row, col - 1)) {
+            int element = xyTo1D(row, col);
+            int left = xyTo1D(row, col - 1);
+            connect(element, left);
+        }
+    }
+
+    private void connectRight(int row, int col) {
+        if (validSite(row, col + 1) && isOpen(row, col + 1)) {
+            int element = xyTo1D(row, col);
+            int right = xyTo1D(row, col + 1);
+            connect(element, right);
+        }
+    }
+
+    private void connectUp(int row, int col) {
+        if (validSite(row - 1, col) && isOpen(row - 1, col)) {
+            int element = xyTo1D(row, col);
+            int up = xyTo1D(row - 1, col);
+            connect(element, up);
+        }
+    }
+
+    private void connectDown(int row, int col) {
+        if (validSite(row + 1, col) && isOpen(row + 1, col)) {
+            int element = xyTo1D(row, col);
+            int down = xyTo1D(row + 1, col);
+            connect(element, down);
+        }
     }
 
     // is the site (row, col) open?
