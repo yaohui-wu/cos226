@@ -5,6 +5,7 @@ import edu.princeton.cs.algs4.WeightedQuickUnionUF;
 public class Percolation {
     private int size;
     private boolean[][] sites;
+    private int openSites;
     private WeightedQuickUnionUF connections;
 
     // creates n-by-n grid, with all sites initially blocked
@@ -17,6 +18,7 @@ public class Percolation {
                 sites[row][col] = false;
             }
         }
+        openSites = 0;
         connections = new WeightedQuickUnionUF(size * size + 2);
         for (int i = 1; i <= size; i += 1) {
             connections.union(0, i);
@@ -28,6 +30,7 @@ public class Percolation {
     public void open(int row, int col) {
         validateSite(row, col);
         sites[row - 1][col - 1] = true;
+        openSites += 1;
         int element = xyTo1D(row, col);
         if (isOpen(row, col - 1)) {
             connections.union(element, xyTo1D(row, col - 1));
@@ -57,10 +60,14 @@ public class Percolation {
     }
 
     // returns the number of open sites
-    public int numberOfOpenSites() {}
+    public int numberOfOpenSites() {
+        return openSites;
+    }
 
     // does the system percolate?
-    public boolean percolates() {}
+    public boolean percolates() {
+        return connections.find(0) == connections.find(size * size + 1);
+    }
 
     // test client (optional)
     public static void main(String[] args) {}
