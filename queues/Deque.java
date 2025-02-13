@@ -55,7 +55,9 @@ public class Deque<Item> implements Iterable<Item> {
      */
     public void addFirst(Item item) {
         validateItem(item);
+        // Create a new node and insert it after the sentinel node.
         Node first = new Node(item, sentinel.next, sentinel);
+        // Update the references of the sentinel node and the first node.
         first.next.prev = first;
         sentinel.next = first;
     }
@@ -65,7 +67,9 @@ public class Deque<Item> implements Iterable<Item> {
      */
     public void addLast(Item item) {
         validateItem(item);
+        // Create a new node and insert it before the sentinel node.
         Node last = new Node(item, sentinel, sentinel.prev);
+        // Update the references of the sentinel node and the last node.
         last.prev.next = last;
         last.next = sentinel;
     }
@@ -77,13 +81,13 @@ public class Deque<Item> implements Iterable<Item> {
         }
     }
 
-    // remove and return the item from the front
     /**
      * Removes and returns the item from the front of the deque.
      */
     public Item removeFirst() {
         validateDeque();
         Item item = sentinel.next.item;
+        // Update the references of the sentinel node and the first node.
         sentinel.next = sentinel.next.next;
         sentinel.next.prev = sentinel;
         return item;
@@ -95,6 +99,7 @@ public class Deque<Item> implements Iterable<Item> {
     public Item removeLast() {
         validateDeque();
         Item item = sentinel.prev.item;
+        // Update the references of the sentinel node and the last node.
         sentinel.prev = sentinel.prev.prev;
         sentinel.prev.next = sentinel;
         return item;
