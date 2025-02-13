@@ -1,3 +1,5 @@
+import java.util.NoSuchElementException;
+
 public class RandomizedQueue<Item> implements Iterable<Item> {
 
     // construct an empty randomized queue
@@ -22,10 +24,21 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
     }
 
     // remove and return a random item
-    public Item dequeue() {}
+    public Item dequeue() {
+        validateQueue();
+    }
 
     // return a random item (but do not remove it)
-    public Item sample() {}
+    public Item sample() {
+        validateQueue();
+    }
+
+    private void validateQueue() {
+        if (isEmpty()) {
+            String error = "Queue is empty";
+            throw new NoSuchElementException(error);
+        }
+    }
 
     // return an independent iterator over items in random order
     public Iterator<Item> iterator() {}
