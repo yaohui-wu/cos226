@@ -89,9 +89,17 @@ public class Deque<Item> implements Iterable<Item> {
     }
 
     private class DequeIterator implements Iterator<Item> {
-        public boolean hasNext() {}
+        private Node curr = sentinel.next;
 
-        public Item next() {}
+        public boolean hasNext() {
+            return curr != sentinel;
+        }
+
+        public Item next() {
+            Item item = curr.item;
+            curr = curr.next;
+            return item;
+        }
 
         public void remove() {
             String error = "Remove operation is not supported";
