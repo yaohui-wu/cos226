@@ -2,11 +2,16 @@ import java.util.NoSuchElementException;
 import java.util.Iterator;
 
 public class Deque<Item> implements Iterable<Item> {
-    private int size;
     private Node sentinel;
+    private int size;
 
     // construct an empty deque
-    public Deque() {}
+    public Deque() {
+        size = 0;
+        sentinel = new Node(null, null, null);
+        sentinel.next = sentinel;
+        sentinel.prev = sentinel;
+    }
 
     // is the deque empty?
     public boolean isEmpty() {}
