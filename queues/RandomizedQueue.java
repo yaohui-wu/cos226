@@ -33,7 +33,7 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
         if (size == capacity) {
             resize(capacity * RESIZE_FACTOR);
         }
-        items[size - 1] = item;
+        items[size] = item;
         size += 1;
     }
 
@@ -44,6 +44,20 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
         }
     }
 
+    // remove and return a random item
+    public Item dequeue() {
+        validateQueue();
+        int index = StdRandom.uniformInt(size);
+        Item item = items[index];
+        items[index] = items[size - 1];
+        items[size - 1] = null;
+        size -= 1;
+        if (size > 0 && size == capacity / SHRINK_FACTOR) {
+            resize(capacity / RESIZE_FACTOR);
+        }
+        return item;
+    }
+
     private void resize(int newCapacity) {
         if (newCapacity >= INITIAL_CAPACITY) {
             capacity = newCapacity;
@@ -51,19 +65,6 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
             System.arraycopy(items, 0, newItems, 0, size);
             items = newItems;
         }
-    }
-
-    // remove and return a random item
-    public Item dequeue() {
-        validateQueue();
-        int index = StdRandom.uniformInt(size);
-        Item item = items[index];
-        items[index] = null;
-        size -= 1;
-        if (size > 0 && size == capacity / SHRINK_FACTOR) {
-            resize(capacity / RESIZE_FACTOR);
-        }
-        return item;
     }
 
     // return a random item (but do not remove it)
