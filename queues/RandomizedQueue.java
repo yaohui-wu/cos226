@@ -49,7 +49,16 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
     private class RandomizedQueueIterator implements Iterator<Item> {
         public boolean hasNext() {}
 
-        public Item next() {}
+        public Item next() {
+            validateNext();
+        }
+
+        private void validateNext() {
+            if (!hasNext()) {
+                String error = "No more items to iterate";
+                throw new NoSuchElementException(error);
+            }
+        }
 
         public void remove() {}
     }
