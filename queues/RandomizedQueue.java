@@ -5,6 +5,7 @@ import java.util.Iterator;
 public class RandomizedQueue<Item> implements Iterable<Item> {
     private static final int INITIAL_CAPACITY = 10;
     private static final int RESIZE_FACTOR = 2;
+    private static final int SHRINK_FACTOR = 4;
     private int size;
     private int capacity;
     private Item[] items;
@@ -29,8 +30,11 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
     // add the item
     public void enqueue(Item item) {
         validateEnqueue(item);
-        resize();
+        if (size == capacity) {
+            resize(capacity * RESIZE_FACTOR);
+        }
         items[size - 1] = item;
+        size += 1;
     }
 
     private void validateEnqueue(Item item) {
@@ -40,9 +44,9 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
         }
     }
 
-    private void resize() {
-        if (size == capacity) {
-            capacity *= RESIZE_FACTOR;
+    private void resize(int newCapacity) {
+        if (newCapacity >= INITIAL_CAPACITY) {
+            capacity = newCapacity;
             Item[] newItems = (Item[]) new Object[capacity];
             System.arraycopy(items, 0, newItems, 0, size);
             items = newItems;
@@ -54,12 +58,20 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
         validateQueue();
         int index = StdRandom.uniformInt(size);
         Item item = items[index];
+        items[index] = null;
+        size -= 1;
+        if (size > 0 && size == capacity / SHRINK_FACTOR) {
+            resize(capacity / RESIZE_FACTOR);
+        }
         return item;
     }
 
     // return a random item (but do not remove it)
     public Item sample() {
         validateQueue();
+        int index = StdRandom.uniformInt(size);
+        Item item = items[index];
+        return item;
     }
 
     private void validateQueue() {
