@@ -10,10 +10,21 @@ public class Deque<Item> implements Iterable<Item> {
     public int size() {}
 
     // add the item to the front
-    public void addFirst(Item item) {}
+    public void addFirst(Item item) {
+        validateItem(item);
+    }
 
     // add the item to the back
-    public void addLast(Item item) {}
+    public void addLast(Item item) {
+        validateItem(item);
+    }
+
+    private void validateItem(Item item) {
+        if (item == null) {
+            String error = "Item cannot be null";
+            throw new IllegalArgumentException(error);
+        }
+    }
 
     // remove and return the item from the front
     public Item removeFirst() {}
