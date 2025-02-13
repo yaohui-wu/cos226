@@ -13,6 +13,18 @@ public class Deque<Item> implements Iterable<Item> {
         sentinel.prev = sentinel;
     }
 
+    private class Node {
+        private Item item;
+        private Node next;
+        private Node prev;
+
+        public Node(Item data, Node nextNode, Node prevNode) {
+            item = data;
+            next = nextNode;
+            prev = prevNode;
+        }
+    }
+
     // is the deque empty?
     public boolean isEmpty() {
         return size == 0;
@@ -61,8 +73,6 @@ public class Deque<Item> implements Iterable<Item> {
     public Iterator<Item> iterator() {
         return new DequeIterator();
     }
-    // unit testing (required)
-    public static void main(String[] args) {}
 
     private class DequeIterator implements Iterator<Item> {
         public boolean hasNext() {}
@@ -75,15 +85,6 @@ public class Deque<Item> implements Iterable<Item> {
         }
     }
 
-    private class Node {
-        private Item item;
-        private Node next;
-        private Node prev;
-
-        public Node(Item data, Node nextNode, Node prevNode) {
-            item = data;
-            next = nextNode;
-            prev = prevNode;
-        }
-    }
+    // unit testing (required)
+    public static void main(String[] args) {}
 }
