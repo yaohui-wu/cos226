@@ -2,32 +2,46 @@ import edu.princeton.cs.algs4.StdRandom;
 import java.util.NoSuchElementException;
 import java.util.Iterator;
 
+/**
+ * Implementtion of a randomized queue, a queue where the item removed is
+ * chosen uniformly at random, using a dynamic array.
+ * 
+ * @author Yaohui Wu
+ */
 public class RandomizedQueue<Item> implements Iterable<Item> {
     private static final int INITIAL_CAPACITY = 10;
     private static final int RESIZE_FACTOR = 2;
     private static final int SHRINK_FACTOR = 4;
-    private int size;
-    private int capacity;
+    private int size; // Number of items in the queue.
+    private int capacity; // Capacity of the queue.
     private Item[] items;
 
-    // construct an empty randomized queue
+    /**
+     * Constructs an empty randomized queue.
+     */
     public RandomizedQueue() {
         size = 0;
         capacity = INITIAL_CAPACITY;
         items = (Item[]) new Object[capacity];
     }
 
-    // is the randomized queue empty?
+    /**
+     * Checks if the queue is empty.
+     */
     public boolean isEmpty() {
         return size == 0;
     }
 
-    // return the number of items on the randomized queue
+    /**
+     * Returns the number of items in the queue.
+     */
     public int size() {
         return size;
     }
 
-    // add the item
+    /**
+     * Adds an item to the front of the queue.
+     */
     public void enqueue(Item item) {
         validateEnqueue(item);
         if (size == capacity) {
@@ -44,7 +58,9 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
         }
     }
 
-    // remove and return a random item
+    /**
+     * Removes and returns a random item from the queue.
+     */
     public Item dequeue() {
         validateQueue();
         int index = StdRandom.uniformInt(size);
@@ -58,6 +74,9 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
         return item;
     }
 
+    /**
+     * Resizes the queue to the new capacity.
+     */
     private void resize(int newCapacity) {
         if (newCapacity >= INITIAL_CAPACITY) {
             capacity = newCapacity;
@@ -68,6 +87,9 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
     }
 
     // return a random item (but do not remove it)
+    /**
+     * Returns a random item from the queue but does not remove it.
+     */
     public Item sample() {
         validateQueue();
         int index = StdRandom.uniformInt(size);
@@ -82,7 +104,9 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
         }
     }
 
-    // return an independent iterator over items in random order
+    /**
+     * Returns an iterator over the items in the queue in random order.
+     */
     public Iterator<Item> iterator() {
         return new RandomizedQueueIterator();
     }
