@@ -96,6 +96,7 @@ public class Deque<Item> implements Iterable<Item> {
         }
 
         public Item next() {
+            validateNext();
             Item item = curr.item;
             curr = curr.next;
             return item;
@@ -104,6 +105,13 @@ public class Deque<Item> implements Iterable<Item> {
         public void remove() {
             String error = "Remove operation is not supported";
             throw new UnsupportedOperationException(error);
+        }
+
+        private void validateNext() {
+            if (!hasNext()) {
+                String error = "No more elements to iterate";
+                throw new NoSuchElementException(error);
+            }
         }
     }
 
