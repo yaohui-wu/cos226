@@ -46,6 +46,9 @@ public class Deque<Item> implements Iterable<Item> {
     // add the item to the back
     public void addLast(Item item) {
         validateItem(item);
+        Node last = new Node(item, sentinel, sentinel.prev);
+        last.prev.next = last;
+        last.next = sentinel;
     }
 
     private void validateItem(Item item) {
