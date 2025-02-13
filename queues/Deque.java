@@ -27,10 +27,21 @@ public class Deque<Item> implements Iterable<Item> {
     }
 
     // remove and return the item from the front
-    public Item removeFirst() {}
+    public Item removeFirst() {
+        validateDeque();
+    }
 
     // remove and return the item from the back
-    public Item removeLast() {}
+    public Item removeLast() {
+        validateDeque();
+    }
+
+    private void validateDeque() {
+        if (isEmpty()) {
+            String error = "Deque is empty";
+            throw new NoSuchElementException(error);
+        }
+    }
 
     // return an iterator over items in order from front to back
     public Iterator<Item> iterator() {}
