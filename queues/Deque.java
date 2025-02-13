@@ -52,7 +52,10 @@ public class Deque<Item> implements Iterable<Item> {
 
         public Item next() {}
 
-        public void remove() {}
+        public void remove() {
+            String error = "Remove operation is not supported";
+            throw new UnsupportedOperationException(error);
+        }
     }
 
     // unit testing (required)
