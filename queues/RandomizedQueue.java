@@ -88,10 +88,13 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
     }
 
     private class RandomizedQueueIterator implements Iterator<Item> {
-        public boolean hasNext() {}
+        public boolean hasNext() {
+            return size > 0;
+        }
 
         public Item next() {
             validateNext();
+            return dequeue();
         }
 
         private void validateNext() {
