@@ -10,7 +10,16 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
     public int size() {}
 
     // add the item
-    public void enqueue(Item item) {}
+    public void enqueue(Item item) {
+        validateEnqueue(item);
+    }
+
+    private void validateEnqueue(Item item) {
+        if (item == null) {
+            String error = "Item cannot be null";
+            throw new IllegalArgumentException(error);
+        }
+    }
 
     // remove and return a random item
     public Item dequeue() {}
