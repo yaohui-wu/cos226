@@ -104,7 +104,7 @@ public class Deque<Item> implements Iterable<Item> {
         
         private void validateNext() {
             if (!hasNext()) {
-                String error = "No more elements to iterate";
+                String error = "No more items to iterate";
                 throw new NoSuchElementException(error);
             }
         }
