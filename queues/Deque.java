@@ -2,8 +2,8 @@ import java.util.NoSuchElementException;
 import java.util.Iterator;
 
 public class Deque<Item> implements Iterable<Item> {
-    private Node sentinel;
     private int size;
+    private Node sentinel;
 
     // construct an empty deque
     public Deque() {
@@ -101,17 +101,17 @@ public class Deque<Item> implements Iterable<Item> {
             curr = curr.next;
             return item;
         }
-
-        public void remove() {
-            String error = "Remove operation is not supported";
-            throw new UnsupportedOperationException(error);
-        }
-
+        
         private void validateNext() {
             if (!hasNext()) {
                 String error = "No more elements to iterate";
                 throw new NoSuchElementException(error);
             }
+        }
+
+        public void remove() {
+            String error = "Remove operation is not supported";
+            throw new UnsupportedOperationException(error);
         }
     }
 
