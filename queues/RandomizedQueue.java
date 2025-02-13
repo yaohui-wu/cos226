@@ -60,7 +60,10 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
             }
         }
 
-        public void remove() {}
+        public void remove() {
+            String error = "Remove operation is not supported";
+            throw new UnsupportedOperationException(error);
+        }
     }
 
     // unit testing (required)
