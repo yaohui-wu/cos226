@@ -1,11 +1,19 @@
 import java.util.NoSuchElementException;
 import java.util.Iterator;
 
+/**
+ * Implementation of a double-ended queue (deque) using a circular doubly
+ * linked list with a sentinel node.
+ * 
+ * @author Yaohui Wu
+ */
 public class Deque<Item> implements Iterable<Item> {
-    private int size;
-    private Node sentinel;
+    private int size; // Number of items in the deque.
+    private Node sentinel; // Sentinel node of the doubly linked list.
 
-    // construct an empty deque
+    /**
+     * Constructs an empty deque with a sentinel node.
+     */
     public Deque() {
         size = 0;
         sentinel = new Node(null, null, null);
@@ -13,10 +21,13 @@ public class Deque<Item> implements Iterable<Item> {
         sentinel.prev = sentinel;
     }
 
+    /**
+     * Node class for the doubly linked list.
+     */
     private class Node {
-        private Item item;
-        private Node next;
-        private Node prev;
+        private Item item; // Data of the node.
+        private Node next; // Reference to the next node.
+        private Node prev; // Reference to the previous node.
 
         public Node(Item data, Node nextNode, Node prevNode) {
             item = data;
@@ -25,17 +36,23 @@ public class Deque<Item> implements Iterable<Item> {
         }
     }
 
-    // is the deque empty?
+    /**
+     * Checks if the deque is empty.
+     */
     public boolean isEmpty() {
         return size == 0;
     }
 
-    // return the number of items on the deque
+    /**
+     * Returns the number of items in the deque.
+     */
     public int size() {
         return size;
     }
 
-    // add the item to the front
+    /**
+     * Adds an item to the front of the deque.
+     */
     public void addFirst(Item item) {
         validateItem(item);
         Node first = new Node(item, sentinel.next, sentinel);
@@ -43,7 +60,9 @@ public class Deque<Item> implements Iterable<Item> {
         sentinel.next = first;
     }
 
-    // add the item to the back
+    /**
+     * Adds an item to the back of the deque.
+     */
     public void addLast(Item item) {
         validateItem(item);
         Node last = new Node(item, sentinel, sentinel.prev);
@@ -59,6 +78,9 @@ public class Deque<Item> implements Iterable<Item> {
     }
 
     // remove and return the item from the front
+    /**
+     * Removes and returns the item from the front of the deque.
+     */
     public Item removeFirst() {
         validateDeque();
         Item item = sentinel.next.item;
@@ -67,7 +89,9 @@ public class Deque<Item> implements Iterable<Item> {
         return item;
     }
 
-    // remove and return the item from the back
+    /**
+     * Removes and returns the item from the back of the deque.
+     */
     public Item removeLast() {
         validateDeque();
         Item item = sentinel.prev.item;
@@ -83,7 +107,9 @@ public class Deque<Item> implements Iterable<Item> {
         }
     }
 
-    // return an iterator over items in order from front to back
+    /**
+     * Returns an iterator over the items in the deque from front to back.
+     */
     public Iterator<Item> iterator() {
         return new DequeIterator();
     }
