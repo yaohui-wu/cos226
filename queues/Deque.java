@@ -1,30 +1,29 @@
 public class Deque<Item> implements Iterable<Item> {
 
     // construct an empty deque
-    public Deque()
+    public Deque() {}
 
     // is the deque empty?
-    public boolean isEmpty()
+    public boolean isEmpty() {}
 
     // return the number of items on the deque
-    public int size()
+    public int size() {}
 
     // add the item to the front
-    public void addFirst(Item item)
+    public void addFirst(Item item) {}
 
     // add the item to the back
-    public void addLast(Item item)
+    public void addLast(Item item) {}
 
     // remove and return the item from the front
-    public Item removeFirst()
+    public Item removeFirst() {}
 
     // remove and return the item from the back
-    public Item removeLast()
+    public Item removeLast() {}
 
     // return an iterator over items in order from front to back
-    public Iterator<Item> iterator()
+    public Iterator<Item> iterator() {}
 
     // unit testing (required)
-    public static void main(String[] args)
-
+    public static void main(String[] args) {}
 }
