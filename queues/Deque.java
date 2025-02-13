@@ -44,7 +44,16 @@ public class Deque<Item> implements Iterable<Item> {
     }
 
     // return an iterator over items in order from front to back
-    public Iterator<Item> iterator() {}
+    public Iterator<Item> iterator() {
+        return new DequeIterator();
+    }
+    private class DequeIterator implements Iterator<Item> {
+        public boolean hasNext() {}
+
+        public Item next() {}
+
+        public void remove() {}
+    }
 
     // unit testing (required)
     public static void main(String[] args) {}
