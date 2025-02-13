@@ -61,6 +61,10 @@ public class Deque<Item> implements Iterable<Item> {
     // remove and return the item from the front
     public Item removeFirst() {
         validateDeque();
+        Item item = sentinel.next.item;
+        sentinel.next = sentinel.next.next;
+        sentinel.next.prev = sentinel;
+        return item;
     }
 
     // remove and return the item from the back
