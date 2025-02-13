@@ -3,6 +3,7 @@ import java.util.Iterator;
 
 public class RandomizedQueue<Item> implements Iterable<Item> {
     private static final int INITIAL_CAPACITY = 10;
+    private static final int RESIZE_FACTOR = 2;
     private int size;
     private int capacity;
     private Item[] items;
@@ -27,6 +28,8 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
     // add the item
     public void enqueue(Item item) {
         validateEnqueue(item);
+        resize();
+        items[size - 1] = item;
     }
 
     private void validateEnqueue(Item item) {
@@ -35,6 +38,8 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
             throw new IllegalArgumentException(error);
         }
     }
+
+    private void resize() {}
 
     // remove and return a random item
     public Item dequeue() {
