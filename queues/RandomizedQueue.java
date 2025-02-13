@@ -39,7 +39,14 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
         }
     }
 
-    private void resize() {}
+    private void resize() {
+        if (size == capacity) {
+            capacity *= RESIZE_FACTOR;
+            Item[] newItems = (Item[]) new Object[capacity];
+            System.arraycopy(items, 0, newItems, 0, size);
+            items = newItems;
+        }
+    }
 
     // remove and return a random item
     public Item dequeue() {
