@@ -2,6 +2,8 @@ import java.util.NoSuchElementException;
 import java.util.Iterator;
 
 public class Deque<Item> implements Iterable<Item> {
+    private int size;
+    private Node sentinel;
 
     // construct an empty deque
     public Deque() {}
@@ -50,6 +52,9 @@ public class Deque<Item> implements Iterable<Item> {
     public Iterator<Item> iterator() {
         return new DequeIterator();
     }
+    // unit testing (required)
+    public static void main(String[] args) {}
+
     private class DequeIterator implements Iterator<Item> {
         public boolean hasNext() {}
 
@@ -61,6 +66,15 @@ public class Deque<Item> implements Iterable<Item> {
         }
     }
 
-    // unit testing (required)
-    public static void main(String[] args) {}
+    private class Node {
+        private Item item;
+        private Node next;
+        private Node prev;
+
+        public Node(Item data, Node nextNode, Node prevNode) {
+            item = data;
+            next = nextNode;
+            prev = prevNode;
+        }
+    }
 }
