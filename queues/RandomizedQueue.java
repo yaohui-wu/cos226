@@ -1,3 +1,4 @@
+import edu.princeton.cs.algs4.StdRandom;
 import java.util.NoSuchElementException;
 import java.util.Iterator;
 
@@ -51,6 +52,9 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
     // remove and return a random item
     public Item dequeue() {
         validateQueue();
+        int index = StdRandom.uniformInt(size);
+        Item item = items[index];
+        return item;
     }
 
     // return a random item (but do not remove it)
