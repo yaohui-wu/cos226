@@ -9,7 +9,8 @@ import java.util.Iterator;
  */
 public class Deque<Item> implements Iterable<Item> {
     private int size; // Number of items in the deque.
-    private Node sentinel; // Sentinel node of the doubly linked list.
+    // Sentinel node of the doubly linked list to track the front and back.
+    private Node sentinel;
 
     /**
      * Constructs an empty deque with a sentinel node.
@@ -147,5 +148,29 @@ public class Deque<Item> implements Iterable<Item> {
     }
 
     // unit testing (required)
-    public static void main(String[] args) {}
+    public static void main(String[] args) {
+        Deque<Integer> deque = new Deque<>();
+        System.out.println("Is deque empty? " + deque.isEmpty());
+        System.out.println("Size of deque: " + deque.size());
+        deque.addFirst(1);
+        deque.addFirst(2);
+        deque.addLast(3);
+        deque.addLast(4);
+        System.out.println("Is deque empty? " + deque.isEmpty());
+        System.out.println("Size of deque: " + deque.size());
+        System.out.println("Items in deque from front to back:");
+        for (int item : deque) {
+            System.out.println(item);
+        }
+        System.out.println("Remove first item: " + deque.removeFirst());
+        System.out.println("Remove last item: " + deque.removeLast());
+        System.out.println("Items in deque from front to back:");
+        for (int item : deque) {
+            System.out.println(item);
+        }
+        System.out.println("Remove first item: " + deque.removeFirst());
+        System.out.println("Remove last item: " + deque.removeLast());
+        System.out.println("Is deque empty? " + deque.isEmpty());
+        System.out.println("Size of deque: " + deque.size());
+    }
 }
