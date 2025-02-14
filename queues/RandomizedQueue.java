@@ -117,7 +117,7 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
         private int count = 0;
 
         public boolean hasNext() {
-            return count == size;
+            return count < size;
         }
 
         public Item next() {
