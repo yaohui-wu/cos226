@@ -59,7 +59,7 @@ public class Deque<Item> implements Iterable<Item> {
         // Create a new node and insert it after the sentinel node.
         Node first = new Node(item, sentinel.next, sentinel);
         // Update the references of the sentinel node and the first node.
-        first.next.prev = first;
+        sentinel.next.prev = first;
         sentinel.next = first;
         size += 1;
     }
@@ -72,8 +72,8 @@ public class Deque<Item> implements Iterable<Item> {
         // Create a new node and insert it before the sentinel node.
         Node last = new Node(item, sentinel, sentinel.prev);
         // Update the references of the sentinel node and the last node.
-        last.prev.next = last;
-        last.next = sentinel;
+        sentinel.prev.next = last;
+        sentinel.prev = last;
         size += 1;
     }
 
