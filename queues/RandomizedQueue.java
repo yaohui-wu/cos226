@@ -44,6 +44,7 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
      */
     public void enqueue(Item item) {
         validateEnqueue(item);
+        // Expand the queue if it is full.
         if (size == capacity) {
             resize(capacity * RESIZE_FACTOR);
         }
@@ -68,6 +69,7 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
         items[index] = items[size - 1];
         items[size - 1] = null;
         size -= 1;
+        // Shrink the queue if it is one-quarter full.
         if (size > 0 && size == capacity / SHRINK_FACTOR) {
             resize(capacity / RESIZE_FACTOR);
         }
@@ -86,7 +88,6 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
         }
     }
 
-    // return a random item (but do not remove it)
     /**
      * Returns a random item from the queue but does not remove it.
      */
@@ -112,13 +113,17 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
     }
 
     private class RandomizedQueueIterator implements Iterator<Item> {
+        private int count = 0;
+
         public boolean hasNext() {
-            return size > 0;
+            return count == size;
         }
 
         public Item next() {
             validateNext();
-            return dequeue();
+            Item item = sample();
+            count += 1;
+            return item;
         }
 
         private void validateNext() {
@@ -135,5 +140,31 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
     }
 
     // unit testing (required)
-    public static void main(String[] args) {}
+    public static void main(String[] args) {
+        RandomizedQueue<Integer> queue = new RandomizedQueue<>();
+        queue.enqueue(1);
+        queue.enqueue(2);
+        queue.enqueue(3);
+        queue.enqueue(4);
+        queue.enqueue(5);
+        for (int item : queue) {
+            System.out.println(item);
+        }
+        System.out.println("Size: " + queue.size());
+        System.out.println("Sample: " + queue.sample());
+        System.out.println("Dequeue: " + queue.dequeue());
+        System.out.println("Size: " + queue.size());
+        System.out.println("Sample: " + queue.sample());
+        System.out.println("Dequeue: " + queue.dequeue());
+        System.out.println("Size: " + queue.size());
+        System.out.println("Sample: " + queue.sample());
+        System.out.println("Dequeue: " + queue.dequeue());
+        System.out.println("Size: " + queue.size());
+        System.out.println("Sample: " + queue.sample());
+        System.out.println("Dequeue: " + queue.dequeue());
+        System.out.println("Size: " + queue.size());
+        System.out.println("Sample: " + queue.sample());
+        System.out.println("Dequeue: " + queue.dequeue());
+        System.out.println("Size: " + queue.size());
+    }
 }
