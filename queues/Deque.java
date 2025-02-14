@@ -151,7 +151,9 @@ public class Deque<Item> implements Iterable<Item> {
         }
     }
 
-    // unit testing (required)
+    /**
+     * Unit tests for the Deque data structure.
+     */
     public static void main(String[] args) {
         Deque<Integer> deque = new Deque<>();
         System.out.println("Is deque empty? " + deque.isEmpty());
