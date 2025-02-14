@@ -61,6 +61,7 @@ public class Deque<Item> implements Iterable<Item> {
         // Update the references of the sentinel node and the first node.
         first.next.prev = first;
         sentinel.next = first;
+        size += 1;
     }
 
     /**
@@ -73,6 +74,7 @@ public class Deque<Item> implements Iterable<Item> {
         // Update the references of the sentinel node and the last node.
         last.prev.next = last;
         last.next = sentinel;
+        size += 1;
     }
 
     private void validateItem(Item item) {
@@ -91,6 +93,7 @@ public class Deque<Item> implements Iterable<Item> {
         // Update the references of the sentinel node and the first node.
         sentinel.next = sentinel.next.next;
         sentinel.next.prev = sentinel;
+        size -= 1;
         return item;
     }
 
@@ -103,6 +106,7 @@ public class Deque<Item> implements Iterable<Item> {
         // Update the references of the sentinel node and the last node.
         sentinel.prev = sentinel.prev.prev;
         sentinel.prev.next = sentinel;
+        size -= 1;
         return item;
     }
 
