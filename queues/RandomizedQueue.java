@@ -19,7 +19,6 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
     /**
      * Constructs an empty randomized queue.
      */
-    @SuppressWarnings("unchecked")
     public RandomizedQueue() {
         size = 0;
         capacity = INITIAL_CAPACITY;
