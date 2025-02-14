@@ -113,16 +113,26 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
     }
 
     private class RandomizedQueueIterator implements Iterator<Item> {
-        private int count = 0;
+        private int length;
+        private Item[] randomItems;
+
+        public RandomizedQueueIterator() {
+            length = size;
+            randomItems = (Item[]) new Object[length];
+            System.arraycopy(items, 0, randomItems, 0, length);
+        }
 
         public boolean hasNext() {
-            return count < size;
+            return length > 0;
         }
 
         public Item next() {
             validateNext();
-            Item item = sample();
-            count += 1;
+            int index = StdRandom.uniformInt(length);
+            Item item = randomItems[index];
+            randomItems[index] = randomItems[length - 1];
+            randomItems[length - 1] = null;
+            length -= 1;
             return item;
         }
 
@@ -140,7 +150,7 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
     }
 
     /**
-     * Unit tests the RandomizedQueue data structure.
+     * Unit tests for the RandomizedQueue data structure.
      */
     public static void main(String[] args) {
         RandomizedQueue<Integer> queue = new RandomizedQueue<>();
