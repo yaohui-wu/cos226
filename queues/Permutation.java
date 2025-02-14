@@ -20,7 +20,7 @@ public class Permutation {
         int p = k + 1;
         while (!StdIn.isEmpty()) {
             String item = StdIn.readString();
-            int j = StdRandom.uniform(p);
+            int j = StdRandom.uniformInt(p);
             if (j < k) {
                 permutation.dequeue();
                 permutation.enqueue(item);
