@@ -139,7 +139,9 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
         }
     }
 
-    // unit testing (required)
+    /**
+     * Unit tests the RandomizedQueue data structure.
+     */
     public static void main(String[] args) {
         RandomizedQueue<Integer> queue = new RandomizedQueue<>();
         queue.enqueue(1);
