@@ -3,8 +3,9 @@ import edu.princeton.cs.algs4.StdRandom;
 import edu.princeton.cs.algs4.StdOut;
 
 /**
- * Takes an integer K, reads a sequence of strings, and prints exactly K of
- * them, uniformly at random.
+ * Takes an integer K, reads a sequence of N strings, and prints exactly K of
+ * them, uniformly at random. Assume that 0 <= K <= N and note that N is not
+ * given.
  * 
  * @author Yaohui Wu
  */
