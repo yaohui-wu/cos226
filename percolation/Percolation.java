@@ -4,7 +4,7 @@ public class Percolation {
     private int size; // Grid size.
     // 0: blocked, 1: open, 2: open sites connected to bottom.
     private byte[] sites;
-    private int numOpen; // Number of open sites.
+    private int numOpenSites; // Number of open sites.
     private WeightedQuickUnionUF openSites; // Open sites.
 
     /**
@@ -18,7 +18,7 @@ public class Percolation {
         for (int i = 1; i < size * size + 1; i += 1) {
             sites[i] = 0;
         }
-        numOpen = 0;
+        numOpenSites = 0;
         openSites = new WeightedQuickUnionUF(size * size + 1);
     }
 
@@ -50,7 +50,7 @@ public class Percolation {
         } else {
             sites[index] = 1;
         }
-        numOpen += 1;
+        numOpenSites += 1;
         if (row == 1) {
             openSites.union(0, index);
         }
@@ -67,7 +67,7 @@ public class Percolation {
     }
 
     private void validateIndex(int index) {
-        if (index <= 0 || index > size) {
+        if (!validIndex(index)) {
             String error = "Index " + index + " out of bounds";
             throw new IllegalArgumentException(error);
         }
@@ -122,8 +122,8 @@ public class Percolation {
     /**
      * Returns the number of open sites.
      */
-    public int numberOfopenSitesites() {
-        return numOpen;
+    public int numberOfOpenSites() {
+        return numOpenSites;
     }
 
     /**
