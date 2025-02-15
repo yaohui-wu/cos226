@@ -102,6 +102,13 @@ public class Point implements Comparable<Point> {
      */
     public Comparator<Point> slopeOrder() {
         /* YOUR CODE HERE */
+        return new Comparator<>() {
+            @Override
+            public int compare(Point p, Point q) {
+                double slopeP = slopeTo(p);
+                double slopeQ = slopeTo(q);
+            }
+        }
     }
 
 
