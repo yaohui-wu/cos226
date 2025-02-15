@@ -13,8 +13,9 @@ public class Percolation {
     public Percolation(int n) {
         validateSize(n);
         size = n;
-        sites = new byte[size * size];
-        for (int i = 0; i < size * size; i += 1) {
+        sites = new byte[size * size + 1];
+        sites[0] = 1; // Virtual top site.
+        for (int i = 1; i < size * size + 1; i += 1) {
             sites[i] = 0;
         }
         numOpen = 0;
@@ -109,7 +110,7 @@ public class Percolation {
     public boolean isFull(int row, int col) {
         validateSite(row, col);
         int element = xyTo1D(row, col);
-        return openSites.find(element) == 2;
+        return openSites.find(element) == openSites.find(0);
     }
 
     /**
