@@ -51,10 +51,10 @@ public class Percolation {
             sites[index] = 1;
         }
         numOpen += 1;
-        // Connect to adjacent open sites.
         if (row == 1) {
             openSites.union(0, index);
         }
+        // Connect to adjacent open sites.
         connect(row, col, row, col - 1); // Left.
         connect(row, col, row, col + 1); // Right.
         connect(row, col, row - 1, col); // Up.
@@ -86,13 +86,16 @@ public class Percolation {
      */
     private void connect(int row1, int col1, int row2, int col2) {
         if (validSite(row2, col2) && isOpen(row2, col2)) {
-            int element1 = xyTo1D(row1, col1);
-            int root1 = openSites.find(element1);
-            int element2 = xyTo1D(row2, col2);
-            int root2 = openSites.find(element2);
-            openSites.union(element1, element2);
-            if (root1 == 2 || root2 == 2) {
-                int root = openSites.find(element1);
+            int index1 = xyTo1D(row1, col1);
+            int index2 = xyTo1D(row2, col2);
+            openSites.union(index1, index2);
+            /*
+             * If either site is connected to the bottom before the
+             * connection, then both sites are connected to the bottom after
+             * the connection.
+             */
+            if (index1 == 2 || index2 == 2) {
+                int root = openSites.find(index1);
                 sites[root] = 2;
             }
         }
