@@ -14,19 +14,34 @@ public class Permutation {
         int k = Integer.parseInt(args[0]);
         // Use one RandomizedQueue object of maximum size at most K.
         RandomizedQueue<String> permutation = new RandomizedQueue<>();
+        // Enenqueue the first K strings.
         for (int i = 0; i < k; i++) {
             String item = StdIn.readString();
             permutation.enqueue(item);
         }
-        int p = k + 1;
+        int m = k;
         while (!StdIn.isEmpty()) {
             String item = StdIn.readString();
-            int j = StdRandom.uniformInt(p);
+            m += 1;
+            /*
+             * Keep the new string with probability K / M where M is the
+             * number of strings read so far.
+             */
+            int j = StdRandom.uniformInt(m);
             if (j < k) {
+                /*
+                 * Dequeue an old string in the RandomizedQueue uniformly at
+                 * random with probality 1 / K.
+                 */
                 permutation.dequeue();
+                // Enqueue the new string.
                 permutation.enqueue(item);
             }
-            p += 1;
+            /*
+             * At any time, the probability of enqueuing a new string in the
+             * RandomizedQueue after reading the first K strings is
+             * (K / M) * (1 / K) = 1 / M, which follows a uniform distribution.
+             */
         }
         for (String item : permutation) {
             StdOut.println(item);
