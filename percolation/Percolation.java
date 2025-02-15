@@ -37,7 +37,7 @@ public class Percolation {
     }
 
     /**
-     * openSites the site (row, col) if it is not open already.
+     * Open the site (row, col) if it is not open already.
      */
     public void open(int row, int col) {
         validateSite(row, col);
@@ -52,13 +52,13 @@ public class Percolation {
         }
         numOpenSites += 1;
         if (row == 1) {
-            openSites.union(0, index);
+            connect(0, index);
         }
         // Connect to adjacent open sites.
-        connect(row, col, row, col - 1); // Left.
-        connect(row, col, row, col + 1); // Right.
-        connect(row, col, row - 1, col); // Up.
-        connect(row, col, row + 1, col); // Down.
+        connectSites(row, col, row, col - 1); // Left.
+        connectSites(row, col, row, col + 1); // Right.
+        connectSites(row, col, row - 1, col); // Up.
+        connectSites(row, col, row + 1, col); // Down.
     }
 
     private void validateSite(int row, int col) {
@@ -84,22 +84,25 @@ public class Percolation {
     /**
      * Connects two sites if the second site is open.
      */
-    private void connect(int row1, int col1, int row2, int col2) {
+    private void connectSites(int row1, int col1, int row2, int col2) {
         if (validSite(row2, col2) && isOpen(row2, col2)) {
             int index1 = xyTo1D(row1, col1);
-            int root1 = openSites.find(index1);
             int index2 = xyTo1D(row2, col2);
-            int root2 = openSites.find(index2);
-            /*
-             * If either site is connected to the bottom before the
-             * connection, then both sites are connected to the bottom after
-             * the connection.
-             */
-            openSites.union(index1, index2);
-            if (sites[root1] == 2 || sites[root2] == 2) {
-                int root = openSites.find(index1);
-                sites[root] = 2;
-            }
+            connect(index1, index2);
+        }
+    }
+
+    private void connect(int index1, int index2) {
+        int root1 = openSites.find(index1);
+        int root2 = openSites.find(index2);
+        openSites.union(index1, index2);
+        /*
+         * If either site is connected to the bottom before the connection,
+         * then both sites are connected to the bottom after the connection.
+         */
+        if (sites[root1] == 2 || sites[root2] == 2) {
+            int root = openSites.find(index1);
+            sites[root] = 2;
         }
     }
 
@@ -129,7 +132,8 @@ public class Percolation {
     }
 
     /**
-     * Returns true if the system percolates.
+     * Returns true if the system percolates, that is, there is a full site in
+     * the bottom row.
      */
     public boolean percolates() {
         int root = openSites.find(0);
