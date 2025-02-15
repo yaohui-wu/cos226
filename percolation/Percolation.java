@@ -52,6 +52,9 @@ public class Percolation {
         }
         numOpen += 1;
         // Connect to adjacent open sites.
+        if (row == 1) {
+            openSites.union(0, index);
+        }
         connect(row, col, row, col - 1); // Left.
         connect(row, col, row, col + 1); // Right.
         connect(row, col, row - 1, col); // Up.
