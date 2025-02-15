@@ -94,7 +94,7 @@ public class Percolation {
              * connection, then both sites are connected to the bottom after
              * the connection.
              */
-            if (index1 == 2 || index2 == 2) {
+            if (sites[index1] == 2 || sites[index2] == 2) {
                 int root = openSites.find(index1);
                 sites[root] = 2;
             }
