@@ -87,14 +87,16 @@ public class Percolation {
     private void connect(int row1, int col1, int row2, int col2) {
         if (validSite(row2, col2) && isOpen(row2, col2)) {
             int index1 = xyTo1D(row1, col1);
+            int root1 = openSites.find(index1);
             int index2 = xyTo1D(row2, col2);
-            openSites.union(index1, index2);
+            int root2 = openSites.find(index2);
             /*
              * If either site is connected to the bottom before the
              * connection, then both sites are connected to the bottom after
              * the connection.
              */
-            if (sites[index1] == 2 || sites[index2] == 2) {
+            openSites.union(index1, index2);
+            if (sites[root1] == 2 || sites[root2] == 2) {
                 int root = openSites.find(index1);
                 sites[root] = 2;
             }
