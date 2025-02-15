@@ -66,7 +66,9 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
         validateQueue();
         int index = StdRandom.uniformInt(size);
         Item item = items[index];
+        // Swap the item to be removed with the last item in the queue.
         items[index] = items[size - 1];
+        // Set the item to be removed to null to avoid loitering.
         items[size - 1] = null;
         size -= 1;
         // Shrink the queue if it is one-quarter full.
