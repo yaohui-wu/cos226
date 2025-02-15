@@ -51,6 +51,7 @@ public class Percolation {
             sites[index] = 1;
         }
         numOpenSites += 1;
+        // Connect to virtual top site.
         if (row == 1) {
             connect(0, index);
         }
@@ -136,6 +137,10 @@ public class Percolation {
      * the bottom row.
      */
     public boolean percolates() {
+        /*
+         * The system percolates if the root of the set that the virtual top
+         * site is in is connected to the bottom.
+         */
         int root = openSites.find(0);
         return sites[root] == 2;
     }
