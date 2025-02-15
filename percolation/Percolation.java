@@ -2,11 +2,10 @@ import edu.princeton.cs.algs4.WeightedQuickUnionUF;
 
 public class Percolation {
     private int size; // Grid size.
-    private boolean[][] sites; // True: open, false: blocked.
-    private int open; // Number of open sites.
-    private WeightedQuickUnionUF opens; // Open sites.
-    private int top; // Virtual top site.
-    private int bottom; // Virtual bottom site.
+    // 0: blocked, 1: open, 2: open sites connected to bottom.
+    private byte[] sites;
+    private int numOpen; // Number of open sites.
+    private WeightedQuickUnionUF openSites; // Open sites.
 
     /**
      * Creates n-by-n grid, with all sites initially blocked.
@@ -14,22 +13,12 @@ public class Percolation {
     public Percolation(int n) {
         validateSize(n);
         size = n;
-        sites = new boolean[size][size];
-        for (int row = 0; row < size; row += 1) {
-            for (int col = 0; col < size; col += 1) {
-                sites[row][col] = false;
-            }
+        sites = new byte[size * size];
+        for (int i = 0; i < size * size; i += 1) {
+            sites[i] = 0;
         }
-        open = 0;
-        // Virtual top and bottom sites to check percolation.
-        opens = new WeightedQuickUnionUF(size * size + 2);
-        top = 0;
-        bottom = size * size + 1;
-        // Connect top row to virtual top site.
-        for (int col = 1; col <= size; col += 1) {
-            int element = xyTo1D(1, col);
-            opens.union(element, top);
-        }
+        numOpen = 0;
+        openSites = new WeightedQuickUnionUF(size * size + 1);
     }
 
     private void validateSize(int n) {
@@ -47,20 +36,20 @@ public class Percolation {
     }
 
     /**
-     * Opens the site (row, col) if it is not open already.
+     * openSites the site (row, col) if it is not open already.
      */
     public void open(int row, int col) {
         validateSite(row, col);
         if (isOpen(row, col)) {
             return;
         }
-        sites[row - 1][col - 1] = true;
-        open += 1;
-        int element = xyTo1D(row, col);
-        // Connect to virtual bottom site.
+        int index = xyTo1D(row, col);
         if (row == size) {
-            opens.union(element, bottom);
+            sites[index] = 2;
+        } else {
+            sites[index] = 1;
         }
+        numOpen += 1;
         // Connect to adjacent open sites.
         connect(row, col, row, col - 1); // Left.
         connect(row, col, row, col + 1); // Right.
@@ -94,8 +83,14 @@ public class Percolation {
     private void connect(int row1, int col1, int row2, int col2) {
         if (validSite(row2, col2) && isOpen(row2, col2)) {
             int element1 = xyTo1D(row1, col1);
+            int root1 = openSites.find(element1);
             int element2 = xyTo1D(row2, col2);
-            opens.union(element1, element2);
+            int root2 = openSites.find(element2);
+            openSites.union(element1, element2);
+            if (root1 == 2 || root2 == 2) {
+                int root = openSites.find(element1);
+                sites[root] = 2;
+            }
         }
     }
 
@@ -104,7 +99,8 @@ public class Percolation {
      */
     public boolean isOpen(int row, int col) {
         validateSite(row, col);
-        return sites[row - 1][col - 1];
+        int index = xyTo1D(row, col);
+        return sites[index] != 0;
     }
 
     /**
@@ -113,20 +109,21 @@ public class Percolation {
     public boolean isFull(int row, int col) {
         validateSite(row, col);
         int element = xyTo1D(row, col);
-        return isOpen(row, col);
+        return openSites.find(element) == 2;
     }
 
     /**
      * Returns the number of open sites.
      */
-    public int numberOfOpenSites() {
-        return open;
+    public int numberOfopenSitesites() {
+        return numOpen;
     }
 
     /**
      * Returns true if the system percolates.
      */
     public boolean percolates() {
-        return opens.find(top) == opens.find(bottom);
+        int root = openSites.find(0);
+        return openSites.find(root) == 2;
     }
 }
