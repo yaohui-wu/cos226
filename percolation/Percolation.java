@@ -7,7 +7,6 @@ public class Percolation {
     private WeightedQuickUnionUF opens; // Open sites.
     private int top; // Virtual top site.
     private int bottom; // Virtual bottom site.
-    private WeightedQuickUnionUF fulls; // Full sites.
 
     /**
      * Creates n-by-n grid, with all sites initially blocked.
@@ -26,13 +25,10 @@ public class Percolation {
         opens = new WeightedQuickUnionUF(size * size + 2);
         top = 0;
         bottom = size * size + 1;
-        // Only virtual top site to avoid backwash.
-        fulls = new WeightedQuickUnionUF(size * size + 1);
         // Connect top row to virtual top site.
         for (int col = 1; col <= size; col += 1) {
             int element = xyTo1D(1, col);
             opens.union(element, top);
-            fulls.union(element, top);
         }
     }
 
@@ -100,7 +96,6 @@ public class Percolation {
             int element1 = xyTo1D(row1, col1);
             int element2 = xyTo1D(row2, col2);
             opens.union(element1, element2);
-            fulls.union(element1, element2);
         }
     }
 
@@ -118,7 +113,7 @@ public class Percolation {
     public boolean isFull(int row, int col) {
         validateSite(row, col);
         int element = xyTo1D(row, col);
-        return isOpen(row, col) && fulls.find(element) == fulls.find(top);
+        return isOpen(row, col);
     }
 
     /**
