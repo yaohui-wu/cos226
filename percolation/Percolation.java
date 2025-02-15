@@ -124,7 +124,6 @@ public class Percolation {
      * Returns true if the system percolates.
      */
     public boolean percolates() {
-        int root = openSites.find(0);
-        return openSites.find(root) == 2;
+        return sites[0] == 2;
     }
 }
