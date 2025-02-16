@@ -46,9 +46,7 @@ public class BruteCollinearPoints {
                         Point q = points[j];
                         Point r = points[k];
                         Point s = points[l];
-                        Comparator<Point> comparator = p.slopeOrder();
-                        if (comparator.compare(q, r) == 0
-                            && comparator.compare(r, s) == 0) {
+                        if (isCollinear(p, q, r) && isCollinear(q, r, s)) {
                             LineSegment line = new LineSegment(p, q);
                             lines.add(line);
                             numSegments += 1;
@@ -58,6 +56,11 @@ public class BruteCollinearPoints {
             }
         }
         return lines;
+    }
+
+    private boolean isCollinear(Point p1, Point p2, Point p3) {
+        Comparator<Point> comparator = p1.slopeOrder();
+        return comparator.compare(p2, p3) == 0;
     }
 
     // the number of line segments
