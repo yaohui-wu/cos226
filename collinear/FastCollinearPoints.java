@@ -1,7 +1,37 @@
+import java.util.ArrayList;
+import java.util.List;
+
 public class FastCollinearPoints {
-    public FastCollinearPoints(Point[] points)     // finds all line segments containing 4 or more points
-    public           int numberOfSegments()        // the number of line segments
-    public LineSegment[] segments()                // the line segments
+    private int numSegments;
+    private LineSegments[] segments;
+
+    // finds all line segments containing 4 or more points
+    public FastCollinearPoints(Point[] points) {}
+
+    // the number of line segments
+    public int numberOfSegments() {}
+
+    // the line segments
+    public LineSegment[] segments() {}
+
+        private void validateArg(Point[] points) {
+        boolean valid = true;
+        if (points == null) {
+            valid = false;
+        }
+        List<Point> uniquePoints = new ArrayList<>();
+        for (Point point : points) {
+            if (point == null || uniquePoints.contains(point)) {
+                valid = false;
+            } else {
+                uniquePoints.add(point);
+            }
+        }
+        if (!valid) {
+            String error = "Invalid argument";
+            throw new IllegalArgumentException(error);
+        }
+    }
 
     public static void main(String[] args) {
 
