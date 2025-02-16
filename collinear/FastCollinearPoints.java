@@ -54,13 +54,34 @@ public class FastCollinearPoints {
                 }
             }
             Arrays.sort(sortedPoints, p.slopeOrder());
+            int count = 1;
+            Point first = sortedPoints[0];
+            double prevSlope = p.slopeTo(first);
+            int sortedLength = sortedPoints.length;
+            for (int k = 1; k < sortedLength; k += 1) {
+                double slope = p.slopeTo(sortedPoints[k]);
+                if (slope == prevSlope) {
+                    count += 1;
+                } else {
+                    if (count >= 3) {
+                        Point q = sortedPoints[k - 1];
+                        LineSegment line = new LineSegment(p, q);
+                        lines.add(line);
+                        numSegments += 1;
+                    }
+                    count = 1;
+                    first = sortedPoints[k];
+                }
+                prevSlope = slope;
+            }
+            if (count >= 3) {
+                Point q = sortedPoints[sortedLength - 1];
+                LineSegment line = new LineSegment(p, q);
+                lines.add(line);
+                numSegments += 1;
+            }
         }
         return lines;
-    }
-
-    private boolean isCollinear(Point p1, Point p2, Point p3) {
-        Comparator<Point> comparator = p1.slopeOrder();
-        return comparator.compare(p2, p3) == 0;
     }
 
     // the number of line segments
