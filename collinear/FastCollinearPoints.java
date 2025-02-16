@@ -1,6 +1,11 @@
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
+
+import edu.princeton.cs.algs4.In;
+import edu.princeton.cs.algs4.StdDraw;
+import edu.princeton.cs.algs4.StdOut;
 
 public class FastCollinearPoints {
     private int numSegments;
@@ -43,8 +48,22 @@ public class FastCollinearPoints {
                 }
             }
             Arrays.sort(sortedPoints);
+            for (int j = 0; j < sortedPoints.length - 2; j += 1) {
+                Point q = sortedPoints[j];
+                Point r = sortedPoints[j + 1];
+                Point s = sortedPoints[j + 2];
+                if (isCollinear(p, q, r) && isCollinear(q, r, s)) {
+                    LineSegment line = new LineSegment(p, s);
+                    lines.add(line);
+                }
+            }
         }
         return lines;
+    }
+
+    private boolean isCollinear(Point p1, Point p2, Point p3) {
+        Comparator<Point> comparator = p1.slopeOrder();
+        return comparator.compare(p2, p3) == 0;
     }
 
     // the number of line segments
