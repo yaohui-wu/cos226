@@ -69,7 +69,7 @@ public class BruteCollinearPoints {
     }
 
     private LineSegment getLine(Point p, Point q, Point r, Point s) {
-        if (isCollinear(p, q, r) && isCollinear(q, r, s)) {
+        if (isCollinear(p, q, r) && isCollinear(p, q, s)) {
             Point[] collinearPoints = {p, q, r, s};
             Arrays.sort(collinearPoints);
             Point min = collinearPoints[0];

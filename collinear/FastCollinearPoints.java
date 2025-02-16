@@ -14,7 +14,12 @@ public class FastCollinearPoints {
     // finds all line segments containing 4 or more points
     public FastCollinearPoints(Point[] points) {
         validateArg(points);
+        numSegments = 0;
         List<LineSegment> lines = findLines(points);
+        segments = new LineSegment[numSegments];
+        for (int i = 0; i < numSegments; i += 1) {
+            segments[i] = lines.get(i);
+        }
     }
 
     private void validateArg(Point[] points) {
@@ -45,18 +50,10 @@ public class FastCollinearPoints {
             for (int j = 0; j < length; j += 1) {
                 if (i != j) {
                     sortedPoints[index] = points[j];
+                    index += 1;
                 }
             }
-            Arrays.sort(sortedPoints);
-            for (int j = 0; j < sortedPoints.length - 2; j += 1) {
-                Point q = sortedPoints[j];
-                Point r = sortedPoints[j + 1];
-                Point s = sortedPoints[j + 2];
-                if (isCollinear(p, q, r) && isCollinear(q, r, s)) {
-                    LineSegment line = new LineSegment(p, s);
-                    lines.add(line);
-                }
-            }
+            Arrays.sort(sortedPoints, p.slopeOrder());
         }
         return lines;
     }
