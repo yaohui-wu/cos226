@@ -19,9 +19,8 @@ public class FastCollinearPoints {
         for (Point point : points) {
             if (point == null || uniquePoints.contains(point)) {
                 error();
-            } else {
-                uniquePoints.add(point);
             }
+            uniquePoints.add(point);
         }
     }
 
