@@ -31,6 +31,16 @@ public class FastCollinearPoints {
 
     private List<LineSegment> findLines(Point[] points) {
         List<LineSegment> lines = new ArrayList<>();
+        int length = points.length;
+        for (int i = 0; i < length; i += 1) {
+            Point p = points[i];
+            double[] slopes = new double[length];
+            for (int j = 0; j < length; j += 1) {
+                Point q = points[j];
+                double slope = p.slopeTo(q);
+                slopes[j] = slope;
+            }
+        }
         return lines;
     }
 
