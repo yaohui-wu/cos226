@@ -35,15 +35,14 @@ public class FastCollinearPoints {
         int length = points.length;
         for (int i = 0; i < length; i += 1) {
             Point p = points[i];
-            double[] slopes = new double[length - 1];
+            Point[] sortedPoints = new Point[length - 1];
             for (int j = 0; j < length; j += 1) {
-                if (j != i) {
-                    Point q = points[j];
-                    double slope = p.slopeTo(q);    
-                    slopes[j] = slope;
+                Point q = points[j];
+                if (j == i) {
+                    continue;
                 }
+                sortedPoints[j] = q;
             }
-            Arrays.sort(slopes);
         }
         return lines;
     }
