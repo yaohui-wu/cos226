@@ -35,6 +35,8 @@ public class BruteCollinearPoints {
     }
 
     // the line segments
-    public LineSegment[] segments() {}
+    public LineSegment[] segments() {
+        return segments;
+    }
  }
  
