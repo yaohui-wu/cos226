@@ -1,5 +1,5 @@
-import java.util.ArrayList;
 import java.util.List;
+import java.util.ArrayList;
 
 public class FastCollinearPoints {
     private int numSegments;
@@ -8,6 +8,7 @@ public class FastCollinearPoints {
     // finds all line segments containing 4 or more points
     public FastCollinearPoints(Point[] points) {
         validateArg(points);
+        List<LineSegment> lines = findLines(points);
     }
 
     private void validateArg(Point[] points) {
@@ -27,6 +28,11 @@ public class FastCollinearPoints {
     private void error() {
         String error = "Invalid argument";
         throw new IllegalArgumentException(error);
+    }
+
+    private List<LineSegment> findLines(Point[] points) {
+        List<LineSegment> lines = new ArrayList<>();
+        return lines;
     }
 
     // the number of line segments
