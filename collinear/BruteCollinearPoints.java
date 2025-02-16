@@ -8,7 +8,6 @@ public class BruteCollinearPoints {
     // finds all line segments containing 4 points
     public BruteCollinearPoints(Point[] points) {
         validateArg(points);
-
     }
 
     private void validateArg(Point[] points) {
@@ -30,8 +29,20 @@ public class BruteCollinearPoints {
         throw new IllegalArgumentException(error);
     }
 
-    private boolean isCollinear(Point[] points) {
-        return true;
+    private void findLines(Point[] points) {
+        int length = points.length;
+        for (int i = 0; i < length; i += 1) {
+            for (int j = 1; j < length; j += 1) {
+                for (int k = 2; k < length; k += 1) {
+                    for (int l = 3; l < length; l += 1) {
+                        Point p = points[i];
+                        Point q = points[j];
+                        Point r = points[k];
+                        Point s = points[l];
+                    }
+                }
+            }
+        }
     }
 
     // the number of line segments
