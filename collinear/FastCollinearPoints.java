@@ -1,5 +1,6 @@
-import java.util.List;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class FastCollinearPoints {
     private int numSegments;
@@ -34,12 +35,15 @@ public class FastCollinearPoints {
         int length = points.length;
         for (int i = 0; i < length; i += 1) {
             Point p = points[i];
-            double[] slopes = new double[length];
+            double[] slopes = new double[length - 1];
             for (int j = 0; j < length; j += 1) {
-                Point q = points[j];
-                double slope = p.slopeTo(q);
-                slopes[j] = slope;
+                if (j != i) {
+                    Point q = points[j];
+                    double slope = p.slopeTo(q);    
+                    slopes[j] = slope;
+                }
             }
+            Arrays.sort(slopes);
         }
         return lines;
     }
