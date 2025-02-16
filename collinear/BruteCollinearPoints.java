@@ -43,10 +43,10 @@ public class BruteCollinearPoints {
     private List<LineSegment> findLines(Point[] points) {
         List<LineSegment> lines = new ArrayList<>();
         int length = points.length;
-        for (int i = 0; i < length; i += 1) {
-            for (int j = 1; j < length; j += 1) {
-                for (int k = 2; k < length; k += 1) {
-                    for (int l = 3; l < length; l += 1) {
+        for (int i = 0; i < length - 3; i += 1) {
+            for (int j = i + 1; j < length - 2; j += 1) {
+                for (int k = j + 1; k < length - 1; k += 1) {
+                    for (int l = k + 1; l < length; l += 1) {
                         Point p = points[i];
                         Point q = points[j];
                         Point r = points[k];
