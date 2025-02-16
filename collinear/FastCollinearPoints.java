@@ -6,35 +6,40 @@ public class FastCollinearPoints {
     private LineSegments[] segments;
 
     // finds all line segments containing 4 or more points
-    public FastCollinearPoints(Point[] points) {}
+    public FastCollinearPoints(Point[] points) {
+        validateArg(points);
+    }
 
-    // the number of line segments
-    public int numberOfSegments() {}
-
-    // the line segments
-    public LineSegment[] segments() {}
-
-        private void validateArg(Point[] points) {
-        boolean valid = true;
+    private void validateArg(Point[] points) {
         if (points == null) {
-            valid = false;
+            error();
         }
         List<Point> uniquePoints = new ArrayList<>();
         for (Point point : points) {
             if (point == null || uniquePoints.contains(point)) {
-                valid = false;
+                error();
             } else {
                 uniquePoints.add(point);
             }
         }
-        if (!valid) {
-            String error = "Invalid argument";
-            throw new IllegalArgumentException(error);
-        }
+    }
+
+    private void error() {
+        String error = "Invalid argument";
+        throw new IllegalArgumentException(error);
+    }
+
+    // the number of line segments
+    public int numberOfSegments() {
+        return numSegments;
+    }
+
+    // the line segments
+    public LineSegment[] segments() {
+        return segments;
     }
 
     public static void main(String[] args) {
-
         // read the n points from a file
         In in = new In(args[0]);
         int n = in.readInt();
