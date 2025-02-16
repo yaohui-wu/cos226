@@ -9,17 +9,13 @@ import edu.princeton.cs.algs4.StdOut;
 
 public class FastCollinearPoints {
     private int numSegments;
-    private LineSegment[] segments;
+    private List<LineSegment> segments;
 
     // finds all line segments containing 4 or more points
     public FastCollinearPoints(Point[] points) {
         validateArg(points);
         numSegments = 0;
-        List<LineSegment> lines = findLines(points);
-        segments = new LineSegment[numSegments];
-        for (int i = 0; i < numSegments; i += 1) {
-            segments[i] = lines.get(i);
-        }
+        segments = findSegments(points);
     }
 
     private void validateArg(Point[] points) {
@@ -40,48 +36,54 @@ public class FastCollinearPoints {
         throw new IllegalArgumentException(error);
     }
 
-    private List<LineSegment> findLines(Point[] points) {
-        List<LineSegment> lines = new ArrayList<>();
+    private List<LineSegment> findSegments(Point[] points) {
+        segments = new ArrayList<>();
         int length = points.length;
+        Point[] pointsCopy = points.clone();
         for (int i = 0; i < length; i += 1) {
             Point p = points[i];
-            Point[] sortedPoints = new Point[length - 1];
-            int index = 0;
-            for (int j = 0; j < length; j += 1) {
-                if (i != j) {
-                    sortedPoints[index] = points[j];
-                    index += 1;
-                }
-            }
+            Point[] sortedPoints = pointsCopy.clone();
             Arrays.sort(sortedPoints, p.slopeOrder());
             int count = 1;
-            Point first = sortedPoints[0];
-            double prevSlope = p.slopeTo(first);
-            int sortedLength = sortedPoints.length;
-            for (int k = 1; k < sortedLength; k += 1) {
-                double slope = p.slopeTo(sortedPoints[k]);
-                if (slope == prevSlope) {
+            int start = 1;
+            double prevSlope = p.slopeTo(sortedPoints[1]);
+            for (int j = 2; j < length; j += 1) {
+                double slope = p.slopeTo(sortedPoints[j]);
+                if (Double.compare(slope, prevSlope) == 0) {
                     count += 1;
                 } else {
                     if (count >= 3) {
-                        Point q = sortedPoints[k - 1];
-                        LineSegment line = new LineSegment(p, q);
-                        lines.add(line);
-                        numSegments += 1;
+                        addSegment(p, sortedPoints, start, j - 1);
                     }
                     count = 1;
-                    first = sortedPoints[k];
+                    start = j;
                 }
                 prevSlope = slope;
             }
             if (count >= 3) {
-                Point q = sortedPoints[sortedLength - 1];
-                LineSegment line = new LineSegment(p, q);
-                lines.add(line);
-                numSegments += 1;
+                addSegment(p, sortedPoints, start, length - 1);
+            }    
+        }
+        return segments;
+    }
+
+    private void addSegment(Point p, Point[] sortedPoints, int start, int end) {
+        Point minPoint = p;
+        Point maxPoint = p;
+        for (int i = start; i <= end; i += 1) {
+            Point q = sortedPoints[i];
+            if (q.compareTo(minPoint) < 0) {
+                minPoint = q;
+            }
+            if (q.compareTo(maxPoint) > 0) {
+                maxPoint = q;
             }
         }
-        return lines;
+        if (p == minPoint) {
+            LineSegment segment = new LineSegment(minPoint, maxPoint);
+            segments.add(segment);
+            numSegments += 1;
+        }
     }
 
     // the number of line segments
@@ -91,7 +93,7 @@ public class FastCollinearPoints {
 
     // the line segments
     public LineSegment[] segments() {
-        return segments;
+        return segments.toArray(new LineSegment[0]);
     }
 
     public static void main(String[] args) {
