@@ -1,5 +1,6 @@
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Comparator;
 
 public class BruteCollinearPoints {
     private int numSegments;
@@ -8,6 +9,12 @@ public class BruteCollinearPoints {
     // finds all line segments containing 4 points
     public BruteCollinearPoints(Point[] points) {
         validateArg(points);
+        numSegments = 0;
+        segments = new LineSegment[numSegments];
+        List<LineSegment> lines = findLines(points);
+        for (int i = 0; i < numSegments; i += 1) {
+            segments[i] = lines.get(i);
+        }
     }
 
     private void validateArg(Point[] points) {
@@ -29,7 +36,8 @@ public class BruteCollinearPoints {
         throw new IllegalArgumentException(error);
     }
 
-    private void findLines(Point[] points) {
+    private List<LineSegment> findLines(Point[] points) {
+        List<LineSegment> lines = new ArrayList<>();
         int length = points.length;
         for (int i = 0; i < length; i += 1) {
             for (int j = 1; j < length; j += 1) {
@@ -39,10 +47,18 @@ public class BruteCollinearPoints {
                         Point q = points[j];
                         Point r = points[k];
                         Point s = points[l];
+                        Comparator<Point> comparator = p.slopeOrder();
+                        if (comparator.compare(q, r) == 0
+                            && comparator.compare(r, s) == 0) {
+                            LineSegment line = new LineSegment(p, q);
+                            lines.add(line);
+                            numSegments += 1;
+                        }
                     }
                 }
             }
         }
+        return lines;
     }
 
     // the number of line segments

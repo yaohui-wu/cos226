@@ -105,7 +105,7 @@ public class Point implements Comparable<Point> {
             double slopeP = slopeTo(p);
             double slopeQ = slopeTo(q);
             return Double.compare(slopeP, slopeQ);
-        }
+        };
     }
 
 
