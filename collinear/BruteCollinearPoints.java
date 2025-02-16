@@ -12,22 +12,22 @@ public class BruteCollinearPoints {
     }
 
     private void validateArg(Point[] points) {
-        boolean valid = true;
         if (points == null) {
-            valid = false;
+            error();
         }
         List<Point> uniquePoints = new ArrayList<>();
         for (Point point : points) {
             if (point == null || uniquePoints.contains(point)) {
-                valid = false;
+                error();
             } else {
                 uniquePoints.add(point);
             }
         }
-        if (!valid) {
-            String error = "Invalid argument";
-            throw new IllegalArgumentException(error);
-        }
+    }
+
+    private void error() {
+        String error = "Invalid argument";
+        throw new IllegalArgumentException(error);
     }
 
     private boolean isCollinear(Point[] points) {
