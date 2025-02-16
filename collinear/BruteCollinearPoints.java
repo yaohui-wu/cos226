@@ -2,6 +2,9 @@ import java.util.List;
 import java.util.ArrayList;
 
 public class BruteCollinearPoints {
+    private int numSegments;
+    private LineSegment[] segments;
+
     // finds all line segments containing 4 points
     public BruteCollinearPoints(Point[] points) {
         validateArg(points);
@@ -27,7 +30,9 @@ public class BruteCollinearPoints {
     }
 
     // the number of line segments
-    public int numberOfSegments() {}
+    public int numberOfSegments() {
+        return numSegments;
+    }
 
     // the line segments
     public LineSegment[] segments() {}
