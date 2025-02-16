@@ -36,13 +36,13 @@ public class FastCollinearPoints {
         for (int i = 0; i < length; i += 1) {
             Point p = points[i];
             Point[] sortedPoints = new Point[length - 1];
+            int index = 0;
             for (int j = 0; j < length; j += 1) {
-                Point q = points[j];
-                if (j == i) {
-                    continue;
+                if (i != j) {
+                    sortedPoints[index] = points[j];
                 }
-                sortedPoints[j] = q;
             }
+            Arrays.sort(sortedPoints);
         }
         return lines;
     }
