@@ -149,17 +149,17 @@ public class Board {
         for (int i = 0; i < length; i += 1) {
             int tile = twin.board[i];
             if (tile != 0) {
-                int j = i - 1;
-                if (j > 0 && twin.board[j] != 0) {
-                    int temp = twin.board[j];
-                    twin.board[j] = tile;
-                    twin.board[i] = temp;
-                    return twin;
+                int j = i + 1;
+                int k = i - 1;
+                int index = -1;
+                if (j < length && twin.board[j] != 0) {
+                    index = j;
+                } else if (k > 0 && twin.board[k] != 0) {
+                    index = k;
                 }
-                int k = i + 1;
-                if (k < length && twin.board[k] != 0) {
-                    int temp = twin.board[k];
-                    twin.board[k] = tile;
+                if (index != -1) {
+                    int temp = twin.board[index];
+                    twin.board[index] = tile;
                     twin.board[i] = temp;
                     return twin;
                 }
