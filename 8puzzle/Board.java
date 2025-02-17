@@ -65,7 +65,13 @@ public class Board {
     /**
      * Returns the sum of Manhattan distances between tiles and goal.
      */
-    public int manhattan() {}
+    public int manhattan() {
+        /*
+         * The Manhattan distance between a board and the goal board is the
+         * sum of the Manhattan distances (sum of the vertical and horizontal
+         * distance) from the tiles to their goal positions.
+         */
+    }
 
     /**
      * Checks if this board is the goal board.
