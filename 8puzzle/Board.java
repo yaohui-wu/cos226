@@ -1,3 +1,5 @@
+import java.util.Arrays;
+
 import edu.princeton.cs.algs4.StdOut;
 
 /**
@@ -89,7 +91,16 @@ public class Board {
     /**
      * Checks if this board is equal to another board.
      */
-    public boolean equals(Object y) {}
+    public boolean equals(Object y) {
+        if (this == y) {
+            return true;
+        }
+        if (y == null || getClass() != y.getClass()) {
+            return false;
+        }
+        Board other = (Board) y;
+        return Arrays.equals(board, other.board);
+    }
 
     /**
      * Returns the all neighboring boards.
