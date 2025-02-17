@@ -8,7 +8,7 @@ public class Board {
     private int[] board;
 
     /**
-     * Create a board from an n-by-n array of tiles, where tiles[row][col]
+     * Creates a board from an n-by-n array of tiles, where tiles[row][col]
      * = tile at (row, col).
      */
     public Board(int[][] tiles) {
@@ -17,22 +17,22 @@ public class Board {
     }
                                            
     /**
-     * String representation of this board.
+     * Returns the string representation of this board.
      */
     public String toString() {}
 
     /**
-     * Board dimension n.
+     * Returns the board dimension N.
      */
     public int dimension() {}
 
     /**
-     * Number of tiles out of place.
+     * Returns the number of tiles out of place.
      */
     public int hamming() {}
 
     /**
-     * Sum of Manhattan distances between tiles and goal.
+     * Returns the sum of Manhattan distances between tiles and goal.
      */
     public int manhattan() {}
 
@@ -47,15 +47,15 @@ public class Board {
     public boolean equals(Object y) {}
 
     /**
-     * All neighboring boards.
+     * Returns the all neighboring boards.
      */
     public Iterable<Board> neighbors() {}
 
     /**
-     * A board that is obtained by exchanging any pair of tiles.
+     * Returns a board that is obtained by exchanging any pair of tiles.
      */
     public Board twin() {}
 
-    // unit testing (not graded)
+    // Unit tests.
     public static void main(String[] args) {}
 }
