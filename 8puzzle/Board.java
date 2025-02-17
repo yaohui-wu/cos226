@@ -73,6 +73,20 @@ public class Board {
          * sum of the Manhattan distances (sum of the vertical and horizontal
          * distance) from the tiles to their goal positions.
          */
+        int manhattan = 0;
+        for (int i = 0; i < board.length; i += 1) {
+            int tile = board[i];
+            if (tile != 0) {
+                manhattan += calcManhattan(tile, i + 1);
+            }
+        }
+        return manhattan;
+    }
+
+    private int calcManhattan(int tile, int goalTile) {
+        if (tile == goalTile) {
+            return 0;
+        }
     }
 
     /**
@@ -103,7 +117,7 @@ public class Board {
     }
 
     /**
-     * Returns the all neighboring boards.
+     * Returns all neighboring boards.
      */
     public Iterable<Board> neighbors() {}
 
