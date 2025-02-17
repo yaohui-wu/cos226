@@ -11,15 +11,14 @@ public class BruteCollinearPoints {
     private int numSegments;
     private LineSegment[] segments;
 
-    // finds all line segments containing 4 points
+    /**
+     * Finds all line segments containing 4 points.
+     */
     public BruteCollinearPoints(Point[] points) {
         validateArg(points);
         numSegments = 0;
         List<LineSegment> lines = findLines(points);
-        segments = new LineSegment[numSegments];
-        for (int i = 0; i < numSegments; i += 1) {
-            segments[i] = lines.get(i);
-        }
+        segments = lines.toArray(new LineSegment[0]);
     }
 
     private void validateArg(Point[] points) {
@@ -63,31 +62,41 @@ public class BruteCollinearPoints {
         return lines;
     }
 
+    /**
+     * Checks if three points are collinear.
+     */
     private boolean isCollinear(Point p1, Point p2, Point p3) {
         Comparator<Point> comparator = p1.slopeOrder();
         return comparator.compare(p2, p3) == 0;
     }
 
+    /**
+     * Returns a maximal line segment if the points are collinear.
+     */
     private LineSegment getLine(Point p, Point q, Point r, Point s) {
         if (isCollinear(p, q, r) && isCollinear(p, q, s)) {
             Point[] collinearPoints = {p, q, r, s};
             Arrays.sort(collinearPoints);
-            Point min = collinearPoints[0];
-            Point max = collinearPoints[collinearPoints.length - 1];
-            if (min.compareTo(max) != 0) {
-                LineSegment line = new LineSegment(min, max);
+            Point minPoint = collinearPoints[0];
+            Point maxPoint = collinearPoints[collinearPoints.length - 1];
+            if (minPoint.compareTo(maxPoint) != 0) {
+                LineSegment line = new LineSegment(minPoint, maxPoint);
                 return line;
             }
         }
         return null;
     }
 
-    // the number of line segments
+    /**
+     * Returns the number of line segments.
+     */
     public int numberOfSegments() {
         return numSegments;
     }
 
-    // the line segments
+    /**
+     * Returns the line segments.
+     */
     public LineSegment[] segments() {
         return segments;
     }
