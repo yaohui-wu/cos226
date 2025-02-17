@@ -182,7 +182,7 @@ public class Board {
     }
 
     private boolean validXY(int x, int y) {
-        return x > 0 && x < size && y > 0 && y < size;
+        return x >= 0 && x < size && y >= 0 && y < size;
     }
 
     /**
@@ -193,7 +193,9 @@ public class Board {
         int length = twin.board.length;
         for (int i = 0; i < length; i += 1) {
             int tile = twin.board[i];
+            // Find the first two non-empty tiles to swap.
             if (tile != 0) {
+                // Try to swap with the tile to the right or left.
                 int j = i + 1;
                 int k = i - 1;
                 int index = -1;
@@ -202,6 +204,7 @@ public class Board {
                 } else if (k > 0 && twin.board[k] != 0) {
                     index = k;
                 }
+                // Swap the tiles.
                 if (index != -1) {
                     int temp = twin.board[index];
                     twin.board[index] = tile;
@@ -220,5 +223,24 @@ public class Board {
     }
 
     // Unit tests.
-    public static void main(String[] args) {}
+    public static void main(String[] args) {
+        int[][] tiles = {
+            {0, 1, 2},
+            {3, 4, 5},
+            {6, 7, 8}
+        };
+        Board board = new Board(tiles);
+        StdOut.print(board);
+        StdOut.println("Dimension: " + board.dimension());
+        StdOut.println("Hamming: " + board.hamming());
+        StdOut.println("Manhattan: " + board.manhattan());
+        StdOut.println("Goal: " + board.isGoal());
+        StdOut.println("Equals: " + board.equals(board.copy()));
+        StdOut.println("Neighbors:");
+        for (Board neighbor : board.neighbors()) {
+            StdOut.print(neighbor);
+        }
+        StdOut.println("Twin: ");
+        StdOut.print(board.twin());
+    }
 }
