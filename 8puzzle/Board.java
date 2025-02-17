@@ -95,8 +95,8 @@ public class Board {
             if (tile != 0) {
                 int x1 = indexToX(i);
                 int y1 = indexToY(i);
-                int x2 = indexToX(tile);
-                int y2 = indexToY(tile);
+                int x2 = indexToX(tile - 1);
+                int y2 = indexToY(tile - 1);
                 manhattan += calcManhattan(x1, y1, x2, y2);
             }
         }
