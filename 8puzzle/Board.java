@@ -18,6 +18,12 @@ public class Board {
     public Board(int[][] tiles) {
         size = tiles.length;
         board = new int[size * size];
+        for (int row = 0; row < size; row += 1) {
+            for (int col = 0; col < size; col += 1) {
+                int index = xyToIndex(row, col);
+                board[index] = tiles[row][col];
+            }
+        }
     }
 
     private int xyToIndex(int x, int y) {
@@ -137,7 +143,36 @@ public class Board {
     /**
      * Returns a board that is obtained by exchanging any pair of tiles.
      */
-    public Board twin() {}
+    public Board twin() {
+        Board twin = copy();
+        int length = twin.board.length;
+        for (int i = 0; i < length; i += 1) {
+            int tile = twin.board[i];
+            if (tile != 0) {
+                int j = i - 1;
+                if (j > 0 && twin.board[j] != 0) {
+                    int temp = twin.board[j];
+                    twin.board[j] = tile;
+                    twin.board[i] = temp;
+                    return twin;
+                }
+                int k = i + 1;
+                if (k < length && twin.board[k] != 0) {
+                    int temp = twin.board[k];
+                    twin.board[k] = tile;
+                    twin.board[i] = temp;
+                    return twin;
+                }
+            }
+        }
+        return null;
+    }
+
+    private Board copy() {
+        Board copy = new Board(new int[size][size]);
+        System.arraycopy(board, 0, copy.board, 0, board.length);
+        return copy;
+    }
 
     // Unit tests.
     public static void main(String[] args) {}
