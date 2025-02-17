@@ -54,14 +54,16 @@ public class FastCollinearPoints {
             int count = 1;
             // Index where a new group of collinear points starts.
             int start = 1;
-            double prevSlope = p.slopeTo(sortedPoints[1]); // Initial slope.
+            // Point with the initial slope.
+            Point prevPoint = sortedPoints[1];
             /*
              * Iterate through the sorted array to find consecutive collinear
              * points.
              */
             for (int j = 2; j < length; j += 1) {
-                double slope = p.slopeTo(sortedPoints[j]);
-                if (Double.compare(slope, prevSlope) == 0) {
+                Point currPoint = sortedPoints[j];
+                Comparator<Point> comparator = p.slopeOrder();
+                if (comparator.compare(prevPoint, currPoint) == 0) {
                     count += 1; // Extend the group.
                 } else {
                     /*
@@ -77,7 +79,7 @@ public class FastCollinearPoints {
                     start = j;
                 }
                 // Update previous slope for the next iteration.
-                prevSlope = slope;
+                prevPoint = currPoint;
             }
             // Handle the last group.
             if (count >= 3) {

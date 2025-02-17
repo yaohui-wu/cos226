@@ -89,9 +89,9 @@ public class Point implements Comparable<Point> {
      */
     public int compareTo(Point that) {
         if (y == that.y) {
-            return x - that.x;
+            return Integer.compare(x - that.x, 0);
         }
-        return y - that.y;
+        return Integer.compare(y - that.y, 0);
     }
 
     /**
@@ -101,10 +101,62 @@ public class Point implements Comparable<Point> {
      * @return the Comparator that defines this ordering on points
      */
     public Comparator<Point> slopeOrder() {
-        return (p, q) -> {
-            double slopeP = slopeTo(p);
-            double slopeQ = slopeTo(q);
-            return Double.compare(slopeP, slopeQ);
+        return (p1, p2) -> {
+            // Slope comparison using only integer arithmetic.
+            int x1 = p1.x;
+            int y1 = p1.y;
+            int x2 = p2.x;
+            int y2 = p2.y;
+            if (x1 == x && y1 == y) {
+                // Two points are the same as this point.
+                if (x2 == x && y2 == y) {
+                    return 0;
+                }
+                // Only the first point is the same as this point.
+                return -1;
+            }
+            if (x2 == x && y2 == y) {
+                // Only the second point is the same as this point.
+                return 1;
+            }
+            // Vertical line cases
+            boolean p1Vertical = (x1 == x);
+            boolean p2Vertical = (x2 == x);
+            if (p1Vertical && p2Vertical) {
+                return 0;
+            }
+            if (p1Vertical) {
+                return 1;
+            }
+            if (p2Vertical) {
+                return -1;
+            }
+
+            // Horizontal line cases
+            boolean p1Horizontal = (y1 == y);
+            boolean p2Horizontal = (y2 == y);
+            if (p1Horizontal && p2Horizontal) {
+                return 0;
+            }
+            int denominator1 = x1 - x;
+            int denominator2 = x2 - x;
+            int cross1 = (y1 - y) * denominator2;
+            int cross2 = (y2 - y) * denominator1;
+            if (p1Horizontal) {
+                return Integer.compare(0, cross2);
+            }
+            if (p2Horizontal) {
+                return Integer.compare(cross1, 0);
+            }
+            /*
+             * Compare slopes using cross product to avoid floating point
+             * arithmetic.
+             */
+            if (denominator1 * denominator2 < 0) {
+                // Flip the inequality when the denominator signs differ.
+                return Integer.compare(cross2, cross1);
+            }
+            return Integer.compare(cross1, cross2);
         };
     }
 

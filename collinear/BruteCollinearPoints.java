@@ -44,12 +44,19 @@ public class BruteCollinearPoints {
         for (int i = 0; i < length - 3; i += 1) {
             for (int j = i + 1; j < length - 2; j += 1) {
                 for (int k = j + 1; k < length - 1; k += 1) {
-                    for (int l = k + 1; l < length; l += 1) {
-                        Point p = points[i];
-                        Point q = points[j];
-                        Point r = points[k];
-                        Point s = points[l];
-                        addLine(p, q, r, s);
+                    Point p1 = points[i];
+                    Point p2 = points[j];
+                    Point p3 = points[k];
+                    // Check if 3 points are collinear.
+                    if (isCollinear(p1, p2, p3)) {
+                        /*
+                         * Check the fourth point to form a line segment if
+                         * they are collinear.
+                         */
+                        for (int n = k + 1; n < length; n += 1) {
+                            Point p4 = points[n];
+                            addLine(p1, p2, p3, p4);
+                        }
                     }
                 }
             }
@@ -68,9 +75,9 @@ public class BruteCollinearPoints {
      * Adds a line segment if 4 points are collinear and the maximum and
      * minimum points are distinct.
      */
-    private void addLine(Point p, Point q, Point r, Point s) {
-        if (isCollinear(p, q, r) && isCollinear(p, q, s)) {
-            Point[] collinearPoints = {p, q, r, s};
+    private void addLine(Point p1, Point p2, Point p3, Point p4) {
+        if (isCollinear(p1, p2, p4)) {
+            Point[] collinearPoints = {p1, p2, p3, p4};
             Arrays.sort(collinearPoints);
             Point minPoint = collinearPoints[0];
             Point maxPoint = collinearPoints[collinearPoints.length - 1];
