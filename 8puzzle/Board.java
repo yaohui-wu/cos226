@@ -1,5 +1,6 @@
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
+import java.util.List;
 
 import edu.princeton.cs.algs4.StdOut;
 
@@ -140,18 +141,48 @@ public class Board {
      * Returns all neighboring boards.
      */
     public Iterable<Board> neighbors() {
-        return new Iterable<Board>() {
-            @Override
-            public Iterator<Board> iterator() {
-                return new Iterator<Board>() {
-                    @Override
-                    public boolean hasNext() {}
-
-                    @Override
-                    public Board next() {}
-                };
+        /*
+         * Depending on the location of the blank square, a board can have 2,
+         * 3, or 4 neighbors.
+         */
+        List<Board> neighbors = new ArrayList<>();
+        final int MAX_NEIGHBORS = 4;
+        int emptyIndex = findEmptyIndex();
+        int emptyX = indexToX(emptyIndex);
+        int emptyY = indexToY(emptyIndex);
+        // Directions to move the empty space: left, right, up, down.
+        int[] dx = {-1, 1, 0, 0};
+        int[] dy = {0, 0, -1, 1};
+        // Try each direction.
+        for (int i = 0; i < MAX_NEIGHBORS; i += 1) {
+            int newX = emptyX + dx[i];
+            int newY = emptyY + dy[i];
+            if (validXY(newX, newY)) {
+                /**
+                 * Create a copy of the current board and swap the empty space
+                 * with the adjacent tile.
+                 */
+                Board neighbor = copy();
+                int newIndex = xyToIndex(newX, newY);
+                neighbor.board[emptyIndex] = neighbor.board[newIndex];
+                neighbor.board[newIndex] = 0;
+                neighbors.add(neighbor);
             }
-        };
+        }
+        return neighbors;
+    }
+
+    private int findEmptyIndex() {
+        for (int i = 0; i < board.length; i += 1) {
+            if (board[i] == 0) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    private boolean validXY(int x, int y) {
+        return x > 0 && x < size && y > 0 && y < size;
     }
 
     /**
