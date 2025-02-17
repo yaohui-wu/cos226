@@ -9,13 +9,16 @@ import edu.princeton.cs.algs4.StdOut;
 
 public class FastCollinearPoints {
     private int numSegments;
-    private List<LineSegment> segments;
+    private List<LineSegment> lines;
 
-    // finds all line segments containing 4 or more points
+    /**
+     * Finds all line segments containing 4 or more points.
+     */
     public FastCollinearPoints(Point[] points) {
         validateArg(points);
         numSegments = 0;
-        segments = findSegments(points);
+        lines = new ArrayList<>();
+        findLines(points);
     }
 
     private void validateArg(Point[] points) {
@@ -36,40 +39,60 @@ public class FastCollinearPoints {
         throw new IllegalArgumentException(error);
     }
 
-    private List<LineSegment> findSegments(Point[] points) {
-        segments = new ArrayList<>();
+    private void findLines(Point[] points) {
         int length = points.length;
-        Point[] pointsCopy = points.clone();
+        // No line segment if less than 4 points.
+        if (length < 4) {
+            return;
+        }
         for (int i = 0; i < length; i += 1) {
-            Point p = points[i];
-            Point[] sortedPoints = pointsCopy.clone();
+            Point p = points[i]; // Origin point.
+            Point[] sortedPoints = points.clone();
+            // Sort the points according to the slopes they makes with P.
             Arrays.sort(sortedPoints, p.slopeOrder());
+            // Number of points with the same slope including P.
             int count = 1;
+            // Index where a new group of collinear points starts.
             int start = 1;
-            double prevSlope = p.slopeTo(sortedPoints[1]);
+            double prevSlope = p.slopeTo(sortedPoints[1]); // Initial slope.
+            /*
+             * Iterate through the sorted array to find consecutive collinear
+             * points.
+             */
             for (int j = 2; j < length; j += 1) {
                 double slope = p.slopeTo(sortedPoints[j]);
                 if (Double.compare(slope, prevSlope) == 0) {
-                    count += 1;
+                    count += 1; // Extend the group.
                 } else {
+                    /*
+                     * If any 3 (or more) adjacent points have equal slopes
+                     * with respect to P, then they are collinear.
+                     */
                     if (count >= 3) {
-                        addSegment(p, sortedPoints, start, j - 1);
+                        addLine(p, sortedPoints, start, j - 1);
                     }
+                    // Reset count for the new slope group.
                     count = 1;
+                    // Update the start index for the new group.
                     start = j;
                 }
+                // Update previous slope for the next iteration.
                 prevSlope = slope;
             }
+            // Handle the last group.
             if (count >= 3) {
-                addSegment(p, sortedPoints, start, length - 1);
+                addLine(p, sortedPoints, start, length - 1);
             }    
         }
-        return segments;
     }
 
-    private void addSegment(Point p, Point[] sortedPoints, int start, int end) {
+    /**
+     * Adds a line segment from the given collinear points.
+     */
+    private void addLine(Point p, Point[] sortedPoints, int start, int end) {
         Point minPoint = p;
         Point maxPoint = p;
+        // Find the minimum and maximum points in the collinear group.
         for (int i = start; i <= end; i += 1) {
             Point q = sortedPoints[i];
             if (q.compareTo(minPoint) < 0) {
@@ -79,21 +102,29 @@ public class FastCollinearPoints {
                 maxPoint = q;
             }
         }
+        /*
+         * Ensure that each segment is added only once (by using the smallest
+         * point).
+         */
         if (p == minPoint) {
-            LineSegment segment = new LineSegment(minPoint, maxPoint);
-            segments.add(segment);
+            LineSegment line = new LineSegment(minPoint, maxPoint);
+            lines.add(line);
             numSegments += 1;
         }
     }
 
-    // the number of line segments
+    /**
+     * Returns the number of line segments.
+     */
     public int numberOfSegments() {
         return numSegments;
     }
 
-    // the line segments
+    /**
+     * Returns the line segments.
+     */
     public LineSegment[] segments() {
-        return segments.toArray(new LineSegment[0]);
+        return lines.toArray(new LineSegment[0]);
     }
 
     public static void main(String[] args) {

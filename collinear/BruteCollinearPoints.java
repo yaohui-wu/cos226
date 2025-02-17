@@ -9,7 +9,7 @@ import edu.princeton.cs.algs4.StdOut;
 
 public class BruteCollinearPoints {
     private int numSegments;
-    private LineSegment[] segments;
+    private List<LineSegment> lines;
 
     /**
      * Finds all line segments containing 4 points.
@@ -17,8 +17,8 @@ public class BruteCollinearPoints {
     public BruteCollinearPoints(Point[] points) {
         validateArg(points);
         numSegments = 0;
-        List<LineSegment> lines = findLines(points);
-        segments = lines.toArray(new LineSegment[0]);
+        lines = new ArrayList<>();
+        findLines(points);
     }
 
     private void validateArg(Point[] points) {
@@ -39,8 +39,7 @@ public class BruteCollinearPoints {
         throw new IllegalArgumentException(error);
     }
 
-    private List<LineSegment> findLines(Point[] points) {
-        List<LineSegment> lines = new ArrayList<>();
+    private void findLines(Point[] points) {
         int length = points.length;
         for (int i = 0; i < length - 3; i += 1) {
             for (int j = i + 1; j < length - 2; j += 1) {
@@ -50,16 +49,11 @@ public class BruteCollinearPoints {
                         Point q = points[j];
                         Point r = points[k];
                         Point s = points[l];
-                        LineSegment line = getLine(p, q, r, s);
-                        if (line != null) {
-                            lines.add(line);
-                            numSegments += 1;
-                        }
+                        addLine(p, q, r, s);
                     }
                 }
             }
         }
-        return lines;
     }
 
     /**
@@ -71,9 +65,10 @@ public class BruteCollinearPoints {
     }
 
     /**
-     * Returns a maximal line segment if the points are collinear.
+     * Adds a line segment if 4 points are collinear and the maximum and
+     * minimum points are distinct.
      */
-    private LineSegment getLine(Point p, Point q, Point r, Point s) {
+    private void addLine(Point p, Point q, Point r, Point s) {
         if (isCollinear(p, q, r) && isCollinear(p, q, s)) {
             Point[] collinearPoints = {p, q, r, s};
             Arrays.sort(collinearPoints);
@@ -81,10 +76,10 @@ public class BruteCollinearPoints {
             Point maxPoint = collinearPoints[collinearPoints.length - 1];
             if (minPoint.compareTo(maxPoint) != 0) {
                 LineSegment line = new LineSegment(minPoint, maxPoint);
-                return line;
+                lines.add(line);
+                numSegments += 1;
             }
         }
-        return null;
     }
 
     /**
@@ -98,7 +93,7 @@ public class BruteCollinearPoints {
      * Returns the line segments.
      */
     public LineSegment[] segments() {
-        return segments;
+        return lines.toArray(new LineSegment[0]);
     }
 
     public static void main(String[] args) {
