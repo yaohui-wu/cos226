@@ -70,7 +70,15 @@ public class Board {
     /**
      * Checks if this board is the goal board.
      */
-    public boolean isGoal() {}
+    public boolean isGoal() {
+        for (int i = 0; i < board.length - 1; i += 1) {
+            int tile = board[i];
+            if (tile != i + 1) {
+                return false;
+            }
+        }
+        return true;
+    }
 
     /**
      * Checks if this board is equal to another board.
