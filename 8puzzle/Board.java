@@ -20,8 +20,16 @@ public class Board {
         board = new int[size * size];
     }
 
-    private int xyTo1D(int x, int y) {
+    private int xyToIndex(int x, int y) {
         return x * size + y;
+    }
+
+    private int indexToX(int index) {
+        return index / size;
+    }
+
+    private int indexToY(int index) {
+        return index % size;
     }
     
     /**
@@ -31,7 +39,7 @@ public class Board {
         String s = size + "\n";
         for (int row = 0; row < size; row += 1) {
             for (int col = 0; col < size; col += 1) {
-                int index = xyTo1D(row, col);
+                int index = xyToIndex(row, col);
                 s += " " + board[index];
             }
             s += "\n";
@@ -77,16 +85,21 @@ public class Board {
         for (int i = 0; i < board.length; i += 1) {
             int tile = board[i];
             if (tile != 0) {
-                manhattan += calcManhattan(tile, i + 1);
+                int x1 = indexToX(i);
+                int y1 = indexToY(i);
+                int x2 = indexToX(tile);
+                int y2 = indexToY(tile);
+                manhattan += calcManhattan(x1, y1, x2, y2);
             }
         }
         return manhattan;
     }
 
-    private int calcManhattan(int tile, int goalTile) {
-        if (tile == goalTile) {
-            return 0;
-        }
+    /**
+     * Returns the Manhattan distance between two points.
+     */
+    private int calcManhattan(int x1, int y1, int x2, int y2) {
+        return Math.abs(x1 - x2) + Math.abs(y1 - y2);
     }
 
     /**
