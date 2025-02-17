@@ -47,7 +47,20 @@ public class Board {
     /**
      * Returns the number of tiles out of place.
      */
-    public int hamming() {}
+    public int hamming() {
+        /*
+         * The Hamming distance between a board and the goal board is the
+         * number of tiles in the wrong position.
+         */
+        int hamming = 0;
+        for (int i = 0; i < board.length; i += 1) {
+            int tile = board[i];
+            if (tile != 0 && tile != i + 1) {
+                hamming += 1;
+            }
+        }
+        return hamming;
+    }
 
     /**
      * Returns the sum of Manhattan distances between tiles and goal.
