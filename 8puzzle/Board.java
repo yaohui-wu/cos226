@@ -4,11 +4,17 @@
  * @author Yaohui Wu
  */
 public class Board {
+    private int size; // Board size.
+    private int[] board;
+
     /**
      * Create a board from an n-by-n array of tiles, where tiles[row][col]
      * = tile at (row, col).
      */
-    public Board(int[][] tiles) {}
+    public Board(int[][] tiles) {
+        size = tiles.length;
+        board = new int[size * size];
+    }
                                            
     /**
      * String representation of this board.
@@ -49,4 +55,7 @@ public class Board {
      * A board that is obtained by exchanging any pair of tiles.
      */
     public Board twin() {}
+
+    // unit testing (not graded)
+    public static void main(String[] args) {}
 }
