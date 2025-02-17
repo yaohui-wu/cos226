@@ -10,8 +10,8 @@ public class Board {
     private int[] board;
 
     /**
-     * Creates a board from an n-by-n array of tiles, where tiles[row][col]
-     * = tile at (row, col).
+     * Creates a board from an n-by-n array of tiles, where
+     * tiles[row][col] = tile at (row, col).
      */
     public Board(int[][] tiles) {
         size = tiles.length;
@@ -38,9 +38,11 @@ public class Board {
     }
 
     /**
-     * Returns the board dimension N.
+     * Returns the board dimension n.
      */
-    public int dimension() {}
+    public int dimension() {
+        return size;
+    }
 
     /**
      * Returns the number of tiles out of place.
