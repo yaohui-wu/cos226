@@ -1,3 +1,5 @@
+import edu.princeton.cs.algs4.StdOut;
+
 /**
  * An immutable data type that models an n-by-n board with sliding tiles.
  * 
@@ -15,11 +17,25 @@ public class Board {
         size = tiles.length;
         board = new int[size * size];
     }
-                                           
+
+    private int xyTo1D(int x, int y) {
+        return x * size + y;
+    }
+    
     /**
      * Returns the string representation of this board.
      */
-    public String toString() {}
+    public String toString() {
+        String s = size + "\n";
+        for (int row = 0; row < size; row += 1) {
+            for (int col = 0; col < size; col += 1) {
+                int index = xyTo1D(row, col);
+                s += " " + board[index];
+            }
+            s += "\n";
+        }
+        return s;
+    }
 
     /**
      * Returns the board dimension N.
