@@ -1,4 +1,5 @@
 import java.util.Arrays;
+import java.util.Iterator;
 
 import edu.princeton.cs.algs4.StdOut;
 
@@ -138,7 +139,20 @@ public class Board {
     /**
      * Returns all neighboring boards.
      */
-    public Iterable<Board> neighbors() {}
+    public Iterable<Board> neighbors() {
+        return new Iterable<Board>() {
+            @Override
+            public Iterator<Board> iterator() {
+                return new Iterator<Board>() {
+                    @Override
+                    public boolean hasNext() {}
+
+                    @Override
+                    public Board next() {}
+                };
+            }
+        };
+    }
 
     /**
      * Returns a board that is obtained by exchanging any pair of tiles.
