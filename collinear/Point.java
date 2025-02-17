@@ -131,34 +131,20 @@ public class Point implements Comparable<Point> {
             if (p2Vertical) {
                 return -1;
             }
-            // Horizontal line cases
-            boolean p1Horizontal = (y1 == y);
-            boolean p2Horizontal = (y2 == y);
-            if (p1Horizontal && p2Horizontal) {
+            // Both lines are horizontal.
+            if (y1 == y && y2 == y) {
                 return 0;
-            }
-            int denominator1 = x1 - x;
-            int denominator2 = x2 - x;
-            int cross1 = (y1 - y) * denominator2;
-            int cross2 = (y2 - y) * denominator1;
-            boolean changeSign = denominator1 * denominator2 < 0;
-            if (p1Horizontal) {
-                if (changeSign) {
-                    return Integer.compare(cross2, 0);
-                }
-                return Integer.compare(0, cross2);
-            }
-            if (p2Horizontal) {
-                if (changeSign) {
-                    return Integer.compare(0, cross1);
-                }
-                return Integer.compare(cross1, 0);
             }
             /*
              * Compare slopes using cross product to avoid floating point
              * arithmetic.
              */
-            if (changeSign) {
+            int denominator1 = x1 - x;
+            int denominator2 = x2 - x;
+            int cross1 = (y1 - y) * denominator2;
+            int cross2 = (y2 - y) * denominator1;
+            boolean flipIneq = denominator1 * denominator2 < 0;
+            if (flipIneq) {
                 // Flip the inequality when the denominator signs differ.
                 return Integer.compare(cross2, cross1);
             }
