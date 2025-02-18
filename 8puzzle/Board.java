@@ -44,15 +44,16 @@ public final class Board {
      * Returns the string representation of this board.
      */
     public String toString() {
-        String s = size + "\n";
+        StringBuilder boardString = new StringBuilder();
+        boardString.append(size + "\n");
         for (int row = 0; row < size; row += 1) {
             for (int col = 0; col < size; col += 1) {
                 int index = xyToIndex(row, col);
-                s += " " + board[index];
+                boardString.append(" " + board[index]);
             }
-            s += "\n";
+            boardString.append("\n");
         }
-        return s;
+        return boardString.toString();
     }
 
     /**
