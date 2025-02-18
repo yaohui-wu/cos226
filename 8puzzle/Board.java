@@ -1,6 +1,6 @@
-import java.util.ArrayList;
+import java.util.ArrayDeque;
 import java.util.Arrays;
-import java.util.List;
+import java.util.Queue;
 
 import edu.princeton.cs.algs4.StdOut;
 
@@ -11,7 +11,7 @@ import edu.princeton.cs.algs4.StdOut;
  */
 public final class Board {
     private final int size; // Board size.
-    private final int[] board;
+    private final int[] board; // Board tiles.
 
     /**
      * Creates a board from an n-by-n array of tiles, where
@@ -134,6 +134,9 @@ public final class Board {
             return false;
         }
         Board other = (Board) y;
+        if (size != other.size) {
+            return false;
+        }
         return Arrays.equals(board, other.board);
     }
 
@@ -145,7 +148,7 @@ public final class Board {
          * Depending on the location of the blank square, a board can have 2,
          * 3, or 4 neighbors.
          */
-        List<Board> neighbors = new ArrayList<>();
+        Queue<Board> neighbors = new ArrayDeque<>();
         final int MAX_NEIGHBORS = 4;
         int emptyIndex = findEmptyIndex();
         int emptyX = indexToX(emptyIndex);
