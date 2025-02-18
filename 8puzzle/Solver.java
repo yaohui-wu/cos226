@@ -123,7 +123,6 @@ public final class Solver {
         private final Board board;
         private final int moves;
         private final Node prev;
-        private final int manhattan;
         private final int priority;
 
         public Node(Board gameBoard, Node prevNode) {
@@ -134,17 +133,18 @@ public final class Solver {
                 moves = prevNode.moves + 1;
             }
             prev = prevNode;
-            manhattan = board.manhattan();
-            priority = moves + manhattan;
+            priority = moves + board.manhattan();
         }
 
         @Override
         public int compareTo(Node other) {
-            int comparison = Integer.compare(priority, other.priority);
-            if (comparison == 0) {
-                comparison = Integer.compare(manhattan, other.manhattan);
+            int cmp = Integer.compare(priority, other.priority);
+            if (cmp == 0) {
+                int man = board.manhattan();
+                int otherMan = other.board.manhattan();
+                cmp = Integer.compare(man, otherMan);
             }
-            return comparison;
+            return cmp;
         }
     }
 }
