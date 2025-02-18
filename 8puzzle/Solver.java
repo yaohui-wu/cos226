@@ -30,11 +30,13 @@ public final class Solver {
         Node curr = priorityQueue.delMin();
         while (!curr.board.isGoal()) {
             for (Board neighbor : curr.board.neighbors()) {
-                Node newNode
-                    = new Node(neighbor, curr.moves + 1, curr, curr.twin);
-                priorityQueue.insert(newNode);
-                curr = priorityQueue.delMin();
+                if (!neighbor.equals(curr.board)) {
+                    Node newNode
+                        = new Node(neighbor, curr.moves + 1, curr, false);
+                    priorityQueue.insert(newNode);
+                }
             }
+            curr = priorityQueue.delMin();
         }
         solvable = !curr.twin;
         if (solvable) {
@@ -73,12 +75,12 @@ public final class Solver {
      * unsolvable.
      */
     public Iterable<Board> solution() {
-        if (isSolvable()) {
+        if (!isSolvable()) {
             return null;
         }
         Deque<Board> stack = new ArrayDeque<>();
         Node curr = solution;
-        while (curr.prev != null) {
+        while (curr != null) {
             stack.push(curr.board);
             curr = curr.prev;
         }
