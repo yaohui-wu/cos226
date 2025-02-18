@@ -9,9 +9,9 @@ import edu.princeton.cs.algs4.StdOut;
  * 
  * @author Yaohui Wu
  */
-public class Board {
-    private int size; // Board size.
-    private int[] board;
+public final class Board {
+    private final int size; // Board size.
+    private final int[] board;
 
     /**
      * Creates a board from an n-by-n array of tiles, where
