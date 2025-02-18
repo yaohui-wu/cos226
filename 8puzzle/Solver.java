@@ -29,7 +29,7 @@ public final class Solver {
         Node curr = priorityQueue.delMin();
         while (!curr.board.isGoal()) {
             for (Board neighbor : curr.board.neighbors()) {
-                if (!neighbor.equals(curr.board)) {
+                if (curr.prev == null || !neighbor.equals(curr.prev.board)) {
                     Node newNode
                         = new Node(neighbor, curr.moves + 1, curr, curr.twin);
                     priorityQueue.insert(newNode);
