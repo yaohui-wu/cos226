@@ -2,8 +2,8 @@ import java.util.ArrayDeque;
 import java.util.Deque;
 
 import edu.princeton.cs.algs4.In;
-import edu.princeton.cs.algs4.MinPQ;
 import edu.princeton.cs.algs4.StdOut;
+import edu.princeton.cs.algs4.MinPQ;
 
 /**
  * An immutable data type that implements A* search to solve n-by-n slider puzzles.
@@ -21,23 +21,29 @@ public final class Solver {
     public Solver(Board initial) {
         validateArg(initial);
         // A* algorithm.
-        MinPQ<Node> priorityQueue = new MinPQ<>();
-        Node init = new Node(initial, 0, null, false);
-        Node initTwin = new Node(initial.twin(), 0, null, true);
-        priorityQueue.insert(init);
-        priorityQueue.insert(initTwin);
-        Node curr = priorityQueue.delMin();
+        MinPQ<Node> pq = new MinPQ<>();
+        MinPQ<Node> twinPQ = new MinPQ<>();
+        Node init = new Node(initial, null);
+        Node initTwin = new Node(initial.twin(), null);
+        pq.insert(init);
+        twinPQ.insert(initTwin);
+        MinPQ<Node> solutionPQ = pq;
+        Node curr = solutionPQ.delMin();
         while (!curr.board.isGoal()) {
             for (Board neighbor : curr.board.neighbors()) {
                 if (curr.prev == null || !neighbor.equals(curr.prev.board)) {
-                    Node newNode
-                        = new Node(neighbor, curr.moves + 1, curr, curr.twin);
-                    priorityQueue.insert(newNode);
+                    Node newNode = new Node(neighbor, curr);
+                    solutionPQ.insert(newNode);
                 }
             }
-            curr = priorityQueue.delMin();
+            curr = solutionPQ.delMin();
+            if (solutionPQ == pq) {
+                solutionPQ = twinPQ;
+            } else {
+                solutionPQ = pq;
+            }
         }
-        solvable = !curr.twin;
+        solvable = (solutionPQ == pq);
         if (solvable) {
             solution = curr;
             moves = solution.moves;
@@ -117,24 +123,28 @@ public final class Solver {
         private final Board board;
         private final int moves;
         private final Node prev;
+        private final int manhattan;
         private final int priority;
-        private final boolean twin;
 
-        public Node(
-            Board gameBoard,
-            int numMoves,
-            Node prevNode,
-            boolean isTwin) {
+        public Node(Board gameBoard, Node prevNode) {
             board = gameBoard;
-            moves = numMoves;
+            if (prevNode == null) {
+                moves = 0;
+            } else {
+                moves = prevNode.moves + 1;
+            }
             prev = prevNode;
-            priority = moves + board.manhattan();
-            twin = isTwin;
+            manhattan = board.manhattan();
+            priority = moves + manhattan;
         }
 
         @Override
         public int compareTo(Node other) {
-            return Integer.compare(priority, other.priority);
+            int comparison = Integer.compare(priority, other.priority);
+            if (comparison == 0) {
+                comparison = Integer.compare(manhattan, other.manhattan);
+            }
+            return comparison;
         }
     }
 }
