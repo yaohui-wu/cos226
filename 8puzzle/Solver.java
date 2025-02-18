@@ -1,3 +1,5 @@
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.LinkedList;
 import java.util.Stack;
 
@@ -21,22 +23,12 @@ public final class Solver {
      */
     public Solver(Board initial) {
         validateArg(initial);
-        solve(initial);
-    }
-
-    private void validateArg(Board initial) {
-        if (initial == null) {
-            String error = "The initial board cannot be null";
-            throw new IllegalArgumentException(error);
-        }
-    }
-
-    private void solve(Board initial) {
         // A* algorithm.
         priorityQueue = new MinPQ<>();
         Node init = new Node(initial, 0, null, false);
         Node initTwin = new Node(initial.twin(), 0, null, true);
         priorityQueue.insert(init);
+        priorityQueue.insert(initTwin);
         Node curr = priorityQueue.delMin();
         while (!curr.board.isGoal()) {
             for (Board neighbor : curr.board.neighbors()) {
@@ -47,13 +39,20 @@ public final class Solver {
             }
         }
         solvable = !curr.twin;
-        if (!solvable) {
+        if (solvable) {
+            solution = curr;
+            moves = solution.moves;
+        } else {
             solution = null;
             moves = -1;
-            return;
         }
-        solution = curr;
-        moves = solution.moves;
+    }
+
+    private void validateArg(Board initial) {
+        if (initial == null) {
+            String error = "The initial board cannot be null";
+            throw new IllegalArgumentException(error);
+        }
     }
 
     /**
@@ -79,7 +78,7 @@ public final class Solver {
         if (isSolvable()) {
             return null;
         }
-        Stack<Board> stack = new LinkedList<>();
+        Deque<Board> stack = new ArrayDeque<>();
         Node curr = solution;
         while (curr.prev != null) {
             stack.push(curr.board);
