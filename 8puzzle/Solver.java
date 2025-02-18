@@ -1,3 +1,6 @@
+import java.util.LinkedList;
+import java.util.Stack;
+
 import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.MinPQ;
 import edu.princeton.cs.algs4.StdOut;
@@ -9,23 +12,16 @@ import edu.princeton.cs.algs4.StdOut;
  */
 public final class Solver {
     private MinPQ<Node> priorityQueue;
+    private final boolean solvable;
+    private final Node solution;
+    private final int moves;
 
     /**
      * Finds a solution to the initial board using the A* algorithm.
      */
     public Solver(Board initial) {
         validateArg(initial);
-        // A* algorithm.
-        priorityQueue = new MinPQ<>();
-        Node init = new Node(initial, 0, null);
-        priorityQueue.insert(init);
-        Node curr = priorityQueue.delMin();
-        while (!curr.board.isGoal()) {
-            for (Board neighbor : curr.board.neighbors()) {
-                Node newNode = new Node(neighbor, curr.moves + 1, curr);
-                priorityQueue.insert(newNode);
-            }
-        }
+        solve(initial);
     }
 
     private void validateArg(Board initial) {
@@ -35,19 +31,44 @@ public final class Solver {
         }
     }
 
+    private void solve(Board initial) {
+        // A* algorithm.
+        priorityQueue = new MinPQ<>();
+        Node init = new Node(initial, 0, null, false);
+        Node initTwin = new Node(initial.twin(), 0, null, true);
+        priorityQueue.insert(init);
+        Node curr = priorityQueue.delMin();
+        while (!curr.board.isGoal()) {
+            for (Board neighbor : curr.board.neighbors()) {
+                Node newNode
+                    = new Node(neighbor, curr.moves + 1, curr, curr.twin);
+                priorityQueue.insert(newNode);
+                curr = priorityQueue.delMin();
+            }
+        }
+        solvable = !curr.twin;
+        if (!solvable) {
+            solution = null;
+            moves = -1;
+            return;
+        }
+        solution = curr;
+        moves = solution.moves;
+    }
+
     /**
      * Checks if the initial board is solvable.
      */
-    public boolean isSolvable() {}
+    public boolean isSolvable() {
+        return solvable;
+    }
 
     /**
      * Returns the minimum number of moves to solve the initial board, returns
      * -1 if unsolvable.
      */
     public int moves() {
-        if (!isSolvable()) {
-            return -1;
-        }
+        return moves;
     }
 
     /**
@@ -55,9 +76,16 @@ public final class Solver {
      * unsolvable.
      */
     public Iterable<Board> solution() {
-        if (!isSolvable()) {
+        if (isSolvable()) {
             return null;
         }
+        Stack<Board> stack = new LinkedList<>();
+        Node curr = solution;
+        while (curr.prev != null) {
+            stack.push(curr.board);
+            curr = curr.prev;
+        }
+        return stack;
     }
 
     /**
@@ -92,12 +120,18 @@ public final class Solver {
         private final int moves;
         private final Node prev;
         private final int priority;
+        private final boolean twin;
 
-        public Node(Board gameBoard, int numMoves, Node prevNode) {
+        public Node(
+            Board gameBoard,
+            int numMoves,
+            Node prevNode,
+            boolean isTwin) {
             board = gameBoard;
             moves = numMoves;
             prev = prevNode;
-            priority = 0;
+            priority = moves + board.manhattan();
+            twin = isTwin;
         }
 
         @Override
