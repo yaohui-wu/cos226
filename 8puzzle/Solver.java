@@ -1,14 +1,26 @@
+import edu.princeton.cs.algs4.In;
+import edu.princeton.cs.algs4.StdOut;
+
 /**
  * An immutable data type that implements A* search to solve n-by-n slider puzzles.
  * 
  * @author Yaohui Wu
  */
-public class Solver {
+public final class Solver {
 
     /**
      * Finds a solution to the initial board using the A* algorithm.
      */
-    public Solver(Board initial) {}
+    public Solver(Board initial) {
+        validateArg(initial);
+    }
+
+    private void validateArg(Board initial) {
+        if (initial == null) {
+            String error = "The initial board cannot be null";
+            throw new IllegalArgumentException(error);
+        }
+    }
 
     /**
      * Checks if the initial board is solvable.
@@ -21,7 +33,6 @@ public class Solver {
      */
     public int moves() {}
 
-    // sequence of boards in a shortest solution; null if unsolvable
     /**
      * Returns the sequence of boards in a shortest solution, returns null if
      * unsolvable.
