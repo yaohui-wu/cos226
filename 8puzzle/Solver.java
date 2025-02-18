@@ -36,12 +36,12 @@ public final class Solver {
                     solutionPQ.insert(newNode);
                 }
             }
-            curr = solutionPQ.delMin();
             if (solutionPQ == pq) {
                 solutionPQ = twinPQ;
             } else {
                 solutionPQ = pq;
             }
+            curr = solutionPQ.delMin();
         }
         solvable = (solutionPQ == pq);
         if (solvable) {
@@ -83,13 +83,13 @@ public final class Solver {
         if (!solvable) {
             return null;
         }
-        Deque<Board> stack = new ArrayDeque<>();
+        Deque<Board> steps = new ArrayDeque<>();
         Node curr = solution;
         while (curr != null) {
-            stack.push(curr.board);
+            steps.push(curr.board);
             curr = curr.prev;
         }
-        return stack;
+        return steps;
     }
 
     /**
