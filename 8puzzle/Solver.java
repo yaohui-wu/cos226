@@ -11,7 +11,6 @@ import edu.princeton.cs.algs4.StdOut;
  * @author Yaohui Wu
  */
 public final class Solver {
-    private MinPQ<Node> priorityQueue;
     private final boolean solvable;
     private final Node solution;
     private final int moves;
@@ -22,7 +21,7 @@ public final class Solver {
     public Solver(Board initial) {
         validateArg(initial);
         // A* algorithm.
-        priorityQueue = new MinPQ<>();
+        MinPQ<Node> priorityQueue = new MinPQ<>();
         Node init = new Node(initial, 0, null, false);
         Node initTwin = new Node(initial.twin(), 0, null, true);
         priorityQueue.insert(init);
@@ -32,7 +31,7 @@ public final class Solver {
             for (Board neighbor : curr.board.neighbors()) {
                 if (!neighbor.equals(curr.board)) {
                     Node newNode
-                        = new Node(neighbor, curr.moves + 1, curr, false);
+                        = new Node(neighbor, curr.moves + 1, curr, curr.twin);
                     priorityQueue.insert(newNode);
                 }
             }
@@ -75,7 +74,7 @@ public final class Solver {
      * unsolvable.
      */
     public Iterable<Board> solution() {
-        if (!isSolvable()) {
+        if (!solvable) {
             return null;
         }
         Deque<Board> stack = new ArrayDeque<>();
