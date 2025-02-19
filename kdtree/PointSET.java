@@ -30,7 +30,7 @@ public class PointSET {
     public void insert(Point2D p) {
         validateArg(p);
         if (!pointSet.contains(p)) {
-            pointSet.insert(p);
+            pointSet.add(p);
         }
     }
 
@@ -53,7 +53,7 @@ public class PointSET {
         SET<Point2D> points = new SET<>();
         for (Point2D point : pointSet) {
             if (rect.contains(point)) {
-                points.insert(point);
+                points.add(point);
             }
         }
         return points;
@@ -63,10 +63,11 @@ public class PointSET {
     public Point2D nearest(Point2D p) {
         validateArg(p);
         Point2D nearest = null;
-        double minDist = 0;
+        double minDist = Double.POSITIVE_INFINITY;
         for (Point2D point : pointSet) {
             double dist = p.distanceTo(point);
-            if (dist < minDist) {
+            int comparison = Double.compare(dist, minDist);
+            if (comparison < 0) {
                 minDist = dist;
                 nearest = point;
             }
@@ -82,5 +83,27 @@ public class PointSET {
     }
 
     // unit testing of the methods (optional)
-    public static void main(String[] args) {}
+    public static void main(String[] args) {
+        PointSET pointSet = new PointSET();
+        Point2D p1 = new Point2D(0.1, 0.2);
+        Point2D p2 = new Point2D(0.3, 0.4);
+        Point2D p3 = new Point2D(0.5, 0.6);
+        Point2D p4 = new Point2D(0.7, 0.8);
+        pointSet.insert(p1);
+        pointSet.insert(p2);
+        pointSet.insert(p3);
+        pointSet.insert(p4);
+        System.out.println(pointSet.size());
+        System.out.println(pointSet.contains(p1));
+        System.out.println(pointSet.contains(p2));
+        System.out.println(pointSet.contains(p3));
+        System.out.println(pointSet.contains(p4));
+        System.out.println(pointSet.contains(new Point2D(0.9, 1.0)));
+        pointSet.draw();
+        RectHV rect = new RectHV(0.1, 0.2, 0.5, 0.6);
+        for (Point2D point : pointSet.range(rect)) {
+            System.out.println(point);
+        }
+        System.out.println(pointSet.nearest(new Point2D(0.1, 0.2)));
+    }
 }
