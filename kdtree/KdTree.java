@@ -30,70 +30,75 @@ public class KdTree {
     // add the point to the set (if it is not already in the set)
     public void insert(Point2D p) {
         validateArg(p);
-        Node node = new Node(p);
-        insert(root, node, false);
+        insert(root, p, false);
     }
 
-    private void insert(Node root, Node node, boolean compareY) {
+    private void insert(Node root, Point2D point, boolean compareY) {
         if (root == null) {
-            root = node;
+            root = new Node(point);
         }
-        double nodeKey = node.p.x();
-        double rootKey = root.p.x();
+        Point2D rootPoint = root.point;
+        if (point.equals(rootPoint)) {
+            return;
+        }
+        double key = point.x();
+        double rootKey = rootPoint.x();
         if (compareY) {
-            nodeKey = node.p.y();
-            rootKey = root.p.y();
+            key = point.y();
+            rootKey = rootPoint.y();
         }
-        if (nodeKey < rootKey) {
-            root = root.lb;
+        if (key < rootKey) {
+            root = root.leftBottom;
         } else {
-            root = root.rt;
+            root = root.rightTop;
         }
-        insert(root, node, !compareY);
+        insert(root, point, !compareY);
     }
 
     // does the set contain point p?
     public boolean contains(Point2D p) {
         validateArg(p);
-        if (isEmpty()) {
-            return false;
-        }
+        return search(root, p, false);
     }
 
-    private boolean search(Node root, Point2D p, boolean compareY) {
+    private boolean search(Node root, Point2D point, boolean compareY) {
         if (root == null) {
             return false;
         }
-        Point2D point = root.p;
-        if (p.equals(point)) {
+        Point2D rootPoint = root.point;
+        if (point.equals(rootPoint)) {
             return true;
         }
-        double key = p.x();
-        double rootKey = point.x();
+        double key = point.x();
+        double rootKey = rootPoint.x();
         if (compareY) {
-            key = p.y();
-            rootKey = point.y();
+            key = point.y();
+            rootKey = rootPoint.y();
         }
         int comparison = Double.compare(key, rootKey);
         if (comparison < 0) {
-            root = root.lb;
+            root = root.leftBottom;
         } else {
-            root = root.rt;
+            root = root.rightTop;
         }
-        return search(root, p, !compareY);
+        return search(root, point, !compareY);
     }
 
     // draw all points to standard draw
-    public void draw() {}
+    public void draw() {
+        // TODO: implement this method.
+    }
 
     // all points that are inside the rectangle (or on the boundary)
     public Iterable<Point2D> range(RectHV rect) {
         validateArg(rect);
+        // TODO: implement this method.
     }
 
     // a nearest neighbor in the set to point p; null if the set is empty
     public Point2D nearest(Point2D p) {
         validateArg(p);
+        // TODO: implement this method.
     }
 
     private static void validateArg(Object obj) {
@@ -104,17 +109,17 @@ public class KdTree {
     }
 
     private static class Node {
-        private Point2D p; // the point
+        private Point2D point; // the point
         // the axis-aligned rectangle corresponding to this node
         private RectHV rect;
-        private Node lb; // the left/bottom subtree
-        private Node rt; // the right/top subtree
+        private Node leftBottom; // the left/bottom subtree
+        private Node rightTop; // the right/top subtree
 
-        public Node(Point2D point) {
-            p = point;
+        public Node(Point2D p) {
+            point = p;
             rect = null;
-            lb = null;
-            rt = null;
+            leftBottom = null;
+            rightTop = null;
         }
     }
 
