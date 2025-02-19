@@ -126,5 +126,27 @@ public class KdTree {
     }
 
     // unit testing of the methods (optional)
-    public static void main(String[] args) {}
+    public static void main(String[] args) {
+        KdTree kdTree = new KdTree();
+        Point2D p1 = new Point2D(0.1, 0.2);
+        Point2D p2 = new Point2D(0.3, 0.4);
+        Point2D p3 = new Point2D(0.5, 0.6);
+        Point2D p4 = new Point2D(0.7, 0.8);
+        kdTree.insert(p1);
+        kdTree.insert(p2);
+        kdTree.insert(p3);
+        kdTree.insert(p4);
+        System.out.println(kdTree.size());
+        System.out.println(kdTree.contains(p1));
+        System.out.println(kdTree.contains(p2));
+        System.out.println(kdTree.contains(p3));
+        System.out.println(kdTree.contains(p4));
+        System.out.println(kdTree.contains(new Point2D(0.9, 1.0)));
+        kdTree.draw();
+        RectHV rect = new RectHV(0.1, 0.2, 0.5, 0.6);
+        for (Point2D point : kdTree.range(rect)) {
+            System.out.println(point);
+        }
+        System.out.println(kdTree.nearest(new Point2D(0.1, 0.2)));
+    }
 }
