@@ -62,6 +62,16 @@ public class PointSET {
     // a nearest neighbor in the set to point p; null if the set is empty
     public Point2D nearest(Point2D p) {
         validateArg(p);
+        Point2D nearest = null;
+        double minDist = 0;
+        for (Point2D point : pointSet) {
+            double dist = p.distanceTo(point);
+            if (dist < minDist) {
+                minDist = dist;
+                nearest = point;
+            }
+        }
+        return nearest;
     }
 
     private static void validateArg(Object obj) {
