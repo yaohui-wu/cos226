@@ -38,22 +38,49 @@ public class KdTree {
         if (root == null) {
             root = node;
         }
-        double rootKey = root.p.x();
         double nodeKey = node.p.x();
+        double rootKey = root.p.x();
         if (compareY) {
-            rootKey = root.p.y();
             nodeKey = node.p.y();
+            rootKey = root.p.y();
         }
         if (nodeKey < rootKey) {
             root = root.lb;
         } else {
             root = root.rt;
         }
+        insert(root, node, !compareY);
     }
 
     // does the set contain point p?
     public boolean contains(Point2D p) {
         validateArg(p);
+        if (isEmpty()) {
+            return false;
+        }
+    }
+
+    private boolean search(Node root, Point2D p, boolean compareY) {
+        if (root == null) {
+            return false;
+        }
+        Point2D point = root.p;
+        if (p.equals(point)) {
+            return true;
+        }
+        double key = p.x();
+        double rootKey = point.x();
+        if (compareY) {
+            key = p.y();
+            rootKey = point.y();
+        }
+        int comparison = Double.compare(key, rootKey);
+        if (comparison < 0) {
+            root = root.lb;
+        } else {
+            root = root.rt;
+        }
+        return search(root, p, !compareY);
     }
 
     // draw all points to standard draw
