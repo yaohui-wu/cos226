@@ -11,7 +11,11 @@ import edu.princeton.cs.algs4.StdOut;
  */
 public final class Board {
     private final int size; // Board size.
-    private final int[] board; // Board tiles.
+    private final char[] board; // Board tiles.
+    /*
+     * Sum of the Manhattan distances (sum of the vertical and horizontal
+     * distance) from the tiles to their goal positions.
+     */
     private final int manhattan;
 
     /**
@@ -20,16 +24,16 @@ public final class Board {
      */
     public Board(int[][] tiles) {
         size = tiles.length;
-        board = new int[size * size];
+        board = new char[size * size];
         for (int row = 0; row < size; row += 1) {
             for (int col = 0; col < size; col += 1) {
                 int index = xyToIndex(row, col);
-                board[index] = tiles[row][col];
+                board[index] = intToChar(tiles[row][col]);
             }
         }
         int sum = 0;
         for (int i = 0; i < board.length; i += 1) {
-            int tile = board[i];
+            int tile = charToInt(board[i]);
             if (tile != 0) {
                 int x1 = indexToX(i);
                 int y1 = indexToY(i);
@@ -53,6 +57,14 @@ public final class Board {
         return index % size;
     }
 
+    private char intToChar(int num) {
+        return (char) (num + '0');
+    }
+
+    private int charToInt(char c) {
+        return c - '0';
+    }
+
     /**
      * Returns the Manhattan distance between two points.
      */
@@ -69,7 +81,7 @@ public final class Board {
         for (int row = 0; row < size; row += 1) {
             for (int col = 0; col < size; col += 1) {
                 int index = xyToIndex(row, col);
-                boardString.append(" " + board[index]);
+                boardString.append(" " + charToInt(board[index]));
             }
             boardString.append("\n");
         }
@@ -93,7 +105,7 @@ public final class Board {
          */
         int hamming = 0;
         for (int i = 0; i < board.length; i += 1) {
-            int tile = board[i];
+            int tile = charToInt(board[i]);
             if (tile != 0 && tile != i + 1) {
                 hamming += 1;
             }
@@ -162,10 +174,12 @@ public final class Board {
                  * Create a copy of the current board and swap the empty space
                  * with the adjacent tile.
                  */
-                Board neighbor = copy();
+                char[] neighborBoard = board.clone();
                 int newIndex = xyToIndex(newX, newY);
-                neighbor.board[emptyIndex] = neighbor.board[newIndex];
-                neighbor.board[newIndex] = 0;
+                neighborBoard[emptyIndex] = neighborBoard[newIndex];
+                neighborBoard[newIndex] = '0';
+                int[][] tiles = boardToTiles(neighborBoard);
+                Board neighbor = new Board(tiles);
                 neighbors.add(neighbor);
             }
         }
@@ -174,7 +188,7 @@ public final class Board {
 
     private int findEmptyIndex() {
         for (int i = 0; i < board.length; i += 1) {
-            if (board[i] == 0) {
+            if (board[i] == '0') {
                 return i;
             }
         }
@@ -185,41 +199,50 @@ public final class Board {
         return x >= 0 && x < size && y >= 0 && y < size;
     }
 
+    private int[][] boardToTiles(char[] gameBoard) {
+        int[][] tiles = new int[size][size];
+        int index = 0;
+        for (int row = 0; row < size; row += 1) {
+            for (int col = 0; col < size; col += 1) {
+                int tile = charToInt(gameBoard[index]);
+                tiles[row][col] = tile;
+                index += 1;
+            }
+        }
+        return tiles;
+    }
+
     /**
      * Returns a board that is obtained by exchanging any pair of tiles.
      */
     public Board twin() {
-        Board twin = copy();
-        int length = twin.board.length;
+        char[] twinBoard = board.clone();
+        int length = twinBoard.length;
         for (int i = 0; i < length; i += 1) {
-            int tile = twin.board[i];
+            char tile = twinBoard[i];
             // Find the first two non-empty tiles to swap.
-            if (tile != 0) {
+            if (tile != '0') {
                 // Try to swap with the tile to the right or left.
                 int j = i + 1;
                 int k = i - 1;
                 int index = -1;
-                if (j < length && twin.board[j] != 0) {
+                if (j < length && twinBoard[j] != '0') {
                     index = j;
-                } else if (k > 0 && twin.board[k] != 0) {
+                } else if (k > 0 && twinBoard[k] != '0') {
                     index = k;
                 }
                 // Swap the tiles.
                 if (index != -1) {
-                    int temp = twin.board[index];
-                    twin.board[index] = tile;
-                    twin.board[i] = temp;
+                    char temp = twinBoard[index];
+                    twinBoard[index] = tile;
+                    twinBoard[i] = temp;
+                    int[][] tiles = boardToTiles(twinBoard);
+                    Board twin = new Board(tiles);
                     return twin;
                 }
             }
         }
         return null;
-    }
-
-    private Board copy() {
-        Board copy = new Board(new int[size][size]);
-        System.arraycopy(board, 0, copy.board, 0, board.length);
-        return copy;
     }
 
     // Unit tests.
@@ -235,7 +258,7 @@ public final class Board {
         StdOut.println("Hamming: " + board.hamming());
         StdOut.println("Manhattan: " + board.manhattan());
         StdOut.println("Goal: " + board.isGoal());
-        StdOut.println("Equals: " + board.equals(board.copy()));
+        StdOut.println("Equals: " + board.equals(new Board(tiles)));
         StdOut.println("Neighbors:");
         for (Board neighbor : board.neighbors()) {
             StdOut.print(neighbor);
