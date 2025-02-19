@@ -1,3 +1,9 @@
+/**
+ * A mutable data type that represents a set of points in the unit square,
+ * implemented using a red-black binary search tree (BST).
+ * 
+ * @author Yaohui Wu
+ */
 public class PointSET {
     // construct an empty set of points
     public PointSET() {}
@@ -9,21 +15,29 @@ public class PointSET {
     public int size() {}
 
     // add the point to the set (if it is not already in the set)
-    public void insert(Point2D p) {}
+    public void insert(Point2D p) {
+        validateArg(p);
+    }
 
     // does the set contain point p?
-    public boolean contains(Point2D p) {}
+    public boolean contains(Point2D p) {
+        validateArg(p);
+    }
 
     // draw all points to standard draw
     public void draw() {}
 
     // all points that are inside the rectangle (or on the boundary)
-    public Iterable<Point2D> range(RectHV rect) {}
+    public Iterable<Point2D> range(RectHV rect) {
+        validateArg(rect);
+    }
 
     // a nearest neighbor in the set to point p; null if the set is empty
-    public Point2D nearest(Point2D p) {}
+    public Point2D nearest(Point2D p) {
+        validateArg(p);
+    }
 
-    private void validateArg(Object obj) {
+    private static void validateArg(Object obj) {
         if (obj == null) {
             String error = "Argument cannot be null";
             throw new IllegalArgumentException(error);
@@ -31,5 +45,7 @@ public class PointSET {
     }
 
     // unit testing of the methods (optional)
-    public static void main(String[] args) {}
+    public static void main(String[] args) {
+        validateArg(args);
+    }
 }
