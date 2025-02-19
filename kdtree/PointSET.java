@@ -1,3 +1,5 @@
+import edu.princeton.cs.algs4.SET;
+
 /**
  * A mutable data type that represents a set of points in the unit square,
  * implemented using a red-black binary search tree (BST).
@@ -5,23 +7,35 @@
  * @author Yaohui Wu
  */
 public class PointSET {
+    private SET<Point2D> pointSet;
+
     // construct an empty set of points
-    public PointSET() {}
+    public PointSET() {
+        pointSet = new SET<>();
+    }
 
     // is the set empty?
-    public boolean isEmpty() {}
+    public boolean isEmpty() {
+        return pointSet.isEmpty();
+    }
 
     // number of points in the set
-    public int size() {}
+    public int size() {
+        return pointSet.size();
+    }
 
     // add the point to the set (if it is not already in the set)
     public void insert(Point2D p) {
         validateArg(p);
+        if (!pointSet.contains(p)) {
+            pointSet.insert(p);
+        }
     }
 
     // does the set contain point p?
     public boolean contains(Point2D p) {
         validateArg(p);
+        return pointSet.contains(p);
     }
 
     // draw all points to standard draw
