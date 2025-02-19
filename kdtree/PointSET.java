@@ -50,6 +50,13 @@ public class PointSET {
     // all points that are inside the rectangle (or on the boundary)
     public Iterable<Point2D> range(RectHV rect) {
         validateArg(rect);
+        SET<Point2D> points = new SET<>();
+        for (Point2D point : pointSet) {
+            if (rect.contains(point)) {
+                points.insert(point);
+            }
+        }
+        return points;
     }
 
     // a nearest neighbor in the set to point p; null if the set is empty
