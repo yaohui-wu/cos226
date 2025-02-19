@@ -2,11 +2,12 @@ import java.util.ArrayDeque;
 import java.util.Deque;
 
 import edu.princeton.cs.algs4.In;
-import edu.princeton.cs.algs4.StdOut;
 import edu.princeton.cs.algs4.MinPQ;
+import edu.princeton.cs.algs4.StdOut;
 
 /**
- * An immutable data type that implements A* search to solve n-by-n slider puzzles.
+ * An immutable data type that applys the A* search algorithm to solve n-by-n
+ * slider puzzles.
  * 
  * @author Yaohui Wu
  */
@@ -20,18 +21,25 @@ public final class Solver {
      */
     public Solver(Board initial) {
         validateArg(initial);
-        // A* algorithm.
         MinPQ<Node> pq = new MinPQ<>();
         MinPQ<Node> twinPQ = new MinPQ<>();
+        // The root of the game tree is the initial search node.
         Node init = new Node(initial, null);
         Node initTwin = new Node(initial.twin(), null);
         pq.insert(init);
         twinPQ.insert(initTwin);
         MinPQ<Node> solutionPQ = pq;
         Node curr = solutionPQ.delMin();
+        // Run the A* algorithm on the board and its twin in lockstep.
         while (!curr.board.isGoal()) {
+            // Insert onto the priority queue all valid neighboring search nodes.
             for (Board neighbor : curr.board.neighbors()) {
-                if (curr.prev == null || !neighbor.equals(curr.prev.board)) {
+                /*
+                 * Enqueue a neighbor if its board is not the same as the
+                 * board of the previous search node in the game tree.
+                 */
+                Node prev = curr.prev;
+                if (prev == null || !neighbor.equals(prev.board)) {
                     Node newNode = new Node(neighbor, curr);
                     solutionPQ.insert(newNode);
                 }
@@ -43,8 +51,10 @@ public final class Solver {
             }
             curr = solutionPQ.delMin();
         }
+        // Exactly one of the two is solvable.
         solvable = (solutionPQ == pq);
         if (solvable) {
+            // Cache the solution.
             solution = curr;
             moves = solution.moves;
         } else {
@@ -83,6 +93,7 @@ public final class Solver {
         if (!solvable) {
             return null;
         }
+        // Stack to store the sequence of boards from initial to goal.
         Deque<Board> steps = new ArrayDeque<>();
         Node curr = solution;
         while (curr != null) {
@@ -119,10 +130,16 @@ public final class Solver {
         }
     }
 
+    /**
+     * A search node of the game tree.
+     */
     private static final class Node implements Comparable<Node> {
         private final Board board;
+        // Number of moves made to reach the board.
         private final int moves;
+        // Previous search node.
         private final Node prev;
+        private final int manhattan;
         private final int priority;
 
         public Node(Board gameBoard, Node prevNode) {
@@ -133,16 +150,18 @@ public final class Solver {
                 moves = prevNode.moves + 1;
             }
             prev = prevNode;
-            priority = moves + board.manhattan();
+            // Cache the Manhattan distance of the board.
+            manhattan = board.manhattan();
+            // Manhattan priority function.
+            priority = moves + manhattan;
         }
 
         @Override
         public int compareTo(Node other) {
             int cmp = Integer.compare(priority, other.priority);
             if (cmp == 0) {
-                int man = board.manhattan();
-                int otherMan = other.board.manhattan();
-                cmp = Integer.compare(man, otherMan);
+                // Break ties using the Manhattan distance.
+                cmp = Integer.compare(manhattan, other.manhattan);
             }
             return cmp;
         }
