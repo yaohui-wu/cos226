@@ -63,17 +63,17 @@ public class KdTree {
         double ymax = rectangle.ymax();
         if (key < rootKey) {
             if (compareX) {
-                xmax = point.x();
+                xmax = node.point.x();
             } else {
-                ymax = point.y();
+                ymax = node.point.y();
             }
             rectangle = new RectHV(xmin, ymin, xmax, ymax);
             node.leftBottom = insert(node.leftBottom, point, rectangle, !compareX);
         } else {
             if (compareX) {
-                xmin = point.x();
+                xmin = node.point.x();
             } else {
-                ymin = point.y();
+                ymin = node.point.y();
             }
             rectangle = new RectHV(xmin, ymin, xmax, ymax);
             node.rightTop = insert(node.rightTop, point, rectangle, !compareX);
@@ -125,10 +125,11 @@ public class KdTree {
         StdDraw.setPenRadius();
         if (splitV) {
             StdDraw.setPenColor(StdDraw.RED);
+            StdDraw.line(node.point.x(), node.rect.ymin(), node.point.x(), node.rect.ymax());
         } else {
             StdDraw.setPenColor(StdDraw.BLUE);
+            StdDraw.line(node.rect.xmin(), node.point.y(), node.rect.xmax(), node.point.y());
         }
-        node.rect.draw();
         draw(node.leftBottom, !splitV);
         draw(node.rightTop, !splitV);
     }
@@ -172,14 +173,16 @@ public class KdTree {
     // unit testing of the methods (optional)
     public static void main(String[] args) {
         KdTree kdTree = new KdTree();
-        Point2D p1 = new Point2D(0.1, 0.2);
-        Point2D p2 = new Point2D(0.3, 0.4);
-        Point2D p3 = new Point2D(0.5, 0.6);
-        Point2D p4 = new Point2D(0.7, 0.8);
+        Point2D p1 = new Point2D(0.7, 0.2);
+        Point2D p2 = new Point2D(0.5, 0.4);
+        Point2D p3 = new Point2D(0.2, 0.3);
+        Point2D p4 = new Point2D(0.4, 0.7);
+        Point2D p5 = new Point2D(0.9, 0.6);
         kdTree.insert(p1);
         kdTree.insert(p2);
         kdTree.insert(p3);
         kdTree.insert(p4);
+        kdTree.insert(p5);
         System.out.println(kdTree.size());
         System.out.println(kdTree.contains(p1));
         System.out.println(kdTree.contains(p2));
