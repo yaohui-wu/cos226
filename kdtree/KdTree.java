@@ -1,3 +1,5 @@
+import org.w3c.dom.css.Rect;
+
 import edu.princeton.cs.algs4.Point2D;
 import edu.princeton.cs.algs4.RectHV;
 
@@ -30,13 +32,21 @@ public class KdTree {
     // add the point to the set (if it is not already in the set)
     public void insert(Point2D p) {
         validateArg(p);
-        root = insert(root, p, false);
+        if (root == null) {
+            root = new Node(p);
+            root.rect = new RectHV(0, 0, 1, 1);
+            size += 1;
+            return;
+        }
+        root = insert(root, p, root.rect, true);
     }
 
-    private Node insert(Node node, Point2D point, boolean compareY) {
+    private Node insert(Node node, Point2D point, RectHV rectangle, boolean compareX) {
         if (node == null) {
+            Node newNode = new Node(point);
+            newNode.rect = rectangle;
             size += 1;
-            return new Node(point);
+            return newNode;
         }
         Point2D rootPoint = node.point;
         if (point.equals(rootPoint)) {
@@ -44,14 +54,30 @@ public class KdTree {
         }
         double key = point.x();
         double rootKey = rootPoint.x();
-        if (compareY) {
+        if (!compareX) {
             key = point.y();
             rootKey = rootPoint.y();
         }
+        double xmin = rectangle.xmin();
+        double ymin = rectangle.ymin();
+        double xmax = rectangle.xmax();
+        double ymax = rectangle.ymax();
         if (key < rootKey) {
-            node.leftBottom = insert(node.leftBottom, point, !compareY);
+            if (compareX) {
+                xmax = point.x();
+            } else {
+                ymax = point.y();
+            }
+            rectangle = new RectHV(xmin, ymin, xmax, ymax);
+            node.leftBottom = insert(node.leftBottom, point, rectangle, !compareX);
         } else {
-            node.rightTop = insert(node.rightTop, point, !compareY);
+            if (compareX) {
+                xmin = point.x();
+            } else {
+                ymin = point.y();
+            }
+            rectangle = new RectHV(xmin, ymin, xmax, ymax);
+            node.rightTop = insert(node.rightTop, point, rectangle, !compareX);
         }
         return node;
     }
@@ -111,7 +137,7 @@ public class KdTree {
     }
 
     private static class Node {
-        private Point2D point; // the point
+        private final Point2D point; // the point
         private Node leftBottom; // the left/bottom subtree
         private Node rightTop; // the right/top subtree
         // the axis-aligned rectangle corresponding to this node
