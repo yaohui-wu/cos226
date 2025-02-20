@@ -1,7 +1,6 @@
-import org.w3c.dom.css.Rect;
-
 import edu.princeton.cs.algs4.Point2D;
 import edu.princeton.cs.algs4.RectHV;
+import edu.princeton.cs.algs4.StdDraw;
 
 /**
  * A mutable data type that uses a 2d-tree to represent a set of points in the
@@ -113,6 +112,25 @@ public class KdTree {
     // draw all points to standard draw
     public void draw() {
         // TODO: implement this method.
+        draw(root, true);
+    }
+
+    private void draw(Node node, boolean splitV) {
+        if (node == null) {
+            return;
+        }
+        StdDraw.setPenColor(StdDraw.BLACK);
+        StdDraw.setPenRadius(0.01);
+        node.point.draw();
+        StdDraw.setPenRadius();
+        if (splitV) {
+            StdDraw.setPenColor(StdDraw.RED);
+        } else {
+            StdDraw.setPenColor(StdDraw.BLUE);
+        }
+        node.rect.draw();
+        draw(node.leftBottom, !splitV);
+        draw(node.rightTop, !splitV);
     }
 
     // all points that are inside the rectangle (or on the boundary)
@@ -138,10 +156,10 @@ public class KdTree {
 
     private static class Node {
         private final Point2D point; // the point
-        private Node leftBottom; // the left/bottom subtree
-        private Node rightTop; // the right/top subtree
         // the axis-aligned rectangle corresponding to this node
         private RectHV rect;
+        private Node leftBottom; // the left/bottom subtree
+        private Node rightTop; // the right/top subtree
 
         public Node(Point2D p) {
             point = p;
