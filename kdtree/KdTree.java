@@ -144,17 +144,15 @@ public class KdTree {
         return points;
     }
 
-    public void range(Node node, RectHV rect, SET<Point2D> points) {
-        if (node != null) {
-            if (!rect.intersects(node.rect)) {
-                return;
-            }
-            if (rect.contains(node.point)) {
-                points.add(node.point);
-            }
-            range(node.leftBottom, rect, points);
-            range(node.rightTop, rect, points);
+    private void range(Node node, RectHV rect, SET<Point2D> points) {
+        if (node == null || !rect.intersects(node.rect)) {
+            return;
         }
+        if (rect.contains(node.point)) {
+            points.add(node.point);
+        }
+        range(node.leftBottom, rect, points);
+        range(node.rightTop, rect, points);
     }
 
     // a nearest neighbor in the set to point p; null if the set is empty
