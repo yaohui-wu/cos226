@@ -85,25 +85,28 @@ public class PointSET {
     // unit testing of the methods (optional)
     public static void main(String[] args) {
         PointSET pointSet = new PointSET();
-        Point2D p1 = new Point2D(0.1, 0.2);
-        Point2D p2 = new Point2D(0.3, 0.4);
-        Point2D p3 = new Point2D(0.5, 0.6);
-        Point2D p4 = new Point2D(0.7, 0.8);
+        Point2D p1 = new Point2D(0.7, 0.2);
+        Point2D p2 = new Point2D(0.5, 0.4);
+        Point2D p3 = new Point2D(0.2, 0.3);
+        Point2D p4 = new Point2D(0.4, 0.7);
+        Point2D p5 = new Point2D(0.9, 0.6);
         pointSet.insert(p1);
         pointSet.insert(p2);
         pointSet.insert(p3);
         pointSet.insert(p4);
+        pointSet.insert(p5);
         System.out.println(pointSet.size());
         System.out.println(pointSet.contains(p1));
         System.out.println(pointSet.contains(p2));
         System.out.println(pointSet.contains(p3));
         System.out.println(pointSet.contains(p4));
-        System.out.println(pointSet.contains(new Point2D(0.9, 1.0)));
+        System.out.println(pointSet.contains(p5));
+        System.out.println(pointSet.contains(new Point2D(0.1, 0.2)));
         pointSet.draw();
-        RectHV rect = new RectHV(0.1, 0.2, 0.5, 0.6);
+        RectHV rect = new RectHV(0.1, 0.2, 0.6, 0.9);
         for (Point2D point : pointSet.range(rect)) {
             System.out.println(point);
         }
-        System.out.println(pointSet.nearest(new Point2D(0.1, 0.2)));
+        System.out.println(pointSet.nearest(new Point2D(0.2, 0.3)));
     }
 }
