@@ -107,6 +107,6 @@ public class PointSET {
         for (Point2D point : pointSet.range(rect)) {
             System.out.println(point);
         }
-        System.out.println(pointSet.nearest(new Point2D(0.2, 0.3)));
+        System.out.println(pointSet.nearest(new Point2D(0.1, 0.2)));
     }
 }

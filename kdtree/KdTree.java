@@ -159,7 +159,27 @@ public class KdTree {
     public Point2D nearest(Point2D p) {
         validateArg(p);
         // TODO: implement this method.
-        return null;
+        if (isEmpty()) {
+            return null;
+        }
+        Point2D nearest = root.point;
+        nearest(p, root, nearest);
+        return nearest;
+    }
+
+    private void nearest(Point2D p, Node node, Point2D nearest) {
+        if (node == null) {
+            return;
+        }
+        double pDist = node.rect.distanceTo(p);
+        double nearestDist = node.rect.distanceTo(nearest);
+        if (nearestDist < pDist) {
+            return;
+        } else {
+            nearest = node.point;
+        }
+        nearest(p, node.leftBottom, nearest);
+        nearest(p, node.rightTop, nearest);
     }
 
     private static void validateArg(Object obj) {
@@ -208,6 +228,6 @@ public class KdTree {
         for (Point2D point : kdTree.range(rect)) {
             System.out.println(point);
         }
-        System.out.println(kdTree.nearest(new Point2D(0.2, 0.3)));
+        System.out.println(kdTree.nearest(new Point2D(0.1, 0.2)));
     }
 }
