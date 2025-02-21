@@ -1,5 +1,6 @@
 import edu.princeton.cs.algs4.Point2D;
 import edu.princeton.cs.algs4.RectHV;
+import edu.princeton.cs.algs4.SET;
 import edu.princeton.cs.algs4.StdDraw;
 
 /**
@@ -138,7 +139,22 @@ public class KdTree {
     public Iterable<Point2D> range(RectHV rect) {
         validateArg(rect);
         // TODO: implement this method.
-        return null;
+        SET<Point2D> points = new SET<>();
+        range(root, rect, points);
+        return points;
+    }
+
+    public void range(Node node, RectHV rect, SET<Point2D> points) {
+        if (node != null) {
+            if (!rect.intersects(node.rect)) {
+                return;
+            }
+            if (rect.contains(node.point)) {
+                points.add(node.point);
+            }
+            range(node.leftBottom, rect, points);
+            range(node.rightTop, rect, points);
+        }
     }
 
     // a nearest neighbor in the set to point p; null if the set is empty
@@ -164,9 +180,9 @@ public class KdTree {
 
         public Node(Point2D p) {
             point = p;
+            rect = null;
             leftBottom = null;
             rightTop = null;
-            rect = null;
         }
     }
 
@@ -190,7 +206,7 @@ public class KdTree {
         System.out.println(kdTree.contains(p4));
         System.out.println(kdTree.contains(new Point2D(0.1, 0.2)));
         kdTree.draw();
-        RectHV rect = new RectHV(0.1, 0.2, 0.6, 0.9);
+        RectHV rect = new RectHV(0.1, 0.1, 0.5, 0.5);
         for (Point2D point : kdTree.range(rect)) {
             System.out.println(point);
         }

@@ -103,7 +103,7 @@ public class PointSET {
         System.out.println(pointSet.contains(p5));
         System.out.println(pointSet.contains(new Point2D(0.1, 0.2)));
         pointSet.draw();
-        RectHV rect = new RectHV(0.1, 0.2, 0.6, 0.9);
+        RectHV rect = new RectHV(0.1, 0.1, 0.5, 0.5);
         for (Point2D point : pointSet.range(rect)) {
             System.out.println(point);
         }
