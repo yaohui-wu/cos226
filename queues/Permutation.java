@@ -1,6 +1,6 @@
 import edu.princeton.cs.algs4.StdIn;
-import edu.princeton.cs.algs4.StdRandom;
 import edu.princeton.cs.algs4.StdOut;
+import edu.princeton.cs.algs4.StdRandom;
 
 /**
  * Takes an integer K, reads a sequence of N strings, and prints exactly K of
@@ -14,7 +14,7 @@ public class Permutation {
         int k = Integer.parseInt(args[0]);
         // Use one RandomizedQueue object of maximum size at most K.
         RandomizedQueue<String> permutation = new RandomizedQueue<>();
-        // Enenqueue the first K strings.
+        // Enqueue the first K strings.
         for (int i = 0; i < k; i++) {
             String item = StdIn.readString();
             permutation.enqueue(item);

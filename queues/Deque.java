@@ -1,5 +1,5 @@
-import java.util.NoSuchElementException;
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 /**
  * Implementation of a double-ended queue (deque) using a circular doubly
@@ -8,33 +8,18 @@ import java.util.Iterator;
  * @author Yaohui Wu
  */
 public class Deque<Item> implements Iterable<Item> {
-    private int size; // Number of items in the deque.
     // Sentinel node of the doubly linked list to track the front and back.
     private Node sentinel;
+    private int size; // Number of items in the deque.
 
     /**
      * Constructs an empty deque with a sentinel node.
      */
     public Deque() {
-        size = 0;
         sentinel = new Node(null, null, null);
         sentinel.next = sentinel;
         sentinel.prev = sentinel;
-    }
-
-    /**
-     * Node class for the doubly linked list.
-     */
-    private class Node {
-        private Item item; // Data of the node.
-        private Node next; // Reference to the next node.
-        private Node prev; // Reference to the previous node.
-
-        public Node(Item data, Node nextNode, Node prevNode) {
-            item = data;
-            next = nextNode;
-            prev = prevNode;
-        }
+        size = 0;
     }
 
     /**
@@ -148,6 +133,21 @@ public class Deque<Item> implements Iterable<Item> {
         public void remove() {
             String error = "Remove operation is not supported";
             throw new UnsupportedOperationException(error);
+        }
+    }
+
+    /**
+     * Node class for the doubly linked list.
+     */
+    private class Node {
+        private Item item; // Data of the node.
+        private Node next; // Reference to the next node.
+        private Node prev; // Reference to the previous node.
+
+        public Node(Item data, Node nextNode, Node prevNode) {
+            item = data;
+            next = nextNode;
+            prev = prevNode;
         }
     }
 

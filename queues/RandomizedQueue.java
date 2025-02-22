@@ -1,10 +1,11 @@
-import edu.princeton.cs.algs4.StdRandom;
-import java.util.NoSuchElementException;
 import java.util.Iterator;
+import java.util.NoSuchElementException;
+
+import edu.princeton.cs.algs4.StdRandom;
 
 /**
- * Implementtion of a randomized queue, a queue where the item removed is
- * chosen uniformly at random, using a dynamic array.
+ * Implementation of a randomized queue, a queue where the item removed is
+ * chosen uniformly at random, using a dynamic resizable array.
  * 
  * @author Yaohui Wu
  */
@@ -12,17 +13,17 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
     private static final int INITIAL_CAPACITY = 10;
     private static final int RESIZE_FACTOR = 2;
     private static final int SHRINK_FACTOR = 4;
+    private Item[] items;
     private int size; // Number of items in the queue.
     private int capacity; // Capacity of the queue.
-    private Item[] items;
 
     /**
      * Constructs an empty randomized queue.
      */
     public RandomizedQueue() {
-        size = 0;
         capacity = INITIAL_CAPACITY;
         items = (Item[]) new Object[capacity];
+        size = 0;
     }
 
     /**
