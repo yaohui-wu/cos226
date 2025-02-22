@@ -60,6 +60,7 @@ public class KdTree {
             key = p.y();
             rootKey = rootPoint.y();
         }
+        rect = node.rect;
         double xmin = node.rect.xmin();
         double ymin = node.rect.ymin();
         double xmax = node.rect.xmax();
@@ -70,7 +71,9 @@ public class KdTree {
             } else {
                 ymax = node.p.y();
             }
-            rect = new RectHV(xmin, ymin, xmax, ymax);
+            if (node.leftBottom == null) {
+                rect = new RectHV(xmin, ymin, xmax, ymax);
+            }
             node.leftBottom = insert(node.leftBottom, p, rect, !compareY);
         } else {
             if (!compareY) {
@@ -78,7 +81,9 @@ public class KdTree {
             } else {
                 ymin = node.p.y();
             }
-            rect = new RectHV(xmin, ymin, xmax, ymax);
+            if (node.rightTop == null) {
+                rect = new RectHV(xmin, ymin, xmax, ymax);
+            }
             node.rightTop = insert(node.rightTop, p, rect, !compareY);
         }
         return node;
@@ -205,7 +210,7 @@ public class KdTree {
 
     private static class Node {
         private final Point2D p; // the point
-        // the axis-aligned rect corresponding to this node
+        // the axis-aligned rectangle corresponding to this node
         private RectHV rect;
         private Node leftBottom; // the left/bottom subtree
         private Node rightTop; // the right/top subtree
