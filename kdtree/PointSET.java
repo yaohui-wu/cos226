@@ -1,3 +1,6 @@
+import java.util.ArrayList;
+import java.util.List;
+
 import edu.princeton.cs.algs4.Point2D;
 import edu.princeton.cs.algs4.RectHV;
 import edu.princeton.cs.algs4.SET;
@@ -50,7 +53,7 @@ public class PointSET {
     // all points that are inside the rectangle (or on the boundary)
     public Iterable<Point2D> range(RectHV rect) {
         validateArg(rect);
-        SET<Point2D> points = new SET<>();
+        List<Point2D> points = new ArrayList<>();
         for (Point2D point : pointSet) {
             if (rect.contains(point)) {
                 points.add(point);
@@ -62,12 +65,14 @@ public class PointSET {
     // a nearest neighbor in the set to point p; null if the set is empty
     public Point2D nearest(Point2D p) {
         validateArg(p);
+        if (isEmpty()) {
+            return null;
+        }
         Point2D nearest = null;
         double minDist = Double.POSITIVE_INFINITY;
         for (Point2D point : pointSet) {
-            double dist = p.distanceTo(point);
-            int comparison = Double.compare(dist, minDist);
-            if (comparison < 0) {
+            double dist = p.distanceSquaredTo(point);
+            if (dist < minDist) {
                 minDist = dist;
                 nearest = point;
             }
