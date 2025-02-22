@@ -1,6 +1,8 @@
+import java.util.ArrayList;
+import java.util.List;
+
 import edu.princeton.cs.algs4.Point2D;
 import edu.princeton.cs.algs4.RectHV;
-import edu.princeton.cs.algs4.SET;
 import edu.princeton.cs.algs4.StdDraw;
 
 /**
@@ -38,46 +40,46 @@ public class KdTree {
             size += 1;
             return;
         }
-        root = insert(root, p, root.rect, true);
+        root = insert(root, p, root.rect, false);
     }
 
-    private Node insert(Node node, Point2D point, RectHV rectangle, boolean compareX) {
+    private Node insert(Node node, Point2D p, RectHV rect, boolean compareY) {
         if (node == null) {
-            Node newNode = new Node(point);
-            newNode.rect = rectangle;
+            node = new Node(p);
+            node.rect = rect;
             size += 1;
-            return newNode;
-        }
-        Point2D rootPoint = node.p;
-        if (point.equals(rootPoint)) {
             return node;
         }
-        double key = point.x();
+        Point2D rootPoint = node.p;
+        if (p.equals(rootPoint)) {
+            return node;
+        }
+        double key = p.x();
         double rootKey = rootPoint.x();
-        if (!compareX) {
-            key = point.y();
+        if (compareY) {
+            key = p.y();
             rootKey = rootPoint.y();
         }
-        double xmin = rectangle.xmin();
-        double ymin = rectangle.ymin();
-        double xmax = rectangle.xmax();
-        double ymax = rectangle.ymax();
+        double xmin = node.rect.xmin();
+        double ymin = node.rect.ymin();
+        double xmax = node.rect.xmax();
+        double ymax = node.rect.ymax();
         if (key < rootKey) {
-            if (compareX) {
+            if (!compareY) {
                 xmax = node.p.x();
             } else {
                 ymax = node.p.y();
             }
-            rectangle = new RectHV(xmin, ymin, xmax, ymax);
-            node.leftBottom = insert(node.leftBottom, point, rectangle, !compareX);
+            rect = new RectHV(xmin, ymin, xmax, ymax);
+            node.leftBottom = insert(node.leftBottom, p, rect, !compareY);
         } else {
-            if (compareX) {
+            if (!compareY) {
                 xmin = node.p.x();
             } else {
                 ymin = node.p.y();
             }
-            rectangle = new RectHV(xmin, ymin, xmax, ymax);
-            node.rightTop = insert(node.rightTop, point, rectangle, !compareX);
+            rect = new RectHV(xmin, ymin, xmax, ymax);
+            node.rightTop = insert(node.rightTop, p, rect, !compareY);
         }
         return node;
     }
@@ -134,15 +136,15 @@ public class KdTree {
         draw(node.rightTop, !splitV);
     }
 
-    // all points that are inside the rectangle (or on the boundary)
+    // all points that are inside the rect (or on the boundary)
     public Iterable<Point2D> range(RectHV rect) {
         validateArg(rect);
-        SET<Point2D> points = new SET<>();
+        List<Point2D> points = new ArrayList<>();
         range(root, rect, points);
         return points;
     }
 
-    private void range(Node node, RectHV rect, SET<Point2D> points) {
+    private void range(Node node, RectHV rect, List<Point2D> points) {
         if (node == null || !rect.intersects(node.rect)) {
             return;
         }
@@ -203,7 +205,7 @@ public class KdTree {
 
     private static class Node {
         private final Point2D p; // the point
-        // the axis-aligned rectangle corresponding to this node
+        // the axis-aligned rect corresponding to this node
         private RectHV rect;
         private Node leftBottom; // the left/bottom subtree
         private Node rightTop; // the right/top subtree
@@ -234,6 +236,7 @@ public class KdTree {
         System.out.println(kdTree.contains(p2));
         System.out.println(kdTree.contains(p3));
         System.out.println(kdTree.contains(p4));
+        System.out.println(kdTree.contains(p5));
         System.out.println(kdTree.contains(new Point2D(0.1, 0.2)));
         kdTree.draw();
         RectHV rect = new RectHV(0.1, 0.1, 0.5, 0.5);
