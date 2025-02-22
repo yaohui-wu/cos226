@@ -1,5 +1,10 @@
 import edu.princeton.cs.algs4.WeightedQuickUnionUF;
 
+/**
+ * A percolation system.
+ * 
+ * @author Yaohui Wu
+ */
 public class Percolation {
     private int size; // Grid size.
     // 0: blocked, 1: open, 2: open sites connected to bottom.
@@ -8,7 +13,7 @@ public class Percolation {
     private WeightedQuickUnionUF openSites; // Open sites.
 
     /**
-     * Creates n-by-n grid, with all sites initially blocked.
+     * Creates an n-by-n grid, with all sites initially blocked.
      */
     public Percolation(int n) {
         validateSize(n);
@@ -37,7 +42,7 @@ public class Percolation {
     }
 
     /**
-     * Open the site (row, col) if it is not open already.
+     * Opens the site (row, col) if it is not open already.
      */
     public void open(int row, int col) {
         validateSite(row, col);

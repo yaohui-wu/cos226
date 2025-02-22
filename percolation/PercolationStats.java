@@ -1,7 +1,13 @@
+import edu.princeton.cs.algs4.StdOut;
 import edu.princeton.cs.algs4.StdRandom;
 import edu.princeton.cs.algs4.StdStats;
-import edu.princeton.cs.algs4.StdOut;
 
+/**
+ * A program to estimate the value of the percolation threshold via Monte
+ * Carlo simulation.
+ * 
+ * @author Yaohui Wu
+ */
 public class PercolationStats {
     private static final double CONFIDENCE_95 = 1.96;
     private int numTrials; // Number of trials.
@@ -29,7 +35,7 @@ public class PercolationStats {
     }
 
     /**
-     * Performs a single trial on an n-by-n grid.
+     * Performs a single experiment on an n-by-n grid.
      */
     private double experiment(int n) {
         Percolation percolation = new Percolation(n);
@@ -86,9 +92,14 @@ public class PercolationStats {
         int n = Integer.parseInt(args[0]);
         int trials = Integer.parseInt(args[1]);
         PercolationStats stats = new PercolationStats(n, trials);
-        StdOut.println("mean                    = " + stats.mean());
-        StdOut.println("stddev                  = " + stats.stddev());
-        StdOut.println("95% confidence interval = [" + stats.confidenceLo()
-            + ", " + stats.confidenceHi() + "]");
+        StdOut.printf("%-24s", "mean");
+        StdOut.println("= " + stats.mean());
+        StdOut.printf("%-24s", "stddev");
+        StdOut.println("= " + stats.stddev());
+        StdOut.println(
+            "95% confidence interval = ["
+            + stats.confidenceLo() + ", "
+            + stats.confidenceHi() + "]"
+        );
     }
 }
