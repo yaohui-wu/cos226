@@ -7,17 +7,23 @@ import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.StdDraw;
 import edu.princeton.cs.algs4.StdOut;
 
+/**
+ * A fast, sorting-based algorithm to find all (maximal) line segment that
+ * connects a subset of 4 or more of the points.
+ * 
+ * @author Yaohui Wu
+ */
 public class FastCollinearPoints {
-    private int numSegments;
     private List<LineSegment> lines;
+    private int numSegments;
 
     /**
      * Finds all line segments containing 4 or more points.
      */
     public FastCollinearPoints(Point[] points) {
         validateArg(points);
-        numSegments = 0;
         lines = new ArrayList<>();
+        numSegments = 0;
         findLines(points);
     }
 

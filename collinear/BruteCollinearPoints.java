@@ -7,17 +7,23 @@ import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.StdDraw;
 import edu.princeton.cs.algs4.StdOut;
 
+/**
+ * Uses brute force that examines 4 points at a time to find all line segment
+ * that connects a subset of 4 points.
+ * 
+ * @author Yaohui Wu
+ */
 public class BruteCollinearPoints {
-    private int numSegments;
     private List<LineSegment> lines;
+    private int numSegments;
 
     /**
      * Finds all line segments containing 4 points.
      */
     public BruteCollinearPoints(Point[] points) {
         validateArg(points);
-        numSegments = 0;
         lines = new ArrayList<>();
+        numSegments = 0;
         findLines(points);
     }
 

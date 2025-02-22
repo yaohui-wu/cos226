@@ -141,11 +141,12 @@ public class Point implements Comparable<Point> {
              */
             int denominator1 = x1 - x;
             int denominator2 = x2 - x;
+            // Cross multiple the two slopes.
             int cross1 = (y1 - y) * denominator2;
             int cross2 = (y2 - y) * denominator1;
-            boolean flipIneq = denominator1 * denominator2 < 0;
-            if (flipIneq) {
-                // Flip the inequality when the denominator signs differ.
+            boolean reverse = denominator1 * denominator2 < 0;
+            if (reverse) {
+                // Reverse the inequality when the denominator signs differ.
                 return Integer.compare(cross2, cross1);
             }
             return Integer.compare(cross1, cross2);
