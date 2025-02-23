@@ -168,10 +168,6 @@ public class KdTree {
         if (rect.contains(p)) {
             points.add(p);
         }
-        /*
-         * Check only whether the query rectangle intersects the splitting
-         * line segment.
-         */
         double x = p.x();
         double y = p.y();
         /*
