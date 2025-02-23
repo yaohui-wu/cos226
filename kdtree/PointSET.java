@@ -12,24 +12,32 @@ import edu.princeton.cs.algs4.SET;
  * @author Yaohui Wu
  */
 public class PointSET {
-    private SET<Point2D> pointSet;
+    private final SET<Point2D> pointSet;
 
-    // construct an empty set of points
+    /**
+     * Constructs an empty set of points
+     */
     public PointSET() {
         pointSet = new SET<>();
     }
 
-    // is the set empty?
+    /**
+     * Returns true if the set is empty.
+     */
     public boolean isEmpty() {
         return pointSet.isEmpty();
     }
 
-    // number of points in the set
+    /**
+     * Returns the number of points in the set.
+     */
     public int size() {
         return pointSet.size();
     }
 
-    // add the point to the set (if it is not already in the set)
+    /**
+     * Adds the point to the set (if it is not already in the set).
+     */
     public void insert(Point2D p) {
         validateArg(p);
         if (!pointSet.contains(p)) {
@@ -37,20 +45,27 @@ public class PointSET {
         }
     }
 
-    // does the set contain point p?
+    /**
+     * Returns true if the set contains the point P.
+     */
     public boolean contains(Point2D p) {
         validateArg(p);
         return pointSet.contains(p);
     }
 
-    // draw all points to standard draw
+    /**
+     * Draws all points to standard draw.
+     */
     public void draw() {
         for (Point2D point : pointSet) {
             point.draw();
         }
     }
 
-    // all points that are inside the rectangle (or on the boundary)
+    /**
+     * Returns an iterable of all points that are inside the rectangle (or on
+     * the boundary).
+     */
     public Iterable<Point2D> range(RectHV rect) {
         validateArg(rect);
         List<Point2D> points = new ArrayList<>();
@@ -62,7 +77,10 @@ public class PointSET {
         return points;
     }
 
-    // a nearest neighbor in the set to point p; null if the set is empty
+    /**
+     * Returns the nearest neighbor in the set to point P, returns null if the
+     * set is empty.
+     */
     public Point2D nearest(Point2D p) {
         validateArg(p);
         if (isEmpty()) {
@@ -87,7 +105,9 @@ public class PointSET {
         }
     }
 
-    // unit testing of the methods (optional)
+    /**
+     * Unit testing of the methods.
+     */
     public static void main(String[] args) {
         PointSET pointSet = new PointSET();
         Point2D p1 = new Point2D(0.7, 0.2);
