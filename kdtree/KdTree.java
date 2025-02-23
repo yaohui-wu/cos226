@@ -42,19 +42,20 @@ public class KdTree {
      */
     public void insert(Point2D p) {
         validateArg(p);
-        if (root == null) {
-            root = new Node(p);
-            root.rect = new RectHV(0, 0, 1, 1); // Unit square.
-            size += 1;
-            return;
-        }
-        root = insert(p, root, root.rect, true);
+        root = insert(p, root, 0, 0, 1, 1, true); // Unit square.
     }
 
-    private Node insert(Point2D p, Node node, RectHV rect, boolean compareX) {
+    private Node insert(
+        Point2D p,
+        Node node,
+        double xmin,
+        double ymin,
+        double xmax,
+        double ymax,
+        boolean cmpX
+    ) {
         if (node == null) {
-            node = new Node(p);
-            node.rect = rect;
+            node = new Node(p, xmin, ymin, xmax, ymax);
             size += 1;
             return node;
         }
@@ -63,34 +64,27 @@ public class KdTree {
             // The point is already in the set.
             return node;
         }
-        rect = node.rect;
-        double xmin = rect.xmin();
-        double ymin = rect.ymin();
-        double xmax = rect.xmax();
-        double ymax = rect.ymax();
-        int cmp = compare(p, point, compareX);
+        xmin = node.xmin;
+        ymin = node.ymin;
+        xmax = node.xmax;
+        ymax = node.ymax;
+        int cmp = compare(p, point, cmpX);
         if (cmp < 0) {
             // Left children has smaller x-coordinate or y-coordinate.
-            if (compareX) {
+            if (cmpX) {
                 xmax = point.x();
             } else {
                 ymax = point.y();
             }
-            if (node.left == null) {
-                rect = new RectHV(xmin, ymin, xmax, ymax);
-            }
-            node.left = insert(p, node.left, rect, !compareX);
+            node.left = insert(p, node.left, xmin, ymin, xmax, ymax, !cmpX);
         } else {
             // Right children has larger x-coordinate or y-coordinate.
-            if (compareX) {
+            if (cmpX) {
                 xmin = point.x();
             } else {
                 ymin = point.y();
             }
-            if (node.right == null) {
-                rect = new RectHV(xmin, ymin, xmax, ymax);
-            }
-            node.right = insert(p, node.right, rect, !compareX);
+            node.right = insert(p, node.right, xmin, ymin, xmax, ymax, !cmpX);
         }
         return node;
     }
@@ -103,7 +97,7 @@ public class KdTree {
         return search(p, root, true);
     }
 
-    private boolean search(Point2D p, Node node, boolean compareX) {
+    private boolean search(Point2D p, Node node, boolean cmpX) {
         if (node == null) {
             return false;
         }
@@ -111,11 +105,11 @@ public class KdTree {
         if (p.equals(point)) {
             return true;
         }
-        int cmp = compare(p, point, compareX);
+        int cmp = compare(p, point, cmpX);
         if (cmp < 0) {
-            return search(p, node.left, !compareX);
+            return search(p, node.left, !cmpX);
         } else {
-            return search(p, node.right, !compareX);
+            return search(p, node.right, !cmpX);
         }
     }
 
@@ -135,7 +129,7 @@ public class KdTree {
         StdDraw.setPenColor(StdDraw.BLACK);
         StdDraw.setPenRadius(0.01);
         p.draw();
-        RectHV rect = node.rect;
+        RectHV rect = new RectHV(node.xmin, node.ymin, node.xmax, node.ymax);
         StdDraw.setPenRadius();
         if (vert) {
             // Draw the vertical split line in red.
@@ -161,7 +155,12 @@ public class KdTree {
         return points;
     }
 
-    private void range(RectHV rect, Node node, List<Point2D> points, boolean vert) {
+    private void range(
+        RectHV rect,
+        Node node,
+        List<Point2D> points,
+        boolean vert
+    ) {
         if (node == null) {
             return;
         }
@@ -175,6 +174,10 @@ public class KdTree {
          */
         double x = p.x();
         double y = p.y();
+        /*
+         * Check only whether the query rectangle intersects the splitting
+         * line segment.
+         */
         int cmpLeft;
         int cmpRight;
         if (vert) {
@@ -184,11 +187,16 @@ public class KdTree {
             cmpLeft = Double.compare(y, rect.ymin());
             cmpRight = Double.compare(y, rect.ymax());
         }
+        /*
+         * Search the one subtree where points intersecting the query
+         * rectangle could be.
+         */
         if (cmpLeft > 0 && cmpRight > 0) {
             range(rect, node.left, points, !vert);
         } else if (cmpLeft < 0 && cmpRight < 0) {
             range(rect, node.right, points, !vert);
         } else {
+            // Search both subtrees.
             range(rect, node.left, points, !vert);
             range(rect, node.right, points, !vert);
         }
@@ -211,7 +219,7 @@ public class KdTree {
         Point2D p,
         Point2D nearest,
         Node node,
-        boolean compareX
+        boolean cmpX
     ) {
         /*
          * Search a node only if it might contain a point that is closer than
@@ -225,7 +233,8 @@ public class KdTree {
          * expensive operation of taking square roots.
          */
         double minDist = nearest.distanceSquaredTo(p);
-        double rectDist = node.rect.distanceSquaredTo(p);
+        RectHV rect = new RectHV(node.xmin, node.ymin, node.xmax, node.ymax);
+        double rectDist = rect.distanceSquaredTo(p);
         if (minDist < rectDist) {
             return nearest;
         }
@@ -238,22 +247,22 @@ public class KdTree {
          * Always choose the subtree that is on the same side of the
          * splitting line as the query point as the first subtree to explore.
          */
-        int cmp = compare(p, point, compareX);
+        int cmp = compare(p, point, cmpX);
         if (cmp < 0) {
             // Left first.
-            nearest = nearest(p, nearest, node.left, !compareX);
-            nearest = nearest(p, nearest, node.right, !compareX);
+            nearest = nearest(p, nearest, node.left, !cmpX);
+            nearest = nearest(p, nearest, node.right, !cmpX);
         } else {
             // Right first.
-            nearest = nearest(p, nearest, node.right, !compareX);
-            nearest = nearest(p, nearest, node.left, !compareX);
+            nearest = nearest(p, nearest, node.right, !cmpX);
+            nearest = nearest(p, nearest, node.left, !cmpX);
         }
         return nearest;
     }
 
-    private int compare(Point2D p1, Point2D p2, boolean compareX) {
+    private int compare(Point2D p1, Point2D p2, boolean cmpX) {
         int cmp;
-        if (compareX) {
+        if (cmpX) {
             cmp = Double.compare(p1.x(), p2.x());
         } else {
             cmp = Double.compare(p1.y(), p2.y());
@@ -270,16 +279,28 @@ public class KdTree {
 
     private static class Node {
         private final Point2D p; // The point.
-        // the axis-aligned rectangle corresponding to this node
-        private RectHV rect;
+        // The axis-aligned rectangle corresponding to this node.
+        private final double xmin;
+        private final double ymin;
+        private final double xmax;
+        private final double ymax;
         // The left subtree.
         private Node left;
         // The right subtree.
         private Node right;
 
-        public Node(Point2D point) {
+        public Node(
+            Point2D point,
+            double x1,
+            double y1,
+            double x2,
+            double y2
+        ) {
             p = point;
-            rect = null;
+            xmin = x1;
+            ymin = y1;
+            xmax = x2;
+            ymax = y2;
             left = null;
             right = null;
         }
