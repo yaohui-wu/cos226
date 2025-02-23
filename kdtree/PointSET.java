@@ -40,9 +40,7 @@ public class PointSET {
      */
     public void insert(Point2D p) {
         validateArg(p);
-        if (!pointSet.contains(p)) {
-            pointSet.add(p);
-        }
+        pointSet.add(p);
     }
 
     /**
