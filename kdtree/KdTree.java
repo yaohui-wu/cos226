@@ -157,23 +157,41 @@ public class KdTree {
     public Iterable<Point2D> range(RectHV rect) {
         validateArg(rect);
         List<Point2D> points = new ArrayList<>();
-        range(rect, root, points);
+        range(rect, root, points, true);
         return points;
     }
 
-    private void range(RectHV rect, Node node, List<Point2D> points) {
-        /*
-         * Search a subtree only if the query rectangle intersects the
-         * rectangle corresponding to the node.
-         */
-        if (node == null || !rect.intersects(node.rect)) {
+    private void range(RectHV rect, Node node, List<Point2D> points, boolean vert) {
+        if (node == null) {
             return;
         }
-        if (rect.contains(node.p)) {
-            points.add(node.p);
+        Point2D p = node.p;
+        if (rect.contains(p)) {
+            points.add(p);
         }
-        range(rect, node.left, points);
-        range(rect, node.right, points);
+        /*
+         * Check only whether the query rectangle intersects the splitting
+         * line segment.
+         */
+        double x = p.x();
+        double y = p.y();
+        int cmpLeft;
+        int cmpRight;
+        if (vert) {
+            cmpLeft = Double.compare(x, rect.xmin());
+            cmpRight = Double.compare(x, rect.xmax());
+        } else {
+            cmpLeft = Double.compare(y, rect.ymin());
+            cmpRight = Double.compare(y, rect.ymax());
+        }
+        if (cmpLeft > 0 && cmpRight > 0) {
+            range(rect, node.left, points, !vert);
+        } else if (cmpLeft < 0 && cmpRight < 0) {
+            range(rect, node.right, points, !vert);
+        } else {
+            range(rect, node.left, points, !vert);
+            range(rect, node.right, points, !vert);
+        }
     }
 
     /**
