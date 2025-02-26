@@ -2,9 +2,19 @@ import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.StdOut;
 
 public class Outcast {
-    public Outcast(WordNet wordnet)         // constructor takes a WordNet object
-    public String outcast(String[] nouns)   // given an array of WordNet nouns, return an outcast
-    // see test client below
+    /**
+     * Constructor takes a WordNet object.
+     */
+    public Outcast(WordNet wordnet) {}
+
+    /**
+     * Given an array of WordNet nouns, return an outcast.
+     */
+    public String outcast(String[] nouns) {}
+
+    /**
+     * Test client.
+     */
     public static void main(String[] args) {
         WordNet wordnet = new WordNet(args[0], args[1]);
         Outcast outcast = new Outcast(wordnet);
