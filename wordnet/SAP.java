@@ -18,7 +18,7 @@ public final class SAP {
     }
  
     /**
-     * Length of shortest ancestral path between V and W; -1 if no such path.
+     * Length of shortest ancestral path between v and w; -1 if no such path.
      */
     public int length(int v, int w) {
         validateArgs(v, w);
@@ -27,7 +27,7 @@ public final class SAP {
     }
  
     /**
-     * A common ancestor of V and W that participates in a shortest ancestral
+     * A common ancestor of v and w that participates in a shortest ancestral
      * path; -1 if no such path.
      */
     public int ancestor(int v, int w) {
@@ -37,8 +37,8 @@ public final class SAP {
     }
  
     /**
-     * Length of shortest ancestral path between any vertex in V and any
-     * vertex in W; -1 if no such path.
+     * Length of shortest ancestral path between any vertex in v and any
+     * vertex in w; -1 if no such path.
      */
     public int length(Iterable<Integer> v, Iterable<Integer> w) {
         validateArgs(v, w);
