@@ -1,3 +1,6 @@
+import java.util.ArrayDeque;
+import java.util.Deque;
+
 import edu.princeton.cs.algs4.Digraph;
 import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.StdIn;
@@ -23,7 +26,9 @@ public final class SAP {
     public int length(int v, int w) {
         validateArgs(v, w);
         validateVertices(v, w);
-        return -1;
+        Cache cache = new Cache();
+        cache.findSAP(v, w);
+        return cache.length;
     }
  
     /**
@@ -33,7 +38,9 @@ public final class SAP {
     public int ancestor(int v, int w) {
         validateArgs(v, w);
         validateVertices(v, w);
-        return -1;
+        Cache cache = new Cache();
+        cache.findSAP(v, w);
+        return cache.ancestor;
     }
  
     /**
@@ -98,6 +105,66 @@ public final class SAP {
             if (i == null) {
                 String error = "Iterable cannot contain null items";
                 throw new IllegalArgumentException(error);
+            }
+        }
+    }
+
+    private class Cache {
+        private int length;
+        private int ancestor;
+
+        public Cache() {
+            length = -1;
+            ancestor = -1;
+        }
+
+        public void findSAP(int v, int w) {
+            if (v == w) {
+                length = 0;
+                ancestor = v;
+                return;
+            }
+            int order = g.V();
+            final int INF = Integer.MAX_VALUE;
+            int[] vDist = new int[order];
+            int[] wDist = new int[order];
+            for (int i = 0; i < order; i += 1) {
+                vDist[i] = INF;
+                wDist[i] = INF;
+            }
+            Deque<Integer> q = new ArrayDeque<>();
+            vDist[v] = 0;
+            q.add(v);
+            while (!q.isEmpty()) {
+                int x = q.remove();
+                for (int y : g.adj(x)) {
+                    if (vDist[y] == INF) {
+                        vDist[y] = vDist[x] + 1;
+                        q.add(y);
+                    }
+                }
+            }
+            int min = INF;
+            wDist[w] = 0;
+            q.add(w);
+            while (!q.isEmpty()) {
+                int x = q.remove();
+                if (vDist[x] != INF) {
+                    int len = vDist[x] + wDist[x];
+                    if (len < min) {
+                        min = len;
+                        ancestor = x;
+                    }
+                }
+                for (int y : g.adj(x)) {
+                    if (wDist[y] == INF) {
+                        wDist[y] = wDist[x] + 1;
+                        q.add(y);
+                    }
+                }
+            }
+            if (min != INF) {
+                length = min;
             }
         }
     }
