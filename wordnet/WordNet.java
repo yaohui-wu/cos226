@@ -12,9 +12,9 @@ import edu.princeton.cs.algs4.In;
  * @author Yaohui Wu
  */
 public final class WordNet {
-    private final Map<Integer, String> synsetsMap;
-    private final Digraph graph;
-    
+    private final Map<String, List<Integer>> synsetsMap;
+    private final SAP sap;
+
     /**
      * Constructor takes the name of the two input files.
      */
@@ -22,44 +22,47 @@ public final class WordNet {
         validateArgs(synsets, hypernyms);
         synsetsMap = new HashMap<>();
         readSynsets(synsets);
-        int order = synsetsMap.size();
-        graph = new Digraph(order);
-        readHypernyms(hypernyms);
+        Digraph graph = readHypernyms(hypernyms);
+        sap = new SAP(graph);
     }
 
     private void readSynsets(String synsets) {
         In synsetsFile = new In(synsets);
-        while (!synsetsFile.hasNextLine()) {
+        while (synsetsFile.hasNextLine()) {
             String line = synsetsFile.readLine();
             String[] fields = line.split(",");
             int id = Integer.parseInt(fields[0]);
             String synset = fields[1];
-            synsetsMap.put(id, synset);
+            String[] words = synset.split(" ");
+            for (String word : words) {
+                if (!synsetsMap.containsKey(word)) {
+                    synsetsMap.put(word, new ArrayList<>());
+                }
+                synsetsMap.get(word).add(id);
+            }
         }
     }
 
-    private void readHypernyms(String hypernyms) {
+    private Digraph readHypernyms(String hypernyms) {
+        Digraph graph = new Digraph(synsetsMap.size());
         In hypernymsFile = new In(hypernyms);
-        while (!hypernymsFile.hasNextLine()) {
+        while (hypernymsFile.hasNextLine()) {
             String line = hypernymsFile.readLine();
             String[] fields = line.split(",");
-            int[] ids = new int[fields.length];
-            for (int i = 0; i < ids.length; i += 1) {
-                ids[i] = Integer.parseInt(fields[i]);
-            }
-            int v = ids[0];
-            for (int i = 1; i < ids.length; i += 1) {
-                graph.addEdge(v, ids[i]);
+            int v = Integer.parseInt(fields[0]);
+            for (int i = 1; i < fields.length; i += 1) {
+                int w = Integer.parseInt(fields[i]);
+                graph.addEdge(v, w);
             }
         }
+        return graph;
     }
  
     /**
      * Returns all WordNet nouns.
      */
     public Iterable<String> nouns() {
-        List<String> nouns = new ArrayList<>();
-        return nouns;
+        return synsetsMap.keySet();
     }
  
     /**
@@ -67,6 +70,7 @@ public final class WordNet {
      */
     public boolean isNoun(String word) {
         validateArgs(word);
+        return synsetsMap.containsKey(word);
     }
  
     /**
