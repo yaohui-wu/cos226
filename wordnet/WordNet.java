@@ -1,7 +1,10 @@
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import edu.princeton.cs.algs4.Digraph;
+import edu.princeton.cs.algs4.In;
 
 /**
  * The WordNet digraph, a rooted directed acyclic graph (DAG).
@@ -9,12 +12,46 @@ import edu.princeton.cs.algs4.Digraph;
  * @author Yaohui Wu
  */
 public final class WordNet {
-    private Digraph wordNet;
+    private final Map<Integer, String> synsetsMap;
+    private final Digraph graph;
+    
     /**
      * Constructor takes the name of the two input files.
      */
     public WordNet(String synsets, String hypernyms) {
         validateArgs(synsets, hypernyms);
+        synsetsMap = new HashMap<>();
+        readSynsets(synsets);
+        int order = synsetsMap.size();
+        graph = new Digraph(order);
+        readHypernyms(hypernyms);
+    }
+
+    private void readSynsets(String synsets) {
+        In synsetsFile = new In(synsets);
+        while (!synsetsFile.hasNextLine()) {
+            String line = synsetsFile.readLine();
+            String[] fields = line.split(",");
+            int id = Integer.parseInt(fields[0]);
+            String synset = fields[1];
+            synsetsMap.put(id, synset);
+        }
+    }
+
+    private void readHypernyms(String hypernyms) {
+        In hypernymsFile = new In(hypernyms);
+        while (!hypernymsFile.hasNextLine()) {
+            String line = hypernymsFile.readLine();
+            String[] fields = line.split(",");
+            int[] ids = new int[fields.length];
+            for (int i = 0; i < ids.length; i += 1) {
+                ids[i] = Integer.parseInt(fields[i]);
+            }
+            int v = ids[0];
+            for (int i = 1; i < ids.length; i += 1) {
+                graph.addEdge(v, ids[i]);
+            }
+        }
     }
  
     /**
