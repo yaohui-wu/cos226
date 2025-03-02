@@ -7,13 +7,14 @@ import edu.princeton.cs.algs4.StdOut;
  * Shortest ancestral path (SAP).
  */
 public final class SAP {
-    private final Digraph digraph;
+    private final Digraph g;
+
     /**
      * Constructor takes a digraph (not necessarily a DAG).
      */
     public SAP(Digraph G) {
         validateArgs(G);
-        digraph = new Digraph(G);
+        g = new Digraph(G);
     }
  
     /**
@@ -22,6 +23,7 @@ public final class SAP {
     public int length(int v, int w) {
         validateArgs(v, w);
         validateVertices(v, w);
+        return -1;
     }
  
     /**
@@ -31,6 +33,7 @@ public final class SAP {
     public int ancestor(int v, int w) {
         validateArgs(v, w);
         validateVertices(v, w);
+        return -1;
     }
  
     /**
@@ -41,6 +44,7 @@ public final class SAP {
         validateArgs(v, w);
         validateIter(v);
         validateIter(w);
+        return -1;
     }
  
     /**
@@ -51,6 +55,7 @@ public final class SAP {
         validateArgs(v, w);
         validateIter(v);
         validateIter(w);
+        return -1;
     }
  
     /**
@@ -79,7 +84,7 @@ public final class SAP {
     }
 
     private void validateVertices(int... vertices) {
-        int maxV = digraph.V() - 1;
+        int maxV = g.V() - 1;
         for (int v : vertices) {
             if (v < 0 || v > maxV) {
                 String error = "Vertex must be between 0 and " + maxV;
