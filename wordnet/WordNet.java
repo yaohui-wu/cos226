@@ -26,7 +26,7 @@ public final class WordNet {
     }
  
     /**
-     * Returns true if the WORD is a WordNet noun.
+     * Returns true if the word is a WordNet noun.
      */
     public boolean isNoun(String word) {
         validateArgs(word);
