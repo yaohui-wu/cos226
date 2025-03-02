@@ -51,7 +51,13 @@ public final class SAP {
         validateArgs(v, w);
         validateIter(v);
         validateIter(w);
-        return -1;
+        Cache cache = new Cache();
+        for (int i : v) {
+            for (int j : w) {
+                cache.findSAP(i, j);
+            }
+        }
+        return cache.length;
     }
  
     /**
@@ -62,7 +68,13 @@ public final class SAP {
         validateArgs(v, w);
         validateIter(v);
         validateIter(w);
-        return -1;
+        Cache cache = new Cache();
+        for (int i : v) {
+            for (int j : w) {
+                cache.findSAP(i, j);
+            }
+        }
+        return cache.ancestor;
     }
  
     /**
