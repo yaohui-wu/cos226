@@ -9,14 +9,15 @@ import edu.princeton.cs.algs4.Digraph;
 import edu.princeton.cs.algs4.In;
 
 /**
- * The WordNet digraph, a rooted directed acyclic graph (DAG).
+ * The WordNet digraph.
  * 
  * @author Yaohui Wu
  */
 public final class WordNet {
     private final List<String> synsetsList;
+    // Map from noun to list of synsets.
     private final Map<String, List<Integer>> synsetsMap;
-    private final SAP sap;
+    private final SAP sap; // Shortest ancestral path (SAP).
 
     /**
      * Constructor takes the name of the two input files.
@@ -26,8 +27,9 @@ public final class WordNet {
         synsetsList = new ArrayList<>();
         synsetsMap = new HashMap<>();
         readSynsets(synsets);
-        Digraph graph = readHypernyms(hypernyms);
-        sap = new SAP(graph);
+        // WordNet is a rooted, directed acyclic graph (DAG).
+        Digraph g = readHypernyms(hypernyms);
+        sap = new SAP(g);
     }
 
     private void readSynsets(String synsets) {
@@ -50,7 +52,7 @@ public final class WordNet {
     }
 
     private Digraph readHypernyms(String hypernyms) {
-        Digraph graph = new Digraph(synsetsMap.size());
+        Digraph g = new Digraph(synsetsMap.size());
         In hypernymsFile = new In(hypernyms);
         while (hypernymsFile.hasNextLine()) {
             String line = hypernymsFile.readLine();
@@ -58,12 +60,12 @@ public final class WordNet {
             int v = Integer.parseInt(fields[0]);
             for (int i = 1; i < fields.length; i += 1) {
                 int w = Integer.parseInt(fields[i]);
-                graph.addEdge(v, w);
+                g.addEdge(v, w);
             }
         }
         hypernymsFile.close();
-        validateDAG(graph);
-        return graph;
+        validateDAG(g);
+        return g;
     }
  
     /**
@@ -87,7 +89,7 @@ public final class WordNet {
      * Distance between nounA and nounB.
      */
     public int distance(String nounA, String nounB) {
-        validateArgs(nounA, nounA);
+        validateArgs(nounA, nounB);
         validateNouns(nounA, nounB);
         List<Integer> v = synsetsMap.get(nounA);
         List<Integer> w = synsetsMap.get(nounB);
@@ -112,7 +114,14 @@ public final class WordNet {
     /**
      * Do unit testing of this class.
      */
-    public static void main(String[] args) {}
+    public static void main(String[] args) {
+        WordNet wordnet = new WordNet(args[0], args[1]);
+        String nounA = args[2];
+        String nounB = args[3];
+        int distance = wordnet.distance(nounA, nounB);
+        String sap = wordnet.sap(nounA, nounB);
+        System.out.println("distance = " + distance + ", sap = " + sap);
+    }
 
     private static void validateArgs(Object... args) {
         for (Object arg : args) {
@@ -171,14 +180,13 @@ public final class WordNet {
      * Depth-first search (DFS).
      */
     private boolean dfs(Digraph graph, int s, boolean[] visited, boolean[] onStack) {
-        if (onStack[s]) {
-            return true;
-        }
         visited[s] = true;
         onStack[s] = true;
         for (int v : graph.adj(s)) {
             if (!visited[v]) {
-                return dfs(graph, v, visited, onStack);
+                if (dfs(graph, v, visited, onStack)) {
+                    return true;
+                }
             } else if (onStack[v]) {
                 return true;
             }
