@@ -28,7 +28,8 @@ public final class SAP {
         validateVertices(v, w);
         Cache cache = new Cache();
         cache.findSAP(v, w);
-        return cache.length;
+        int length = cache.length;
+        return length;
     }
  
     /**
@@ -40,7 +41,8 @@ public final class SAP {
         validateVertices(v, w);
         Cache cache = new Cache();
         cache.findSAP(v, w);
-        return cache.ancestor;
+        int ancestor = cache.ancestor;
+        return ancestor;
     }
  
     /**
@@ -57,7 +59,8 @@ public final class SAP {
                 cache.findSAP(i, j);
             }
         }
-        return cache.length;
+        int length = cache.length;
+        return length;
     }
  
     /**
@@ -74,7 +77,8 @@ public final class SAP {
                 cache.findSAP(i, j);
             }
         }
-        return cache.ancestor;
+        int ancestor = cache.ancestor;
+        return ancestor;
     }
  
     /**
