@@ -1,5 +1,7 @@
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Deque;
+import java.util.List;
 
 import edu.princeton.cs.algs4.Digraph;
 import edu.princeton.cs.algs4.In;
@@ -8,9 +10,12 @@ import edu.princeton.cs.algs4.StdOut;
 
 /**
  * Shortest ancestral path (SAP).
+ * 
+ * @author Yaohui Wu
  */
 public final class SAP {
-    private final Digraph g;
+    private final Digraph g; // Directed graph.
+    private final int[] sap; // 0: length, 1: ancestor.
 
     /**
      * Constructor takes a digraph (not necessarily a DAG).
@@ -18,6 +23,9 @@ public final class SAP {
     public SAP(Digraph G) {
         validateArgs(G);
         g = new Digraph(G);
+        sap = new int[2];
+        sap[0] = -1;
+        sap[1] = -1;
     }
  
     /**
@@ -26,9 +34,8 @@ public final class SAP {
     public int length(int v, int w) {
         validateArgs(v, w);
         validateVertices(v, w);
-        Cache cache = new Cache();
-        cache.findSAP(v, w);
-        int length = cache.length;
+        findSAP(v, w);
+        int length = sap[0];
         return length;
     }
  
@@ -39,9 +46,8 @@ public final class SAP {
     public int ancestor(int v, int w) {
         validateArgs(v, w);
         validateVertices(v, w);
-        Cache cache = new Cache();
-        cache.findSAP(v, w);
-        int ancestor = cache.ancestor;
+        findSAP(v, w);
+        int ancestor = sap[1];
         return ancestor;
     }
  
@@ -53,13 +59,8 @@ public final class SAP {
         validateArgs(v, w);
         validateIter(v);
         validateIter(w);
-        Cache cache = new Cache();
-        for (int i : v) {
-            for (int j : w) {
-                cache.findSAP(i, j);
-            }
-        }
-        int length = cache.length;
+        findSAP(v, w);
+        int length = sap[0];
         return length;
     }
  
@@ -71,13 +72,8 @@ public final class SAP {
         validateArgs(v, w);
         validateIter(v);
         validateIter(w);
-        Cache cache = new Cache();
-        for (int i : v) {
-            for (int j : w) {
-                cache.findSAP(i, j);
-            }
-        }
-        int ancestor = cache.ancestor;
+        findSAP(v, w);
+        int ancestor = sap[1];
         return ancestor;
     }
  
@@ -125,63 +121,69 @@ public final class SAP {
         }
     }
 
-    private class Cache {
-        private int length;
-        private int ancestor;
-
-        public Cache() {
-            length = -1;
-            ancestor = -1;
+    private void findSAP(int v, int w) {
+        if (v == w) {
+            sap[0] = 0;
+            sap[1] = v;
+            return;
         }
+        List<Integer> vList = new ArrayList<>();
+        vList.add(v);
+        List<Integer> wList = new ArrayList<>();
+        wList.add(w);
+        findSAP(vList, wList);
+    }
 
-        public void findSAP(int v, int w) {
-            if (v == w) {
-                length = 0;
-                ancestor = v;
-                return;
-            }
-            int order = g.V();
-            final int INF = Integer.MAX_VALUE;
-            int[] vDist = new int[order];
-            int[] wDist = new int[order];
-            for (int i = 0; i < order; i += 1) {
-                vDist[i] = INF;
-                wDist[i] = INF;
-            }
-            Deque<Integer> q = new ArrayDeque<>();
-            vDist[v] = 0;
-            q.add(v);
-            while (!q.isEmpty()) {
-                int x = q.remove();
-                for (int y : g.adj(x)) {
-                    if (vDist[y] == INF) {
-                        vDist[y] = vDist[x] + 1;
-                        q.add(y);
-                    }
+    private void findSAP(Iterable<Integer> v, Iterable<Integer> w) {
+        sap[0] = -1;
+        sap[1] = -1;
+        int order = g.V();
+        final int INF = Integer.MAX_VALUE;
+        int[] vDist = new int[order];
+        int[] wDist = new int[order];
+        for (int i = 0; i < order; i += 1) {
+            vDist[i] = INF;
+            wDist[i] = INF;
+        }
+        Deque<Integer> q = new ArrayDeque<>();
+        for (int x : v) {
+            vDist[x] = 0;
+            q.add(x);
+        }
+        while (!q.isEmpty()) {
+            int x = q.remove();
+            for (int y : g.adj(x)) {
+                if (vDist[y] == INF) {
+                    vDist[y] = vDist[x] + 1;
+                    q.add(y);
                 }
             }
-            int min = INF;
-            wDist[w] = 0;
-            q.add(w);
-            while (!q.isEmpty()) {
-                int x = q.remove();
-                if (vDist[x] != INF) {
-                    int len = vDist[x] + wDist[x];
-                    if (len < min) {
-                        min = len;
-                        ancestor = x;
-                    }
-                }
-                for (int y : g.adj(x)) {
-                    if (wDist[y] == INF) {
-                        wDist[y] = wDist[x] + 1;
-                        q.add(y);
-                    }
+        }
+        int min = INF;
+        int ancestor = -1;
+        for (int x : w) {
+            wDist[x] = 0;
+            q.add(x);
+        }
+        while (!q.isEmpty()) {
+            int x = q.remove();
+            if (vDist[x] != INF) {
+                int len = vDist[x] + wDist[x];
+                if (len < min) {
+                    min = len;
+                    ancestor = x;
                 }
             }
-            if (min != INF) {
-                length = min;
+            for (int y : g.adj(x)) {
+                if (wDist[y] == INF) {
+                    wDist[y] = wDist[x] + 1;
+                    q.add(y);
+                }
             }
+        }
+        if (min != INF) {
+            sap[0] = min;
+            sap[1] = ancestor;
         }
     }
 }
