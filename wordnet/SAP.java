@@ -1,7 +1,9 @@
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import edu.princeton.cs.algs4.Digraph;
 import edu.princeton.cs.algs4.In;
@@ -15,7 +17,8 @@ import edu.princeton.cs.algs4.StdOut;
  */
 public final class SAP {
     private final Digraph g; // Directed graph.
-    private final int[] sap; // 0: length, 1: ancestor.
+    // Cache for SAP, vertices -> {0: length, 1: ancestor}.
+     private final Map<String, int[]> sapMap;
 
     /**
      * Constructor takes a digraph (not necessarily a DAG).
@@ -23,9 +26,7 @@ public final class SAP {
     public SAP(Digraph G) {
         validateArgs(G);
         g = new Digraph(G);
-        sap = new int[2];
-        sap[0] = -1;
-        sap[1] = -1;
+        sapMap = new HashMap<>();
     }
  
     /**
@@ -33,8 +34,14 @@ public final class SAP {
      */
     public int length(int v, int w) {
         validateArgs(v, w);
-        validateVertices(v, w);
-        findSAP(v, w);
+        String key = key(v, w);
+        if (sapMap.containsKey(key)) {
+            int[] sap = sapMap.get(key);
+            int length = sap[0];
+            return length;
+        }
+        int[] sap = findSAP(v, w);
+        sapMap.put(key, sap);
         int length = sap[0];
         return length;
     }
@@ -45,8 +52,14 @@ public final class SAP {
      */
     public int ancestor(int v, int w) {
         validateArgs(v, w);
-        validateVertices(v, w);
-        findSAP(v, w);
+        String key = key(v, w);
+        if (sapMap.containsKey(key)) {
+            int[] sap = sapMap.get(key);
+            int ancestor = sap[1];
+            return ancestor;
+        }
+        int[] sap = findSAP(v, w);
+        sapMap.put(key, sap);
         int ancestor = sap[1];
         return ancestor;
     }
@@ -57,9 +70,14 @@ public final class SAP {
      */
     public int length(Iterable<Integer> v, Iterable<Integer> w) {
         validateArgs(v, w);
-        validateIter(v);
-        validateIter(w);
-        findSAP(v, w);
+        String key = key(v, w);
+        if (sapMap.containsKey(key)) {
+            int[] sap = sapMap.get(key);
+            int length = sap[0];
+            return length;
+        }
+        int[] sap = findSAP(v, w);
+        sapMap.put(key, sap);
         int length = sap[0];
         return length;
     }
@@ -70,9 +88,14 @@ public final class SAP {
      */
     public int ancestor(Iterable<Integer> v, Iterable<Integer> w) {
         validateArgs(v, w);
-        validateIter(v);
-        validateIter(w);
-        findSAP(v, w);
+        String key = key(v, w);
+        if (sapMap.containsKey(key)) {
+            int[] sap = sapMap.get(key);
+            int ancestor = sap[1];
+            return ancestor;
+        }
+        int[] sap = findSAP(v, w);
+        sapMap.put(key, sap);
         int ancestor = sap[1];
         return ancestor;
     }
@@ -102,81 +125,92 @@ public final class SAP {
         }
     }
 
-    private void validateVertices(int... vertices) {
-        int maxV = g.V() - 1;
+    private void validateVertices(int max, int... vertices) {
         for (int v : vertices) {
-            if (v < 0 || v > maxV) {
-                String error = "Vertex must be between 0 and " + maxV;
+            if (v < 0 || v > max) {
+                String error = "Vertex must be between 0 and " + max;
                 throw new IllegalArgumentException(error);
             }
         }
     }
 
-    private void validateIter(Iterable<Integer> iter) {
-        for (Integer i : iter) {
-            if (i == null) {
+    private void validateVertices(int max, Iterable<Integer> vertices) {
+        for (Integer v : vertices) {
+            if (v == null) {
                 String error = "Iterable cannot contain null items";
                 throw new IllegalArgumentException(error);
             }
+            validateVertices(max, v);
         }
     }
 
-    private void findSAP(int v, int w) {
+    private String key(int v, int w) {
+        String key = v + " -> " + w;
+        return key;
+    }
+
+    private String key(Iterable<Integer> v, Iterable<Integer> w) {
+        String key = v.hashCode() + " -> " + w.hashCode();
+        return key;
+    }
+
+    private int[] findSAP(int v, int w) {
+        int max = g.V() - 1;
+        validateVertices(max, v, w);
         if (v == w) {
-            sap[0] = 0;
-            sap[1] = v;
-            return;
+            int[] sap = {0, v};
+            return sap;
         }
         List<Integer> vList = new ArrayList<>();
         vList.add(v);
         List<Integer> wList = new ArrayList<>();
         wList.add(w);
-        findSAP(vList, wList);
+        int[] sap = findSAP(vList, wList);
+        return sap;
     }
 
-    private void findSAP(Iterable<Integer> v, Iterable<Integer> w) {
-        sap[0] = -1;
-        sap[1] = -1;
-        int order = g.V();
-        final int INF = Integer.MAX_VALUE;
-        int[] vDist = new int[order];
-        int[] wDist = new int[order];
-        for (int i = 0; i < order; i += 1) {
-            vDist[i] = INF;
-            wDist[i] = INF;
-        }
+    private int[] findSAP(Iterable<Integer> v, Iterable<Integer> w) {
+        int order = g.V(); // Number of vertices in the graph.
+        int max = order - 1;
+        validateVertices(max, v);
+        validateVertices(max, w);
+        int[] sap = {-1, -1};
+        Map<Integer, Integer> vDist = new HashMap<>(); // Distance from v.
+        Map<Integer, Integer> wDist = new HashMap<>(); // Distance from w.
         Deque<Integer> q = new ArrayDeque<>();
+        // Initialize distances for v and w.
         for (int x : v) {
-            vDist[x] = 0;
+            vDist.put(x, 0);
             q.add(x);
         }
-        while (!q.isEmpty()) {
-            int x = q.remove();
-            for (int y : g.adj(x)) {
-                if (vDist[y] == INF) {
-                    vDist[y] = vDist[x] + 1;
-                    q.add(y);
-                }
-            }
+        for (int x : w) {
+            wDist.put(x, 0);
+            q.add(x);
         }
+        final int INF = Integer.MAX_VALUE; // Represents infinity.
         int min = INF;
         int ancestor = -1;
-        for (int x : w) {
-            wDist[x] = 0;
-            q.add(x);
-        }
         while (!q.isEmpty()) {
             int x = q.remove();
-            if (vDist[x] != INF) {
-                int len = vDist[x] + wDist[x];
+            if (vDist.containsKey(x) && wDist.containsKey(x)) {
+                int len = vDist.get(x) + wDist.get(x);
                 if (len < min) {
                     min = len;
                     ancestor = x;
+                } else if (min != INF && len > min) {
+                    break;
                 }
             }
+            // Explore neighbors.
             for (int y : g.adj(x)) {
-                if (wDist[y] == INF) {
-                    wDist[y] = wDist[x] + 1;
+                if (vDist.containsKey(x) && !vDist.containsKey(y)) {
+                    int dist = vDist.get(x) + 1;
+                    vDist.put(y, dist);
+                    q.add(y);
+                }
+                if (wDist.containsKey(x) && !wDist.containsKey(y)) {
+                    int dist = wDist.get(x) + 1;
+                    wDist.put(y, dist);
                     q.add(y);
                 }
             }
@@ -185,5 +219,6 @@ public final class SAP {
             sap[0] = min;
             sap[1] = ancestor;
         }
+        return sap;
     }
 }
