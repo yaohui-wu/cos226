@@ -23,6 +23,10 @@ public final class Outcast {
         String outcast = null;
         int max = Integer.MIN_VALUE;
         int len = nouns.length;
+        /*
+         * Compute the sum of the distances between each noun and every other
+         * one.
+         */
         for (int i = 0; i < len; i += 1) {
             String nounX = nouns[i];
             int dist = 0;
