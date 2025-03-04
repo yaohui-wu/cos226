@@ -158,8 +158,7 @@ public final class SAP {
         int max = g.V() - 1;
         validateVertices(max, v, w);
         if (v == w) {
-            int[] sap = {0, v};
-            return sap;
+            return new int[] {0, v};
         }
         List<Integer> vList = new ArrayList<>();
         vList.add(v);
@@ -174,7 +173,6 @@ public final class SAP {
         int max = order - 1;
         validateVertices(max, v);
         validateVertices(max, w);
-        int[] sap = {-1, -1};
         Map<Integer, Integer> vDist = new HashMap<>(); // Distance from v.
         Map<Integer, Integer> wDist = new HashMap<>(); // Distance from w.
         Deque<Integer> q = new ArrayDeque<>();
@@ -193,12 +191,12 @@ public final class SAP {
         while (!q.isEmpty()) {
             int x = q.remove();
             if (vDist.containsKey(x) && wDist.containsKey(x)) {
-                int len = vDist.get(x) + wDist.get(x);
+                int len = vDist.get(x) + wDist.get(x) - 1;
                 if (len < min) {
                     min = len;
                     ancestor = x;
-                } else if (min != INF && len > min) {
-                    break;
+                } else if (min != INF) {
+                    return new int[] {min, ancestor};
                 }
             }
             // Explore neighbors.
@@ -216,9 +214,8 @@ public final class SAP {
             }
         }
         if (min != INF) {
-            sap[0] = min;
-            sap[1] = ancestor;
+            return new int[] {min, ancestor};
         }
-        return sap;
+        return new int[] {-1, -1};
     }
 }
