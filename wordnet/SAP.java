@@ -2,8 +2,10 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import edu.princeton.cs.algs4.Digraph;
 import edu.princeton.cs.algs4.In;
@@ -18,7 +20,7 @@ import edu.princeton.cs.algs4.StdOut;
 public final class SAP {
     private final Digraph g; // Directed graph.
     // Cache for SAP, vertices -> {0: length, 1: ancestor}.
-     private final Map<String, int[]> sapMap;
+     private final Map<Integer, int[]> sapMap;
 
     /**
      * Constructor takes a digraph (not necessarily a DAG).
@@ -34,16 +36,14 @@ public final class SAP {
      */
     public int length(int v, int w) {
         validateArgs(v, w);
-        String key = key(v, w);
+        int key = key(v, w);
         if (sapMap.containsKey(key)) {
             int[] sap = sapMap.get(key);
-            int length = sap[0];
-            return length;
+            return sap[0];
         }
         int[] sap = findSAP(v, w);
         sapMap.put(key, sap);
-        int length = sap[0];
-        return length;
+        return sap[0];
     }
  
     /**
@@ -52,16 +52,14 @@ public final class SAP {
      */
     public int ancestor(int v, int w) {
         validateArgs(v, w);
-        String key = key(v, w);
+        int key = key(v, w);
         if (sapMap.containsKey(key)) {
             int[] sap = sapMap.get(key);
-            int ancestor = sap[1];
-            return ancestor;
+            return sap[1];
         }
         int[] sap = findSAP(v, w);
         sapMap.put(key, sap);
-        int ancestor = sap[1];
-        return ancestor;
+        return sap[1];
     }
  
     /**
@@ -70,16 +68,14 @@ public final class SAP {
      */
     public int length(Iterable<Integer> v, Iterable<Integer> w) {
         validateArgs(v, w);
-        String key = key(v, w);
+        int key = key(v, w);
         if (sapMap.containsKey(key)) {
             int[] sap = sapMap.get(key);
-            int length = sap[0];
-            return length;
+            return sap[0];
         }
         int[] sap = findSAP(v, w);
         sapMap.put(key, sap);
-        int length = sap[0];
-        return length;
+        return sap[0];
     }
  
     /**
@@ -88,16 +84,14 @@ public final class SAP {
      */
     public int ancestor(Iterable<Integer> v, Iterable<Integer> w) {
         validateArgs(v, w);
-        String key = key(v, w);
+        int key = key(v, w);
         if (sapMap.containsKey(key)) {
             int[] sap = sapMap.get(key);
-            int ancestor = sap[1];
-            return ancestor;
+            return sap[1];
         }
         int[] sap = findSAP(v, w);
         sapMap.put(key, sap);
-        int ancestor = sap[1];
-        return ancestor;
+        return sap[1];
     }
  
     /**
@@ -144,14 +138,22 @@ public final class SAP {
         }
     }
 
-    private String key(int v, int w) {
-        String key = v + " -> " + w;
-        return key;
+    private int key(int v, int w) {
+        Set<Integer> set = new HashSet<>();
+        set.add(v);
+        set.add(w);
+        return set.hashCode();
     }
 
-    private String key(Iterable<Integer> v, Iterable<Integer> w) {
-        String key = v.hashCode() + " -> " + w.hashCode();
-        return key;
+    private int key(Iterable<Integer> v, Iterable<Integer> w) {
+        Set<Integer> set = new HashSet<>();
+        for (int x : v) {
+            set.add(x);
+        }
+        for (int x : w) {
+            set.add(x);
+        }
+        return set.hashCode();
     }
 
     private int[] findSAP(int v, int w) {
@@ -164,34 +166,47 @@ public final class SAP {
         vList.add(v);
         List<Integer> wList = new ArrayList<>();
         wList.add(w);
-        int[] sap = findSAP(vList, wList);
-        return sap;
+        return findSAP(vList, wList);
     }
 
     private int[] findSAP(Iterable<Integer> v, Iterable<Integer> w) {
-        int order = g.V(); // Number of vertices in the graph.
-        int max = order - 1;
+        int max = g.V() - 1;
         validateVertices(max, v);
         validateVertices(max, w);
+        Set<Integer> vSet = new HashSet<>();
+        Set<Integer> wSet = new HashSet<>();
+        for (int x : v) {
+            vSet.add(x);
+        }
+        for (int x : w) {
+            if (vSet.contains(x)) {
+                return new int[] {0, x};
+            }
+            wSet.add(x);
+        }
         Map<Integer, Integer> vDist = new HashMap<>(); // Distance from v.
         Map<Integer, Integer> wDist = new HashMap<>(); // Distance from w.
         Deque<Integer> q = new ArrayDeque<>();
         // Initialize distances for v and w.
-        for (int x : v) {
+        for (int x : vSet) {
             vDist.put(x, 0);
-            q.add(x);
         }
-        for (int x : w) {
+        q.addAll(vSet);
+        for (int x : wSet) {
             wDist.put(x, 0);
-            q.add(x);
         }
+        q.addAll(wSet);
         final int INF = Integer.MAX_VALUE; // Represents infinity.
         int min = INF;
         int ancestor = -1;
+        /*
+         * Run breadth-first searches (BFS) from v and w alternating back and
+         * forth between exploring vertices in each of the two searches.
+         */
         while (!q.isEmpty()) {
             int x = q.remove();
             if (vDist.containsKey(x) && wDist.containsKey(x)) {
-                int len = vDist.get(x) + wDist.get(x) - 1;
+                int len = vDist.get(x) + wDist.get(x);
                 if (len < min) {
                     min = len;
                     ancestor = x;
@@ -199,7 +214,6 @@ public final class SAP {
                     return new int[] {min, ancestor};
                 }
             }
-            // Explore neighbors.
             for (int y : g.adj(x)) {
                 if (vDist.containsKey(x) && !vDist.containsKey(y)) {
                     int dist = vDist.get(x) + 1;
@@ -216,6 +230,7 @@ public final class SAP {
         if (min != INF) {
             return new int[] {min, ancestor};
         }
+        // No common ancestor.
         return new int[] {-1, -1};
     }
 }
