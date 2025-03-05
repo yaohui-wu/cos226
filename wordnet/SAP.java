@@ -2,10 +2,8 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import edu.princeton.cs.algs4.Digraph;
 import edu.princeton.cs.algs4.In;
@@ -20,7 +18,7 @@ import edu.princeton.cs.algs4.StdOut;
 public final class SAP {
     private final Digraph g; // Directed graph.
     // Cache for SAP, vertices -> {0: length, 1: ancestor}.
-     private final Map<Integer, int[]> sapMap;
+     private final Map<String, int[]> sapMap;
 
     /**
      * Constructor takes a digraph (not necessarily a DAG).
@@ -37,7 +35,7 @@ public final class SAP {
     public int length(int v, int w) {
         validateArgs(v, w);
         validateVertices(v, w);
-        int key = key(v, w);
+        String key = key(v, w);
         if (sapMap.containsKey(key)) {
             int[] sap = sapMap.get(key);
             return sap[0];
@@ -54,7 +52,7 @@ public final class SAP {
     public int ancestor(int v, int w) {
         validateArgs(v, w);
         validateVertices(v, w);
-        int key = key(v, w);
+        String key = key(v, w);
         if (sapMap.containsKey(key)) {
             int[] sap = sapMap.get(key);
             return sap[1];
@@ -72,7 +70,7 @@ public final class SAP {
         validateArgs(v, w);
         validateVertices(v);
         validateVertices(w);
-        int key = key(v, w);
+        String key = key(v, w);
         if (sapMap.containsKey(key)) {
             int[] sap = sapMap.get(key);
             return sap[0];
@@ -90,7 +88,7 @@ public final class SAP {
         validateArgs(v, w);
         validateVertices(v);
         validateVertices(w);
-        int key = key(v, w);
+        String key = key(v, w);
         if (sapMap.containsKey(key)) {
             int[] sap = sapMap.get(key);
             return sap[1];
@@ -145,22 +143,14 @@ public final class SAP {
         }
     }
 
-    private int key(int v, int w) {
-        Set<Integer> set = new HashSet<>();
-        set.add(v);
-        set.add(w);
-        return set.hashCode();
+    private String key(int v, int w) {
+        String key = v + " " + w;
+        return key;
     }
 
-    private int key(Iterable<Integer> v, Iterable<Integer> w) {
-        Set<Integer> set = new HashSet<>();
-        for (int x : v) {
-            set.add(x);
-        }
-        for (int x : w) {
-            set.add(x);
-        }
-        return set.hashCode();
+    private String key(Iterable<Integer> v, Iterable<Integer> w) {
+        String key = v + " " + w;
+        return key;
     }
 
     private int[] findSAP(int v, int w) {
@@ -175,47 +165,46 @@ public final class SAP {
     }
 
     private int[] findSAP(Iterable<Integer> v, Iterable<Integer> w) {
-        Map<Integer, Integer> vDist = new HashMap<>(); // Distance from v.
-        Map<Integer, Integer> wDist = new HashMap<>(); // Distance from w.
-        Deque<Integer> q = new ArrayDeque<>();
-        // Initialize distances for v and w.
-        for (int x : v) {
-            vDist.put(x, 0);
-            q.add(x);
-        }
-        for (int x : w) {
-            if (vDist.containsKey(x)) {
-                // There is a common vertex.
-                return new int[] {0, x};
-            }
-            wDist.put(x, 0);
-            q.add(x);
-        }
+        int order = g.V(); // Number of vertices in the graph.
+        int[] vDist = new int[order]; // Distance from v to each vertex.
+        int[] wDist = new int[order]; // Distance from w to each vertex.
         final int INF = Integer.MAX_VALUE; // Represents infinity.
-        int min = INF;
-        int ancestor = -1;
-        /*
-         * Run breadth-first searches (BFS) from v and w alternating back and
-         * forth between exploring vertices in each of the two searches.
-         */
+        for (int x = 0; x < order; x++) {
+            vDist[x] = INF;
+            wDist[x] = INF;
+        }
+        Deque<Integer> q = new ArrayDeque<>();
+        for (int x : v) {
+            vDist[x] = 0;
+            q.add(x);
+        }
         while (!q.isEmpty()) {
             int x = q.remove();
-            if (vDist.containsKey(x) && wDist.containsKey(x)) {
-                int length = vDist.get(x) + wDist.get(x);
-                if (length < min) {
-                    min = length;
+            for (int y : g.adj(x)) {
+                if (vDist[y] == INF) {
+                    vDist[y] = vDist[x] + 1;
+                    q.add(y);
+                }
+            }
+        }
+        for (int x : w) {
+            wDist[x] = 0;
+            q.add(x);
+        }
+        int min = INF;
+        int ancestor = -1;
+        while (!q.isEmpty()) {
+            int x = q.remove();
+            if (vDist[x] != INF) {
+                int len = vDist[x] + wDist[x];
+                if (len < min) {
+                    min = len;
                     ancestor = x;
                 }
             }
             for (int y : g.adj(x)) {
-                if (vDist.containsKey(x) && !vDist.containsKey(y)) {
-                    int dist = vDist.get(x) + 1;
-                    vDist.put(y, dist);
-                    q.add(y);
-                }
-                if (wDist.containsKey(x) && !wDist.containsKey(y)) {
-                    int dist = wDist.get(x) + 1;
-                    wDist.put(y, dist);
+                if (wDist[y] == INF) {
+                    wDist[y] = wDist[x] + 1;
                     q.add(y);
                 }
             }
