@@ -36,6 +36,7 @@ public final class SAP {
      */
     public int length(int v, int w) {
         validateArgs(v, w);
+        validateVertices(v, w);
         int key = key(v, w);
         if (sapMap.containsKey(key)) {
             int[] sap = sapMap.get(key);
@@ -52,6 +53,7 @@ public final class SAP {
      */
     public int ancestor(int v, int w) {
         validateArgs(v, w);
+        validateVertices(v, w);
         int key = key(v, w);
         if (sapMap.containsKey(key)) {
             int[] sap = sapMap.get(key);
@@ -68,6 +70,8 @@ public final class SAP {
      */
     public int length(Iterable<Integer> v, Iterable<Integer> w) {
         validateArgs(v, w);
+        validateVertices(v);
+        validateVertices(w);
         int key = key(v, w);
         if (sapMap.containsKey(key)) {
             int[] sap = sapMap.get(key);
@@ -84,6 +88,8 @@ public final class SAP {
      */
     public int ancestor(Iterable<Integer> v, Iterable<Integer> w) {
         validateArgs(v, w);
+        validateVertices(v);
+        validateVertices(w);
         int key = key(v, w);
         if (sapMap.containsKey(key)) {
             int[] sap = sapMap.get(key);
@@ -119,7 +125,8 @@ public final class SAP {
         }
     }
 
-    private void validateVertices(int max, int... vertices) {
+    private void validateVertices(int... vertices) {
+        int max = g.V() - 1;
         for (int v : vertices) {
             if (v < 0 || v > max) {
                 String error = "Vertex must be between 0 and " + max;
@@ -128,13 +135,13 @@ public final class SAP {
         }
     }
 
-    private void validateVertices(int max, Iterable<Integer> vertices) {
+    private void validateVertices(Iterable<Integer> vertices) {
         for (Integer v : vertices) {
             if (v == null) {
                 String error = "Iterable cannot contain null items";
                 throw new IllegalArgumentException(error);
             }
-            validateVertices(max, v);
+            validateVertices(v);
         }
     }
 
@@ -157,8 +164,6 @@ public final class SAP {
     }
 
     private int[] findSAP(int v, int w) {
-        int max = g.V() - 1;
-        validateVertices(max, v, w);
         if (v == w) {
             return new int[] {0, v};
         }
@@ -170,32 +175,22 @@ public final class SAP {
     }
 
     private int[] findSAP(Iterable<Integer> v, Iterable<Integer> w) {
-        int max = g.V() - 1;
-        validateVertices(max, v);
-        validateVertices(max, w);
-        Set<Integer> vSet = new HashSet<>();
-        Set<Integer> wSet = new HashSet<>();
-        for (int x : v) {
-            vSet.add(x);
-        }
-        for (int x : w) {
-            if (vSet.contains(x)) {
-                return new int[] {0, x};
-            }
-            wSet.add(x);
-        }
         Map<Integer, Integer> vDist = new HashMap<>(); // Distance from v.
         Map<Integer, Integer> wDist = new HashMap<>(); // Distance from w.
         Deque<Integer> q = new ArrayDeque<>();
         // Initialize distances for v and w.
-        for (int x : vSet) {
+        for (int x : v) {
             vDist.put(x, 0);
+            q.add(x);
         }
-        q.addAll(vSet);
-        for (int x : wSet) {
+        for (int x : w) {
+            if (vDist.containsKey(x)) {
+                // There is a common vertex.
+                return new int[] {0, x};
+            }
             wDist.put(x, 0);
+            q.add(x);
         }
-        q.addAll(wSet);
         final int INF = Integer.MAX_VALUE; // Represents infinity.
         int min = INF;
         int ancestor = -1;
@@ -206,12 +201,10 @@ public final class SAP {
         while (!q.isEmpty()) {
             int x = q.remove();
             if (vDist.containsKey(x) && wDist.containsKey(x)) {
-                int len = vDist.get(x) + wDist.get(x);
-                if (len < min) {
-                    min = len;
+                int length = vDist.get(x) + wDist.get(x);
+                if (length < min) {
+                    min = length;
                     ancestor = x;
-                } else if (min != INF) {
-                    return new int[] {min, ancestor};
                 }
             }
             for (int y : g.adj(x)) {
