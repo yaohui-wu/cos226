@@ -165,46 +165,45 @@ public final class SAP {
     }
 
     private int[] findSAP(Iterable<Integer> v, Iterable<Integer> w) {
-        int order = g.V(); // Number of vertices in the graph.
-        int[] vDist = new int[order]; // Distance from v to each vertex.
-        int[] wDist = new int[order]; // Distance from w to each vertex.
-        final int INF = Integer.MAX_VALUE; // Represents infinity.
-        for (int x = 0; x < order; x++) {
-            vDist[x] = INF;
-            wDist[x] = INF;
-        }
+        // Distance from v to each vertex, vertex -> distance.
+        Map<Integer, Integer> vDist = new HashMap<>();
+        // Distance from w to each vertex, vertex -> distance.
+        Map<Integer, Integer> wDist = new HashMap<>();
         Deque<Integer> q = new ArrayDeque<>();
         for (int x : v) {
-            vDist[x] = 0;
+            vDist.put(x, 0);
             q.add(x);
         }
         while (!q.isEmpty()) {
             int x = q.remove();
             for (int y : g.adj(x)) {
-                if (vDist[y] == INF) {
-                    vDist[y] = vDist[x] + 1;
+                if (!vDist.containsKey(y)) {
+                    int dist = vDist.get(x) + 1;
+                    vDist.put(y, dist);
                     q.add(y);
                 }
             }
         }
         for (int x : w) {
-            wDist[x] = 0;
+            wDist.put(x, 0);
             q.add(x);
         }
+        final int INF = Integer.MAX_VALUE; // Represents infinity.
         int min = INF;
         int ancestor = -1;
         while (!q.isEmpty()) {
             int x = q.remove();
-            if (vDist[x] != INF) {
-                int len = vDist[x] + wDist[x];
+            if (vDist.containsKey(x)) {
+                int len = vDist.get(x) + wDist.get(x);
                 if (len < min) {
                     min = len;
                     ancestor = x;
                 }
             }
             for (int y : g.adj(x)) {
-                if (wDist[y] == INF) {
-                    wDist[y] = wDist[x] + 1;
+                if (!wDist.containsKey(y)) {
+                    int dist = wDist.get(x) + 1;
+                    wDist.put(y, dist);
                     q.add(y);
                 }
             }
