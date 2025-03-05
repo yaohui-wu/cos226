@@ -18,7 +18,7 @@ import edu.princeton.cs.algs4.StdOut;
 public final class SAP {
     private final Digraph g; // Directed graph.
     // Cache for SAP, vertices -> {0: length, 1: ancestor}.
-     private final Map<String, int[]> sapMap;
+    private final Map<String, int[]> sapMap;
 
     /**
      * Constructor takes a digraph (not necessarily a DAG).
@@ -166,45 +166,61 @@ public final class SAP {
 
     private int[] findSAP(Iterable<Integer> v, Iterable<Integer> w) {
         // Distance from v to each vertex, vertex -> distance.
-        Map<Integer, Integer> vDist = new HashMap<>();
+        Map<Integer, Integer> vDists = new HashMap<>();
         // Distance from w to each vertex, vertex -> distance.
-        Map<Integer, Integer> wDist = new HashMap<>();
-        Deque<Integer> q = new ArrayDeque<>();
+        Map<Integer, Integer> wDists = new HashMap<>();
+        Deque<Integer> vQ = new ArrayDeque<>(); // Queue for BFS from v.
         for (int x : v) {
-            vDist.put(x, 0);
-            q.add(x);
+            vDists.put(x, 0);
+            vQ.add(x);
         }
-        while (!q.isEmpty()) {
-            int x = q.remove();
-            for (int y : g.adj(x)) {
-                if (!vDist.containsKey(y)) {
-                    int dist = vDist.get(x) + 1;
-                    vDist.put(y, dist);
-                    q.add(y);
-                }
-            }
-        }
+        Deque<Integer> wQ = new ArrayDeque<>();
         for (int x : w) {
-            wDist.put(x, 0);
-            q.add(x);
+            wDists.put(x, 0);
+            wQ.add(x);
         }
         final int INF = Integer.MAX_VALUE; // Represents infinity.
         int min = INF;
         int ancestor = -1;
-        while (!q.isEmpty()) {
-            int x = q.remove();
-            if (vDist.containsKey(x)) {
-                int len = vDist.get(x) + wDist.get(x);
-                if (len < min) {
-                    min = len;
-                    ancestor = x;
+        while (!vQ.isEmpty() || !wQ.isEmpty()) {
+            if (!vQ.isEmpty()) {
+                int x = vQ.remove();
+                int vDist = vDists.get(x);
+                if (wDists.containsKey(x)) {
+                    int length = vDist + wDists.get(x);
+                    if (length < min) {
+                        min = length;
+                        ancestor = x;
+                    }
+                }
+                if (vDist < min) {
+                    for (int y : g.adj(x)) {
+                        if (!vDists.containsKey(y)) {
+                            int dist = vDist + 1;
+                            vDists.put(y, dist);
+                            vQ.add(y);
+                        }
+                    }
                 }
             }
-            for (int y : g.adj(x)) {
-                if (!wDist.containsKey(y)) {
-                    int dist = wDist.get(x) + 1;
-                    wDist.put(y, dist);
-                    q.add(y);
+            if (!wQ.isEmpty()) {
+                int x = wQ.remove();
+                int wDist = wDists.get(x);
+                if (vDists.containsKey(x)) {
+                    int length = vDists.get(x) + wDist;
+                    if (length < min) {
+                        min = length;
+                        ancestor = x;
+                    }
+                }
+                if (wDist < min) {
+                    for (int y : g.adj(x)) {
+                        if (!wDists.containsKey(y)) {
+                            int dist = wDists.get(x) + 1;
+                            wDists.put(y, dist);
+                            wQ.add(y);
+                        }
+                    }
                 }
             }
         }
