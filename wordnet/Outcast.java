@@ -27,10 +27,10 @@ public final class Outcast {
          * Compute the sum of the distances between each noun and every other
          * one.
          */
-        for (int i = 0; i < len; i += 1) {
+        for (int i = 0; i < len; i++) {
             String nounX = nouns[i];
             int dist = 0;
-            for (int j = 0; j < len; j += 1) {
+            for (int j = 0; j < len; j++) {
                 if (i != j) {
                     String nounY = nouns[j];
                     dist += wordNet.distance(nounX, nounY);
@@ -50,10 +50,10 @@ public final class Outcast {
     public static void main(String[] args) {
         WordNet wordnet = new WordNet(args[0], args[1]);
         Outcast outcast = new Outcast(wordnet);
-        for (int t = 2; t < args.length; t++) {
-            In in = new In(args[t]);
+        for (int i = 2; i < args.length; i++) {
+            In in = new In(args[i]);
             String[] nouns = in.readAllStrings();
-            StdOut.println(args[t] + ": " + outcast.outcast(nouns));
+            StdOut.println(args[i] + ": " + outcast.outcast(nouns));
         }
     }
 }
