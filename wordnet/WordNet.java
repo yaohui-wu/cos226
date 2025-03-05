@@ -8,6 +8,7 @@ import java.util.Set;
 import edu.princeton.cs.algs4.Digraph;
 import edu.princeton.cs.algs4.DirectedCycle;
 import edu.princeton.cs.algs4.In;
+import edu.princeton.cs.algs4.StdOut;
 
 /**
  * The WordNet digraph.
@@ -59,7 +60,7 @@ public final class WordNet {
             String line = hypernymsFile.readLine();
             String[] fields = line.split(",");
             int v = Integer.parseInt(fields[0]);
-            for (int i = 1; i < fields.length; i += 1) {
+            for (int i = 1; i < fields.length; i++) {
                 int w = Integer.parseInt(fields[i]);
                 g.addEdge(v, w);
             }
@@ -82,8 +83,7 @@ public final class WordNet {
      */
     public boolean isNoun(String word) {
         validateArgs(word);
-        boolean isNoun = synsetsMap.containsKey(word);
-        return isNoun;
+        return synsetsMap.containsKey(word);
     }
  
     /**
@@ -94,8 +94,7 @@ public final class WordNet {
         validateNouns(nounA, nounB);
         List<Integer> v = synsetsMap.get(nounA);
         List<Integer> w = synsetsMap.get(nounB);
-        int distance = sap.length(v, w);
-        return distance;
+        return sap.length(v, w);
     }
  
     /**
@@ -107,20 +106,19 @@ public final class WordNet {
         List<Integer> v = synsetsMap.get(nounA);
         List<Integer> w = synsetsMap.get(nounB);
         int ancestor = sap.ancestor(v, w);
-        String synset = synsetsList.get(ancestor);
-        return synset;
+        return synsetsList.get(ancestor);
     }
  
     /**
      * Do unit testing of this class.
      */
     public static void main(String[] args) {
-        WordNet wordnet = new WordNet(args[0], args[1]);
+        WordNet wordNet = new WordNet(args[0], args[1]);
         String nounA = args[2];
         String nounB = args[3];
-        int distance = wordnet.distance(nounA, nounB);
-        String sap = wordnet.sap(nounA, nounB);
-        System.out.println("distance = " + distance + ", sap = " + sap);
+        int distance = wordNet.distance(nounA, nounB);
+        String sap = wordNet.sap(nounA, nounB);
+        StdOut.println("distance = " + distance + ", sap = " + sap);
     }
 
     private void validateArgs(Object... args) {
@@ -145,7 +143,7 @@ public final class WordNet {
 
     private boolean hasOneRoot(Digraph g) {
         int count = 0;
-        for (int v = 0; v < g.V(); v += 1) {
+        for (int v = 0; v < g.V(); v++) {
             if (isRoot(g, v)) {
                 count += 1;
                 if (count > 1) {
@@ -153,21 +151,19 @@ public final class WordNet {
                 }
             }
         }
-        boolean hasOneRoot = (count == 1);
-        return hasOneRoot;
+        return count == 1;
     }
 
     private boolean isRoot(Digraph g, int v) {
-        int out = g.outdegree(v);
-        int in = g.indegree(v);
-        boolean isRoot = (out == 0 && in > 0);
-        return isRoot;
+        if (g.outdegree(v) == 0) {
+            return g.indegree(v) > 0;
+        }
+        return false;
     }
 
     private boolean hasCycle(Digraph g) {
         DirectedCycle c = new DirectedCycle(g);
-        boolean hasCycle = c.hasCycle();
-        return hasCycle;
+        return c.hasCycle();
     }
 
     private void validateNouns(String... nouns) {
