@@ -143,7 +143,8 @@ public final class WordNet {
 
     private boolean hasOneRoot(Digraph g) {
         int count = 0;
-        for (int v = 0; v < g.V(); v++) {
+        int order = g.V();
+        for (int v = 0; v < order; v++) {
             if (isRoot(g, v)) {
                 count += 1;
                 if (count > 1) {
