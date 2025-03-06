@@ -17,7 +17,7 @@ import edu.princeton.cs.algs4.StdOut;
  */
 public final class SAP {
     private final Digraph g; // Directed graph.
-    // Cache for SAP, vertices -> {0: length, 1: ancestor}.
+    // SAP: vertices -> {0: length, 1: ancestor}.
     private final Map<String, int[]> sapMap;
 
     /**
@@ -174,14 +174,18 @@ public final class SAP {
             vDists.put(x, 0);
             vQ.add(x);
         }
-        Deque<Integer> wQ = new ArrayDeque<>();
+        Deque<Integer> wQ = new ArrayDeque<>(); // Queue for BFS from w.
         for (int x : w) {
             wDists.put(x, 0);
             wQ.add(x);
         }
-        final int INF = Integer.MAX_VALUE; // Represents infinity.
-        int min = INF;
+        int min = Integer.MAX_VALUE;
         int ancestor = -1;
+        /*
+         * Run breadth-first searches (BFS) from v and w in lockstep.
+         * Terminate the BFS from v (or w) as soon as the distance exceeds the
+         * length of the best ancestral path.
+         */
         while (!vQ.isEmpty() || !wQ.isEmpty()) {
             if (!vQ.isEmpty()) {
                 int x = vQ.remove();
@@ -224,7 +228,7 @@ public final class SAP {
                 }
             }
         }
-        if (min != INF) {
+        if (min != Integer.MAX_VALUE) {
             return new int[] {min, ancestor};
         }
         // No common ancestor.
