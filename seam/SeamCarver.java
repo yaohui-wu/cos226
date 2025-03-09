@@ -46,14 +46,16 @@ public class SeamCarver {
     }
 
     private void validateIndices(int x, int y) {
-        String error = null;
+        StringBuilder error = new StringBuilder();
         if (x < 0 || x >= width) {
-            error = "x must be between 0 and " + (width - 1);
+            error.append("x must be between 0 and ");
+            error.append(width - 1);
         } else if (y < 0 || y >= height) {
-            error = "y must be between 0 and " + (height - 1);
+            error.append("y must be between 0 and ");
+            error.append(height - 1);
         }
-        if (error != null) {
-            throw new IllegalArgumentException(error);
+        if (!error.isEmpty()) {
+            throw new IllegalArgumentException(error.toString());
         }
     }
 
@@ -72,6 +74,35 @@ public class SeamCarver {
      */
     public void removeHorizontalSeam(int[] seam) {
         validateArg(seam);
+        validateHorizontalSeam(seam);
+    }
+
+    private void validateHorizontalSeam(int[] seam) {
+        StringBuilder error = new StringBuilder();
+        int length = seam.length;
+        if (length != width) {
+            error.append("Horizontal seam must have length ");
+            error.append(width);
+            throw new IllegalArgumentException(error.toString());
+        }
+        for (int i = 0; i < length - 1; i++) {
+            int entry = seam[i];
+            if (entry < 0 || entry >= height) {
+                error.append("Entry ");
+                error.append(entry);
+                error.append(" at index ");
+                error.append(i);
+                error.append(" is out of bounds");
+                throw new IllegalArgumentException(error.toString());
+            } else if (Math.abs(entry - seam[i + 1]) > 1) {
+                error.append("Adjacent entries ");
+                error.append(entry);
+                error.append(" and ");
+                error.append(seam[i + 1]);
+                error.append(" differ by more than 1");
+                throw new IllegalArgumentException(error.toString());
+            }
+        }
     }
 
     /**
@@ -79,7 +110,37 @@ public class SeamCarver {
      */
     public void removeVerticalSeam(int[] seam) {
         validateArg(seam);
+        validateVerticalSeam(seam);
     }
+
+    private void validateVerticalSeam(int[] seam) {
+        StringBuilder error = new StringBuilder();
+        int length = seam.length;
+        if (length != height) {
+            error.append("Vertical seam must have length ");
+            error.append(height);
+            throw new IllegalArgumentException(error.toString());
+        }
+        for (int i = 0; i < length - 1; i++) {
+            int entry = seam[i];
+            if (entry < 0 || entry >= width) {
+                error.append("Entry ");
+                error.append(entry);
+                error.append(" at index ");
+                error.append(i);
+                error.append(" is out of bounds");
+                throw new IllegalArgumentException(error.toString());
+            } else if (Math.abs(entry - seam[i + 1]) > 1) {
+                error.append("Adjacent entries ");
+                error.append(entry);
+                error.append(" and ");
+                error.append(seam[i + 1]);
+                error.append(" differ by more than 1");
+                throw new IllegalArgumentException(error.toString());
+            }
+        }
+    }
+
 
     /**
      * Unit testing.
