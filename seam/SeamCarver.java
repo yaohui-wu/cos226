@@ -12,7 +12,16 @@ public class SeamCarver {
     /**
      * Create a seam carver object based on the given picture.
      */
-    public SeamCarver(Picture picture) {}
+    public SeamCarver(Picture picture) {
+        validateArg(picture);
+    }
+
+    private void validateArg(Object arg) {
+        if (arg == null) {
+            String error = "Argument cannot be null";
+            throw new IllegalArgumentException(error);
+        }
+    }
 
     /**
      * Current picture.
@@ -61,12 +70,16 @@ public class SeamCarver {
     /**
      * Remove horizontal seam from current picture.
      */
-    public void removeHorizontalSeam(int[] seam) {}
+    public void removeHorizontalSeam(int[] seam) {
+        validateArg(seam);
+    }
 
     /**
      * Remove vertical seam from current picture.
      */
-    public void removeVerticalSeam(int[] seam) {}
+    public void removeVerticalSeam(int[] seam) {
+        validateArg(seam);
+    }
 
     /**
      * Unit testing.
