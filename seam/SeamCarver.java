@@ -10,6 +10,9 @@ import edu.princeton.cs.algs4.StdOut;
  */
 public class SeamCarver {
     private Picture picture;
+    private int width;
+    private int height;
+    double[][] energys;
 
     /**
      * Create a seam carver object based on the given picture.
@@ -17,6 +20,14 @@ public class SeamCarver {
     public SeamCarver(Picture picture) {
         validateArg(picture);
         this.picture = new Picture(picture);
+        width = this.picture.width();
+        height = this.picture.height();
+        energys = new double[width][height];
+        for (int i = 0; i < width; i++) {
+            for (int j = 0; j < height; j++) {
+                energys[i][j] = energy(i, j);
+            }
+        }
     }
 
     private void validateArg(Object arg) {
@@ -51,8 +62,6 @@ public class SeamCarver {
      * Energy of pixel at column x and row y.
      */
     public double energy(int x, int y) {
-        int width = width();
-        int height = height();
         validateIndices(x, y);
         // Define the energy of a pixel at the border of the image to be 1,000.0.
         if (x == 0 || x == width - 1 || y == 0 || y == height - 1) {
@@ -81,8 +90,6 @@ public class SeamCarver {
     }
 
     private void validateIndices(int x, int y) {
-        int width = width();
-        int height = height();
         StringBuilder error = new StringBuilder();
         if (x < 0 || x >= width) {
             error.append("x must be between 0 and ");
@@ -96,69 +103,22 @@ public class SeamCarver {
     }
 
     /**
-     * Sequence of indices for horizontal seam.
-     */
-    public int[] findHorizontalSeam() {
-        // TODO: Implement this method.
-        int width = width();
-        int[] seam = new int[width];
-        return seam;
-    }
-
-    /**
      * Sequence of indices for vertical seam.
      */
     public int[] findVerticalSeam() {
         // TODO: Implement this method.
+        int height = height();
         int[] seam = new int[height];
+        int width = width();
         return seam;
     }
 
     /**
-     * Remove horizontal seam from current picture.
+     * Sequence of indices for horizontal seam.
      */
-    public void removeHorizontalSeam(int[] seam) {
-        validateArg(seam);
-        validateHeight();
-        validateHorizontalSeam(seam);
-    }
-
-    private void validateHeight() {
-        int height = height();
-        if (height <= 1) {
-            String error = "Height must be greater than 1";
-            throw new IllegalArgumentException(error);
-        }
-    }
-
-    private void validateHorizontalSeam(int[] seam) {
-        int width = width();
-        int height = height();
-        StringBuilder error = new StringBuilder();
-        int length = seam.length;
-        if (length != width) {
-            error.append("Horizontal seam must have length ");
-            error.append(width);
-            throw new IllegalArgumentException(error.toString());
-        }
-        for (int i = 0; i < length - 1; i++) {
-            int entry = seam[i];
-            if (entry < 0 || entry >= height) {
-                error.append("Entry ");
-                error.append(entry);
-                error.append(" at index ");
-                error.append(i);
-                error.append(" is out of bounds");
-                throw new IllegalArgumentException(error.toString());
-            } else if (Math.abs(entry - seam[i + 1]) > 1) {
-                error.append("Adjacent entries ");
-                error.append(entry);
-                error.append(" and ");
-                error.append(seam[i + 1]);
-                error.append(" differ by more than 1");
-                throw new IllegalArgumentException(error.toString());
-            }
-        }
+    public int[] findHorizontalSeam() {
+        // TODO: Implement this method.
+        return null;
     }
 
     /**
@@ -179,8 +139,6 @@ public class SeamCarver {
     }
 
     private void validateVerticalSeam(int[] seam) {
-        int width = width();
-        int height = height();
         StringBuilder error = new StringBuilder();
         int length = seam.length;
         if (length != height) {
@@ -208,6 +166,50 @@ public class SeamCarver {
         }
     }
 
+    /**
+     * Remove horizontal seam from current picture.
+     */
+    public void removeHorizontalSeam(int[] seam) {
+        validateArg(seam);
+        validateHeight();
+        validateHorizontalSeam(seam);
+    }
+
+    private void validateHeight() {
+        int height = height();
+        if (height <= 1) {
+            String error = "Height must be greater than 1";
+            throw new IllegalArgumentException(error);
+        }
+    }
+
+    private void validateHorizontalSeam(int[] seam) {
+        StringBuilder error = new StringBuilder();
+        int length = seam.length;
+        if (length != width) {
+            error.append("Horizontal seam must have length ");
+            error.append(width);
+            throw new IllegalArgumentException(error.toString());
+        }
+        for (int i = 0; i < length - 1; i++) {
+            int entry = seam[i];
+            if (entry < 0 || entry >= height) {
+                error.append("Entry ");
+                error.append(entry);
+                error.append(" at index ");
+                error.append(i);
+                error.append(" is out of bounds");
+                throw new IllegalArgumentException(error.toString());
+            } else if (Math.abs(entry - seam[i + 1]) > 1) {
+                error.append("Adjacent entries ");
+                error.append(entry);
+                error.append(" and ");
+                error.append(seam[i + 1]);
+                error.append(" differ by more than 1");
+                throw new IllegalArgumentException(error.toString());
+            }
+        }
+    }
 
     /**
      * Unit testing.
