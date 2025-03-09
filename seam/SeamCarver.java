@@ -6,6 +6,9 @@ import edu.princeton.cs.algs4.Picture;
  * @author Yaohui Wu
  */
 public class SeamCarver {
+    private int width;
+    private int height;
+
     /**
      * Create a seam carver object based on the given picture.
      */
@@ -29,7 +32,21 @@ public class SeamCarver {
     /**
      * Energy of pixel at column x and row y.
      */
-    public double energy(int x, int y) {}
+    public double energy(int x, int y) {
+        validateIndices(x, y);
+    }
+
+    private void validateIndices(int x, int y) {
+        String error = null;
+        if (x < 0 || x >= width) {
+            error = "x must be between 0 and " + (width - 1);
+        } else if (y < 0 || y >= height) {
+            error = "y must be between 0 and " + (height - 1);
+        }
+        if (error != null) {
+            throw new IllegalArgumentException(error);
+        }
+    }
 
     /**
      * Sequence of indices for horizontal seam.
