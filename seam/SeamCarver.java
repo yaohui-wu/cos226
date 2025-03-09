@@ -1,4 +1,7 @@
+import java.awt.Color;
+
 import edu.princeton.cs.algs4.Picture;
+import edu.princeton.cs.algs4.StdOut;
 
 /**
  * Seam carving.
@@ -53,6 +56,30 @@ public class SeamCarver {
      */
     public double energy(int x, int y) {
         validateIndices(x, y);
+        // Define the energy of a pixel at the border of the image to be 1,000.0.
+        if (x == 0 || x == width - 1 || y == 0 || y == height - 1) {
+            return 1_000.0;
+        }
+        // Dual-gradient energy function.
+        double xGrad = gradient(x + 1, y, x - 1, y); // Square x-gradient.
+        double yGrad = gradient(x, y + 1, x, y - 1); // Square y-gradient.
+        double energy = Math.sqrt(xGrad + yGrad);
+        return energy;
+    }
+
+    private int gradient(int x1, int y1, int x2, int y2) {
+        Color color1 = picture.get(x1, y1);
+        Color color2 = picture.get(x2, y2);
+        // Squared differences in red, green, and blue components.
+        int red = color1.getRed() - color2.getRed();
+        int green = color1.getGreen() - color2.getGreen();
+        int blue = color1.getBlue() - color2.getBlue();
+        int grad = square(red) + square(green) + square(blue); // Gradient.
+        return grad;
+    }
+
+    private int square(int x) {
+        return x * x;
     }
 
     private void validateIndices(int x, int y) {
@@ -60,11 +87,10 @@ public class SeamCarver {
         if (x < 0 || x >= width) {
             error.append("x must be between 0 and ");
             error.append(width - 1);
+            throw new IllegalArgumentException(error.toString());
         } else if (y < 0 || y >= height) {
             error.append("y must be between 0 and ");
             error.append(height - 1);
-        }
-        if (!error.isEmpty()) {
             throw new IllegalArgumentException(error.toString());
         }
     }
@@ -72,12 +98,18 @@ public class SeamCarver {
     /**
      * Sequence of indices for horizontal seam.
      */
-    public int[] findHorizontalSeam() {}
+    public int[] findHorizontalSeam() {
+        // TODO: Implement this method.
+        return null;
+    }
 
     /**
      * Sequence of indices for vertical seam.
      */
-    public int[] findVerticalSeam() {}
+    public int[] findVerticalSeam() {
+        // TODO: Implement this method.
+        return null;
+    }
 
     /**
      * Remove horizontal seam from current picture.
@@ -171,5 +203,14 @@ public class SeamCarver {
     /**
      * Unit testing.
      */
-    public static void main(String[] args) {}
+    public static void main(String[] args) {
+        Picture picture = new Picture(args[0]);
+        int x = Integer.parseInt(args[1]);
+        int y = Integer.parseInt(args[2]);
+        SeamCarver sc = new SeamCarver(picture);
+        StdOut.println("Width: " + sc.width());
+        StdOut.println("Height: " + sc.height());
+        double energy = sc.energy(x, y);
+        StdOut.printf("Energy of pixel at (%d, %d): %f\n", x, y, energy);
+    }
 }
