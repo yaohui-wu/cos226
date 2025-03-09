@@ -6,6 +6,7 @@ import edu.princeton.cs.algs4.Picture;
  * @author Yaohui Wu
  */
 public class SeamCarver {
+    private Picture picture;
     private int width;
     private int height;
 
@@ -14,6 +15,9 @@ public class SeamCarver {
      */
     public SeamCarver(Picture picture) {
         validateArg(picture);
+        this.picture = new Picture(picture);
+        width = this.picture.width();
+        height = this.picture.height();
     }
 
     private void validateArg(Object arg) {
@@ -26,17 +30,23 @@ public class SeamCarver {
     /**
      * Current picture.
      */
-    public Picture picture() {}
+    public Picture picture() {
+        return new Picture(picture);
+    }
 
     /**
      * Width of current picture.
      */
-    public int width() {}
+    public int width() {
+        return width;
+    }
 
     /**
      * Height of current picture.
      */
-    public int height() {}
+    public int height() {
+        return height;
+    }
 
     /**
      * Energy of pixel at column x and row y.
