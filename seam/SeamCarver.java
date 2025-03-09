@@ -74,7 +74,15 @@ public class SeamCarver {
      */
     public void removeHorizontalSeam(int[] seam) {
         validateArg(seam);
+        validateHeight();
         validateHorizontalSeam(seam);
+    }
+
+    private void validateHeight() {
+        if (height <= 1) {
+            String error = "Height must be greater than 1";
+            throw new IllegalArgumentException(error);
+        }
     }
 
     private void validateHorizontalSeam(int[] seam) {
@@ -110,7 +118,15 @@ public class SeamCarver {
      */
     public void removeVerticalSeam(int[] seam) {
         validateArg(seam);
+        validateWidth();
         validateVerticalSeam(seam);
+    }
+
+    private void validateWidth() {
+        if (width <= 1) {
+            String error = "Width must be greater than 1";
+            throw new IllegalArgumentException(error);
+        }
     }
 
     private void validateVerticalSeam(int[] seam) {
