@@ -10,8 +10,6 @@ import edu.princeton.cs.algs4.StdOut;
  */
 public class SeamCarver {
     private Picture picture;
-    private int width;
-    private int height;
 
     /**
      * Create a seam carver object based on the given picture.
@@ -19,8 +17,6 @@ public class SeamCarver {
     public SeamCarver(Picture picture) {
         validateArg(picture);
         this.picture = new Picture(picture);
-        width = this.picture.width();
-        height = this.picture.height();
     }
 
     private void validateArg(Object arg) {
@@ -41,20 +37,22 @@ public class SeamCarver {
      * Width of current picture.
      */
     public int width() {
-        return width;
+        return picture.width();
     }
 
     /**
      * Height of current picture.
      */
     public int height() {
-        return height;
+        return picture.height();
     }
 
     /**
      * Energy of pixel at column x and row y.
      */
     public double energy(int x, int y) {
+        int width = width();
+        int height = height();
         validateIndices(x, y);
         // Define the energy of a pixel at the border of the image to be 1,000.0.
         if (x == 0 || x == width - 1 || y == 0 || y == height - 1) {
@@ -83,6 +81,8 @@ public class SeamCarver {
     }
 
     private void validateIndices(int x, int y) {
+        int width = width();
+        int height = height();
         StringBuilder error = new StringBuilder();
         if (x < 0 || x >= width) {
             error.append("x must be between 0 and ");
@@ -100,7 +100,9 @@ public class SeamCarver {
      */
     public int[] findHorizontalSeam() {
         // TODO: Implement this method.
-        return null;
+        int width = width();
+        int[] seam = new int[width];
+        return seam;
     }
 
     /**
@@ -108,7 +110,8 @@ public class SeamCarver {
      */
     public int[] findVerticalSeam() {
         // TODO: Implement this method.
-        return null;
+        int[] seam = new int[height];
+        return seam;
     }
 
     /**
@@ -121,6 +124,7 @@ public class SeamCarver {
     }
 
     private void validateHeight() {
+        int height = height();
         if (height <= 1) {
             String error = "Height must be greater than 1";
             throw new IllegalArgumentException(error);
@@ -128,6 +132,8 @@ public class SeamCarver {
     }
 
     private void validateHorizontalSeam(int[] seam) {
+        int width = width();
+        int height = height();
         StringBuilder error = new StringBuilder();
         int length = seam.length;
         if (length != width) {
@@ -165,6 +171,7 @@ public class SeamCarver {
     }
 
     private void validateWidth() {
+        int width = width();
         if (width <= 1) {
             String error = "Width must be greater than 1";
             throw new IllegalArgumentException(error);
@@ -172,6 +179,8 @@ public class SeamCarver {
     }
 
     private void validateVerticalSeam(int[] seam) {
+        int width = width();
+        int height = height();
         StringBuilder error = new StringBuilder();
         int length = seam.length;
         if (length != height) {
