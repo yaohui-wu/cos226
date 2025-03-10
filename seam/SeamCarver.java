@@ -1,4 +1,3 @@
-import java.awt.Color;
 import java.util.Arrays;
 
 import edu.princeton.cs.algs4.Picture;
@@ -13,7 +12,7 @@ public class SeamCarver {
     private int width;
     private int height;
     private int[][] picture;
-    double[][] energys;
+    private double[][] energys;
 
     /**
      * Create a seam carver object based on the given picture.
@@ -131,7 +130,6 @@ public class SeamCarver {
      */
     public int[] findVerticalSeam() {
         int[] seam = new int[height];
-        int width = width();
         // Distances to the end of the seam.
         double[][] distTo = new double[height][width];
         // Edges to the end of the seam.
@@ -222,7 +220,6 @@ public class SeamCarver {
     }
 
     private void validateWidth() {
-        int width = width();
         if (width <= 1) {
             String error = "Width must be greater than 1";
             throw new IllegalArgumentException(error);
@@ -237,7 +234,7 @@ public class SeamCarver {
             error.append(height);
             throw new IllegalArgumentException(error.toString());
         }
-        for (int i = 0; i < length - 1; i++) {
+        for (int i = 0; i < length; i++) {
             int entry = seam[i];
             if (entry < 0 || entry >= width) {
                 error.append("Entry ");
@@ -246,11 +243,13 @@ public class SeamCarver {
                 error.append(i);
                 error.append(" is out of bounds");
                 throw new IllegalArgumentException(error.toString());
-            } else if (Math.abs(entry - seam[i + 1]) > 1) {
+            }
+            int j = i + 1;
+            if (j < length && Math.abs(entry - seam[j]) > 1) {
                 error.append("Adjacent entries ");
                 error.append(entry);
                 error.append(" and ");
-                error.append(seam[i + 1]);
+                error.append(seam[j]);
                 error.append(" differ by more than 1");
                 throw new IllegalArgumentException(error.toString());
             }
@@ -270,7 +269,6 @@ public class SeamCarver {
     }
 
     private void validateHeight() {
-        int height = height();
         if (height <= 1) {
             String error = "Height must be greater than 1";
             throw new IllegalArgumentException(error);
@@ -285,7 +283,7 @@ public class SeamCarver {
             error.append(width);
             throw new IllegalArgumentException(error.toString());
         }
-        for (int i = 0; i < length - 1; i++) {
+        for (int i = 0; i < length; i++) {
             int entry = seam[i];
             if (entry < 0 || entry >= height) {
                 error.append("Entry ");
@@ -294,11 +292,13 @@ public class SeamCarver {
                 error.append(i);
                 error.append(" is out of bounds");
                 throw new IllegalArgumentException(error.toString());
-            } else if (Math.abs(entry - seam[i + 1]) > 1) {
+            }
+            int j = i + 1;
+            if (j < length && Math.abs(entry - seam[j]) > 1) {
                 error.append("Adjacent entries ");
                 error.append(entry);
                 error.append(" and ");
-                error.append(seam[i + 1]);
+                error.append(seam[j]);
                 error.append(" differ by more than 1");
                 throw new IllegalArgumentException(error.toString());
             }
