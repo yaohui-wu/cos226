@@ -1,4 +1,5 @@
 import java.awt.Color;
+import java.util.Arrays;
 
 import edu.princeton.cs.algs4.Picture;
 import edu.princeton.cs.algs4.StdOut;
@@ -110,6 +111,58 @@ public class SeamCarver {
         int height = height();
         int[] seam = new int[height];
         int width = width();
+        // Distances to the end of the seam.
+        double[][] distTo = new double[height][width];
+        // Edges to the end of the seam.
+        int[][] edgeTo = new int[height][width];
+        for (int i = 0; i < height; i++) {
+            for (int j = 0; j < width; j++) {
+                if (i == 0) {
+                    distTo[i][j] = 0;
+                } else {
+                    distTo[i][j] = Double.POSITIVE_INFINITY;
+                }
+            }
+        }
+        int x = 0; // End of the seam.
+        double min = Double.POSITIVE_INFINITY;
+        int[] dir = {-1, 0, 1};
+        for (int i = 1; i < height; i++) {
+            for (int j = 0; j < width; j++) {
+                for (int k : dir) {
+                    int m = j + k;
+                    if (m >= 0 && m < width) {
+                        double d = distTo[i - 1][m] + energys[j][i];
+                        double dist = distTo[i][j];
+                        if (dist > d) {
+                            distTo[i][j] = d;
+                            edgeTo[i][j] = m;
+                        }
+                    }
+                }
+                if (i == height - 1 && distTo[i][j] < min) {
+                    min = distTo[i][j];
+                    x = j;
+                }
+            }
+        }
+        for (int i = height - 1; i >= 0; i--) {
+            seam[i] = x;
+            x = edgeTo[i][x];
+        }
+
+        // TODO: debugging.
+        for (int i = 0; i < height; i++) {
+            for (int j = 0; j < width; j++) {
+                StdOut.print(distTo[i][j] + " ");
+            }
+            StdOut.println();
+        }
+        for (int i : seam) {
+            StdOut.print(i + " ");
+        }
+        StdOut.println();
+
         return seam;
     }
 
@@ -223,5 +276,8 @@ public class SeamCarver {
         StdOut.println("Height: " + sc.height());
         double energy = sc.energy(x, y);
         StdOut.printf("Energy of pixel at (%d, %d): %f\n", x, y, energy);
+        int[] verticalSeam = sc.findVerticalSeam();
+        StdOut.println("Vertical seam:");
+        StdOut.println(Arrays.toString(verticalSeam));
     }
 }
