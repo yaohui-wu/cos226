@@ -1,3 +1,5 @@
+import edu.princeton.cs.algs4.StdOut;
+
 /**
  * Represents a sports division and determines which teams are mathematically
  * eliminated.
@@ -49,4 +51,25 @@ public class BaseballElimination {
      * Subset R of teams that eliminates given team; null if not eliminated.
      */
     public Iterable<String> certificateOfElimination(String team) {}
+
+    /**
+     * Reads in a sports division from an input file and prints whether each
+     * team is mathematically eliminated and a certificate of elimination for
+     * each team that is eliminated.
+     */
+    public static void main(String[] args) {
+        BaseballElimination division = new BaseballElimination(args[0]);
+        for (String team : division.teams()) {
+            if (division.isEliminated(team)) {
+                StdOut.print(team + " is eliminated by the subset R = { ");
+                for (String t : division.certificateOfElimination(team)) {
+                    StdOut.print(t + " ");
+                }
+                StdOut.println("}");
+            }
+            else {
+                StdOut.println(team + " is not eliminated");
+            }
+        }
+    }
 }
