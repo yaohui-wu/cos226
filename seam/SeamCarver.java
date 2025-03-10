@@ -24,11 +24,6 @@ public class SeamCarver {
         width = this.picture.width();
         height = this.picture.height();
         energys = new double[width][height];
-        for (int i = 0; i < width; i++) {
-            for (int j = 0; j < height; j++) {
-                energys[i][j] = energy(i, j);
-            }
-        }
     }
 
     private void validateArg(Object arg) {
@@ -42,21 +37,28 @@ public class SeamCarver {
      * Current picture.
      */
     public Picture picture() {
-        return new Picture(picture);
+        Picture pic = new Picture(width, height);
+        for (int i = 0; i < width; i++) {
+            for (int j = 0; j < height; j++) {
+                int rgb = picture.getRGB(i, j);
+                pic.setRGB(i, j, rgb);
+            }
+        }
+        return pic;
     }
 
     /**
      * Width of current picture.
      */
     public int width() {
-        return picture.width();
+        return width;
     }
 
     /**
      * Height of current picture.
      */
     public int height() {
-        return picture.height();
+        return height;
     }
 
     /**
@@ -64,15 +66,32 @@ public class SeamCarver {
      */
     public double energy(int x, int y) {
         validateIndices(x, y);
-        // Define the energy of a pixel at the border of the image to be 1,000.0.
+        // The energy of a pixel at the border of the image is 1,000.0.
         if (x == 0 || x == width - 1 || y == 0 || y == height - 1) {
             return 1_000.0;
+        }
+        if (energys[x][y] != 0.0) {
+            return energys[x][y];
         }
         // Dual-gradient energy function.
         double xGrad = gradient(x + 1, y, x - 1, y); // Square x-gradient.
         double yGrad = gradient(x, y + 1, x, y - 1); // Square y-gradient.
-        double energy = Math.sqrt(xGrad + yGrad);
-        return energy;
+        energys[x][y] = Math.sqrt(xGrad + yGrad);
+        return energys[x][y];
+    }
+
+    private void validateIndices(int x, int y) {
+        StringBuilder error = new StringBuilder();
+        if (x < 0 || x >= width) {
+            error.append("x must be between 0 and ");
+            error.append(width - 1);
+            throw new IllegalArgumentException(error.toString());
+        }
+        if (y < 0 || y >= height) {
+            error.append("y must be between 0 and ");
+            error.append(height - 1);
+            throw new IllegalArgumentException(error.toString());
+        }
     }
 
     private int gradient(int x1, int y1, int x2, int y2) {
@@ -90,19 +109,6 @@ public class SeamCarver {
         return x * x;
     }
 
-    private void validateIndices(int x, int y) {
-        StringBuilder error = new StringBuilder();
-        if (x < 0 || x >= width) {
-            error.append("x must be between 0 and ");
-            error.append(width - 1);
-            throw new IllegalArgumentException(error.toString());
-        } else if (y < 0 || y >= height) {
-            error.append("y must be between 0 and ");
-            error.append(height - 1);
-            throw new IllegalArgumentException(error.toString());
-        }
-    }
-
     /**
      * Sequence of indices for vertical seam.
      */
@@ -115,54 +121,41 @@ public class SeamCarver {
         double[][] distTo = new double[height][width];
         // Edges to the end of the seam.
         int[][] edgeTo = new int[height][width];
-        for (int i = 0; i < height; i++) {
-            for (int j = 0; j < width; j++) {
-                if (i == 0) {
-                    distTo[i][j] = 0;
+        for (int j = 0; j < height; j++) {
+            for (int i = 0; i < width; i++) {
+                if (j == 0) {
+                    distTo[j][i] = 0;
                 } else {
-                    distTo[i][j] = Double.POSITIVE_INFINITY;
+                    distTo[j][i] = Double.POSITIVE_INFINITY;
                 }
             }
         }
         int x = 0; // End of the seam.
         double min = Double.POSITIVE_INFINITY;
-        int[] dir = {-1, 0, 1};
-        for (int i = 1; i < height; i++) {
-            for (int j = 0; j < width; j++) {
-                for (int k : dir) {
-                    int m = j + k;
+        for (int j = 1; j < height; j++) {
+            for (int i = 0; i < width; i++) {
+                double energy = energy(i, j);
+                for (int k = -1; k < 2; k++) {
+                    int m = i + k;
                     if (m >= 0 && m < width) {
-                        double d = distTo[i - 1][m] + energys[j][i];
-                        double dist = distTo[i][j];
+                        double d = distTo[j - 1][m] + energy;
+                        double dist = distTo[j][i];
                         if (dist > d) {
-                            distTo[i][j] = d;
-                            edgeTo[i][j] = m;
+                            distTo[j][i] = d;
+                            edgeTo[j][i] = m;
                         }
                     }
                 }
-                if (i == height - 1 && distTo[i][j] < min) {
-                    min = distTo[i][j];
-                    x = j;
+                if (j == height - 1 && distTo[j][i] < min) {
+                    min = distTo[j][i];
+                    x = i;
                 }
             }
         }
-        for (int i = height - 1; i >= 0; i--) {
-            seam[i] = x;
-            x = edgeTo[i][x];
+        for (int j = height - 1; j >= 0; j--) {
+            seam[j] = x;
+            x = edgeTo[j][x];
         }
-
-        // TODO: debugging.
-        for (int i = 0; i < height; i++) {
-            for (int j = 0; j < width; j++) {
-                StdOut.print(distTo[i][j] + " ");
-            }
-            StdOut.println();
-        }
-        for (int i : seam) {
-            StdOut.print(i + " ");
-        }
-        StdOut.println();
-
         return seam;
     }
 
@@ -171,7 +164,7 @@ public class SeamCarver {
      */
     public int[] findHorizontalSeam() {
         // TODO: Implement this method.
-        return null;
+        return findVerticalSeam();
     }
 
     /**
@@ -181,6 +174,22 @@ public class SeamCarver {
         validateArg(seam);
         validateWidth();
         validateVerticalSeam(seam);
+        for (int j = 0; j < height; j++) {
+            for (int i = seam[j]; i < width - 1; i++) {
+                int rgb = picture.getRGB(i + 1, j);
+                picture.setRGB(i, j, rgb);
+                energys[i][j] = energys[i + 1][j];
+            }
+        }
+        for (int j = 0; j < height; j++) {
+            for (int i = -1; i < 2; i++) {
+                int k = seam[j] + i;
+                if (k >= 0 && k < width) {
+                    energys[k][j] = 0.0;
+                }
+            }
+        }
+        width -= 1;
     }
 
     private void validateWidth() {
@@ -226,6 +235,7 @@ public class SeamCarver {
         validateArg(seam);
         validateHeight();
         validateHorizontalSeam(seam);
+        height -= 1;
     }
 
     private void validateHeight() {
