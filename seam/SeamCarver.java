@@ -25,7 +25,7 @@ public class SeamCarver {
         this.picture = new int[width][height];
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < height; j++) {
-                this.picture[i][j] = picture.getARGB(i, j);
+                this.picture[i][j] = picture.getRGB(i, j);
             }
         }
         energys = new double[width][height];
@@ -130,7 +130,6 @@ public class SeamCarver {
      * Sequence of indices for vertical seam.
      */
     public int[] findVerticalSeam() {
-        transpose();
         int[] seam = new int[height];
         int width = width();
         // Distances to the end of the seam.
@@ -176,19 +175,24 @@ public class SeamCarver {
     public int[] findHorizontalSeam() {
         transpose();
         int[] seam = findVerticalSeam();
+        transpose();
         return seam;
     }
 
     private void transpose() {
         int[][] newPicture = new int[height][width];
         double[][] newEnergys = new double[height][width];
-        for (int i = 0; i < width; i++) {
-            System.arraycopy(picture[i], 0, newPicture[i], 0, height);
-            System.arraycopy(energys[i], 0, newEnergys[i], 0, height);
+        for (int j = 0; j < height; j++) {
+            for (int i = 0; i < width; i++) {
+                newPicture[j][i] = picture[i][j];
+                newEnergys[j][i] = energys[i][j];
+            }
         }
         int temp = width;
         width = height;
         height = temp;
+        picture = newPicture;
+        energys = newEnergys;
     }
 
     /**
@@ -198,7 +202,6 @@ public class SeamCarver {
         validateArg(seam);
         validateWidth();
         validateVerticalSeam(seam);
-        transpose();
         for (int j = 0; j < height; j++) {
             for (int i = seam[j]; i < width - 1; i++) {
                 picture[i][j] = picture[i + 1][j];
@@ -263,6 +266,7 @@ public class SeamCarver {
         validateHorizontalSeam(seam);
         transpose();
         removeVerticalSeam(seam);
+        transpose();
     }
 
     private void validateHeight() {
