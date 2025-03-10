@@ -11,7 +11,7 @@ import edu.princeton.cs.algs4.StdOut;
 public class SeamCarver {
     private int width;
     private int height;
-    private int[][] picture;
+    private int[][] picture; // RGB values of pixels.
     private double[][] energys;
 
     /**
@@ -138,13 +138,15 @@ public class SeamCarver {
             Arrays.fill(distTo[j], Double.POSITIVE_INFINITY);
         }
         Arrays.fill(distTo[0], 0.0);
-        int x = 0; // End of the seam.
+        int x = 0; // End of the shortest path.
+        // Use topological sort to find a shortest path.
         double min = Double.POSITIVE_INFINITY;
         for (int j = 1; j < height; j++) {
             for (int i = 0; i < width; i++) {
                 double energy = energy(i, j);
                 for (int k = -1; k < 2; k++) {
                     int m = i + k;
+                    // Relaxation.
                     if (m >= 0 && m < width) {
                         double d = distTo[j - 1][m] + energy;
                         double dist = distTo[j][i];
@@ -154,12 +156,13 @@ public class SeamCarver {
                         }
                     }
                 }
+                // Find the current shortest path.
                 if (j == height - 1 && distTo[j][i] < min) {
                     min = distTo[j][i];
                     x = i;
                 }
             }
-        }
+        } 
         for (int j = height - 1; j >= 0; j--) {
             seam[j] = x;
             x = edgeTo[j][x];
@@ -206,6 +209,7 @@ public class SeamCarver {
                 energys[i][j] = energys[i + 1][j];
             }
         }
+        // Reset energy for the pixels along the seam.
         for (int j = 0; j < height; j++) {
             for (int i = -1; i < 2; i++) {
                 int k = seam[j] + i;
