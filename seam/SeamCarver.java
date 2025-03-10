@@ -10,9 +10,9 @@ import edu.princeton.cs.algs4.StdOut;
  * @author Yaohui Wu
  */
 public class SeamCarver {
-    private Picture picture;
     private int width;
     private int height;
+    private int[][] picture;
     double[][] energys;
 
     /**
@@ -20,9 +20,14 @@ public class SeamCarver {
      */
     public SeamCarver(Picture picture) {
         validateArg(picture);
-        this.picture = new Picture(picture);
-        width = this.picture.width();
-        height = this.picture.height();
+        width = picture.width();
+        height = picture.height();
+        this.picture = new int[width][height];
+        for (int i = 0; i < width; i++) {
+            for (int j = 0; j < height; j++) {
+                this.picture[i][j] = picture.getARGB(i, j);
+            }
+        }
         energys = new double[width][height];
     }
 
@@ -40,7 +45,7 @@ public class SeamCarver {
         Picture pic = new Picture(width, height);
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < height; j++) {
-                int rgb = picture.getRGB(i, j);
+                int rgb = picture[i][j];
                 pic.setRGB(i, j, rgb);
             }
         }
@@ -95,14 +100,26 @@ public class SeamCarver {
     }
 
     private int gradient(int x1, int y1, int x2, int y2) {
-        Color color1 = picture.get(x1, y1);
-        Color color2 = picture.get(x2, y2);
+        int rgb1 = picture[x1][y1];
+        int rgb2 = picture[x2][y2];
         // Squared differences in red, green, and blue components.
-        int red = color1.getRed() - color2.getRed();
-        int green = color1.getGreen() - color2.getGreen();
-        int blue = color1.getBlue() - color2.getBlue();
+        int red = getRed(rgb1) - getRed(rgb2);
+        int green = getGreen(rgb1) - getGreen(rgb2);
+        int blue = getBlue(rgb1) - getBlue(rgb2);
         int grad = square(red) + square(green) + square(blue); // Gradient.
         return grad;
+    }
+
+    private int getRed(int rgb) {
+        return (rgb >> 16) & 0xFF;
+    }
+
+    private int getGreen(int rgb) {
+        return (rgb >>  8) & 0xFF;
+    }
+
+    private int getBlue(int rgb) {
+        return (rgb >>  0) & 0xFF;
     }
 
     private int square(int x) {
@@ -113,23 +130,17 @@ public class SeamCarver {
      * Sequence of indices for vertical seam.
      */
     public int[] findVerticalSeam() {
-        // TODO: Implement this method.
-        int height = height();
+        transpose();
         int[] seam = new int[height];
         int width = width();
         // Distances to the end of the seam.
         double[][] distTo = new double[height][width];
         // Edges to the end of the seam.
         int[][] edgeTo = new int[height][width];
-        for (int j = 0; j < height; j++) {
-            for (int i = 0; i < width; i++) {
-                if (j == 0) {
-                    distTo[j][i] = 0;
-                } else {
-                    distTo[j][i] = Double.POSITIVE_INFINITY;
-                }
-            }
+        for (int j = 1; j < height; j++) {
+            Arrays.fill(distTo[j], Double.POSITIVE_INFINITY);
         }
+        Arrays.fill(distTo[0], 0.0);
         int x = 0; // End of the seam.
         double min = Double.POSITIVE_INFINITY;
         for (int j = 1; j < height; j++) {
@@ -163,8 +174,21 @@ public class SeamCarver {
      * Sequence of indices for horizontal seam.
      */
     public int[] findHorizontalSeam() {
-        // TODO: Implement this method.
-        return findVerticalSeam();
+        transpose();
+        int[] seam = findVerticalSeam();
+        return seam;
+    }
+
+    private void transpose() {
+        int[][] newPicture = new int[height][width];
+        double[][] newEnergys = new double[height][width];
+        for (int i = 0; i < width; i++) {
+            System.arraycopy(picture[i], 0, newPicture[i], 0, height);
+            System.arraycopy(energys[i], 0, newEnergys[i], 0, height);
+        }
+        int temp = width;
+        width = height;
+        height = temp;
     }
 
     /**
@@ -174,10 +198,10 @@ public class SeamCarver {
         validateArg(seam);
         validateWidth();
         validateVerticalSeam(seam);
+        transpose();
         for (int j = 0; j < height; j++) {
             for (int i = seam[j]; i < width - 1; i++) {
-                int rgb = picture.getRGB(i + 1, j);
-                picture.setRGB(i, j, rgb);
+                picture[i][j] = picture[i + 1][j];
                 energys[i][j] = energys[i + 1][j];
             }
         }
@@ -189,6 +213,8 @@ public class SeamCarver {
                 }
             }
         }
+        picture[width - 1] = null;
+        energys[width - 1] = null;
         width -= 1;
     }
 
@@ -235,7 +261,8 @@ public class SeamCarver {
         validateArg(seam);
         validateHeight();
         validateHorizontalSeam(seam);
-        height -= 1;
+        transpose();
+        removeVerticalSeam(seam);
     }
 
     private void validateHeight() {
@@ -289,5 +316,12 @@ public class SeamCarver {
         int[] verticalSeam = sc.findVerticalSeam();
         StdOut.println("Vertical seam:");
         StdOut.println(Arrays.toString(verticalSeam));
+        int[] horizontalSeam = sc.findHorizontalSeam();
+        StdOut.println("Horizontal seam:");
+        StdOut.println(Arrays.toString(horizontalSeam));
+        sc.removeVerticalSeam(verticalSeam);
+        sc.removeHorizontalSeam(horizontalSeam);
+        Picture newPicture = sc.picture();
+        newPicture.show();
     }
 }
