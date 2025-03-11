@@ -44,32 +44,49 @@ public final class BaseballElimination {
     /**
      * Number of teams.
      */
-    public int numberOfTeams() {}
+    public int numberOfTeams() {
+        return numTeams;
+    }
 
     /**
      * All teams.
      */
-    public Iterable<String> teams() {}
+    public Iterable<String> teams() {
+        return teams.keySet();
+    }
 
     /**
      * Number of wins for given team.
      */
-    public int wins(String team) {}
+    public int wins(String team) {
+        int i = teams.get(team);
+        return wins[i];
+    }
 
     /**
      * Number of losses for given team.
      */
-    public int losses(String name) {}
+    public int losses(String team) {
+        int i = teams.get(team);
+        return losses[i];
+    }
 
     /**
      * Number of remaining games for given team.
      */
-    public int remaining(String team) {}
+    public int remaining(String team) {
+        int i = teams.get(team);
+        return rem[i];
+    }
 
     /**
      * Number of remaining games between team1 and team2.
      */
-    public int against(String team1, String team2) {}
+    public int against(String team1, String team2) {
+        int i = teams.get(team1);
+        int j = teams.get(team2);
+        return games[i][j];
+    }
 
     /**
      * Is given team eliminated?
