@@ -10,13 +10,13 @@ import edu.princeton.cs.algs4.StdOut;
  * 
  * @author Yaohui Wu
  */
-public class BaseballElimination {
-    private int numTeams; // Number of teams.
-    private Map<String, Integer> teams; // Team name to index.
-    private int[] wins; // Wins for each team.
-    private int[] losses; // Losses for each team.
-    private int[] rem; // Remaining games for each team.
-    private int[][] games; // Remaining games between teams.
+public final class BaseballElimination {
+    private final int numTeams; // Number of teams.
+    private final Map<String, Integer> teams; // Team name to index.
+    private final int[] wins; // Wins for each team.
+    private final int[] losses; // Losses for each team.
+    private final int[] rem; // Remaining games for each team.
+    private final int[][] games; // Remaining games between teams.
     
     /**
      * Create a baseball division from given filename.
@@ -25,6 +25,10 @@ public class BaseballElimination {
         In file = new In(filename);
         numTeams = file.readInt();
         teams = new HashMap<>();
+        wins = new int[numTeams];
+        losses = new int[numTeams];
+        rem = new int[numTeams];
+        games = new int[numTeams][numTeams];
         for (int i = 0; i < numTeams; i++) {
             String team = file.readString();
             teams.put(team, i);
