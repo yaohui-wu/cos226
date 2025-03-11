@@ -1,3 +1,7 @@
+import java.util.HashMap;
+import java.util.Map;
+
+import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.StdOut;
 
 /**
@@ -7,10 +11,31 @@ import edu.princeton.cs.algs4.StdOut;
  * @author Yaohui Wu
  */
 public class BaseballElimination {
+    private int numTeams; // Number of teams.
+    private Map<String, Integer> teams; // Team name to index.
+    private int[] wins; // Wins for each team.
+    private int[] losses; // Losses for each team.
+    private int[] rem; // Remaining games for each team.
+    private int[][] games; // Remaining games between teams.
+    
     /**
      * Create a baseball division from given filename.
      */
-    public BaseballElimination(String filename) {}
+    public BaseballElimination(String filename) {
+        In file = new In(filename);
+        numTeams = file.readInt();
+        teams = new HashMap<>();
+        for (int i = 0; i < numTeams; i++) {
+            String team = file.readString();
+            teams.put(team, i);
+            wins[i] = file.readInt();
+            losses[i] = file.readInt();
+            rem[i] = file.readInt();
+            for (int j = 0; j < numTeams; j++) {
+                games[i][j] = file.readInt();
+            }
+        }
+    }
 
     /**
      * Number of teams.
