@@ -59,6 +59,7 @@ public final class BaseballElimination {
      * Number of wins for given team.
      */
     public int wins(String team) {
+        validateTeams(team);
         int i = teams.get(team);
         return wins[i];
     }
@@ -67,6 +68,7 @@ public final class BaseballElimination {
      * Number of losses for given team.
      */
     public int losses(String team) {
+        validateTeams(team);
         int i = teams.get(team);
         return losses[i];
     }
@@ -75,6 +77,7 @@ public final class BaseballElimination {
      * Number of remaining games for given team.
      */
     public int remaining(String team) {
+        validateTeams(team);
         int i = teams.get(team);
         return rem[i];
     }
@@ -83,6 +86,7 @@ public final class BaseballElimination {
      * Number of remaining games between team1 and team2.
      */
     public int against(String team1, String team2) {
+        validateTeams(team1, team2);
         int i = teams.get(team1);
         int j = teams.get(team2);
         return games[i][j];
@@ -91,12 +95,25 @@ public final class BaseballElimination {
     /**
      * Is given team eliminated?
      */
-    public boolean isEliminated(String team) {}
+    public boolean isEliminated(String team) {
+        validateTeams(team);
+    }
 
     /**
      * Subset R of teams that eliminates given team; null if not eliminated.
      */
-    public Iterable<String> certificateOfElimination(String team) {}
+    public Iterable<String> certificateOfElimination(String team) {
+        validateTeams(team);
+    }
+
+    private void validateTeams(String... givenTeams) {
+        for (String team : givenTeams) {
+            if (!teams.containsKey(team)) {
+                String error = "Invalid team: " + team;
+                throw new IllegalArgumentException(error);
+            }
+        }
+    }
 
     /**
      * Reads in a sports division from an input file and prints whether each
