@@ -23,7 +23,6 @@ public final class BaseballElimination {
     private final int[] losses; // Losses for each team.
     private final int[] rem; // Remaining games for each team.
     private final int[][] games; // Remaining games between teams.
-    private final boolean elimination[];
     private int flow;
     
     /**
@@ -38,7 +37,6 @@ public final class BaseballElimination {
         losses = new int[numTeams];
         rem = new int[numTeams];
         games = new int[numTeams][numTeams];
-        elimination = new boolean[numTeams];
         for (int i = 0; i < numTeams; i++) {
             String team = file.readString();
             teams.put(team, i);
@@ -126,13 +124,14 @@ public final class BaseballElimination {
     }
 
     private boolean nontrivialElimination(int x) {
-        // TODO: Implement the nontrivial elimination check.
         FordFulkerson maxFlow = maxFlow(x);
+        if (maxFlow == null) {
+            return false;
+        }
         return flow > maxFlow.value();
     }
     
     private FordFulkerson maxFlow(int x) {
-        int flow = 0;
         // Excludes team x.
         int numOtherTeams = numTeams - 1;
         int numGameVertices = nC2(numOtherTeams);
@@ -182,22 +181,18 @@ public final class BaseballElimination {
      * Subset R of teams that eliminates given team; null if not eliminated.
      */
     public Iterable<String> certificateOfElimination(String team) {
-        // TODO: Implement the certificate of elimination.
         validateTeams(team);
         int x = teams.get(team);
         List<String> subset = new ArrayList<>();
         int numGameVertices = nC2(numTeams - 1);
         FordFulkerson maxFlow = maxFlow(x);
+        int maxWins = wins[x] + rem[x];
         for (int i = 0; i < numTeams; i++) {
-            if (x != i && wins[x] + rem[x] < wins[i]) {
+            if (x != i && maxWins < wins[i]) {
                 subset.add(indices.get(i));
             } else if (maxFlow.inCut(i + numGameVertices + 1)) {
                 subset.add(indices.get(i));
             }
-        }
-        if (subset.isEmpty()) {
-            elimination[x] = true;
-            return null;
         }
         return subset;
     }
