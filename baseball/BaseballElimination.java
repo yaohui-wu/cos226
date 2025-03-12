@@ -1,8 +1,9 @@
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
+import edu.princeton.cs.algs4.FlowNetwork;
 import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.StdOut;
 
@@ -28,6 +29,7 @@ public final class BaseballElimination {
         In file = new In(filename);
         numTeams = file.readInt();
         teams = new HashMap<>();
+        indices = new HashMap<>();
         wins = new int[numTeams];
         losses = new int[numTeams];
         rem = new int[numTeams];
@@ -35,6 +37,7 @@ public final class BaseballElimination {
         for (int i = 0; i < numTeams; i++) {
             String team = file.readString();
             teams.put(team, i);
+            indices.put(i, team);
             wins[i] = file.readInt();
             losses[i] = file.readInt();
             rem[i] = file.readInt();
@@ -113,7 +116,9 @@ public final class BaseballElimination {
         return false;
     }
 
-    private boolean nontrivialElimination(int x) {}
+    private boolean nontrivialElimination(int x) {
+        FlowNetwork flowNetwork = new FlowNetwork(numTeams);
+    }
 
     /**
      * Subset R of teams that eliminates given team; null if not eliminated.
@@ -124,7 +129,7 @@ public final class BaseballElimination {
         if (!isEliminated(team)) {
             return null;
         }
-        Set<String> subset = new HashSet<>();
+        List<String> subset = new ArrayList<>();
         for (int i = 0; i < numTeams; i++) {
             if (x != i && wins[x] + rem[x] < wins[i]) {
                 subset.add(indices.get(i));
