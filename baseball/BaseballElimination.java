@@ -23,6 +23,8 @@ public final class BaseballElimination {
     private final int[] losses; // Losses for each team.
     private final int[] rem; // Remaining games for each team.
     private final int[][] games; // Remaining games between teams.
+    private final boolean elimination[];
+    private int flow;
     
     /**
      * Create a baseball division from given filename.
@@ -36,6 +38,7 @@ public final class BaseballElimination {
         losses = new int[numTeams];
         rem = new int[numTeams];
         games = new int[numTeams][numTeams];
+        elimination = new boolean[numTeams];
         for (int i = 0; i < numTeams; i++) {
             String team = file.readString();
             teams.put(team, i);
@@ -115,7 +118,7 @@ public final class BaseballElimination {
     private boolean trivialElimination(int x) {
         int maxWins = wins[x] + rem[x];
         for (int i = 0; i < numTeams; i++) {
-            if (x != i && maxWins < wins[i]) {
+            if (i != x && maxWins < wins[i]) {
                 return true;
             }
         }
@@ -124,33 +127,50 @@ public final class BaseballElimination {
 
     private boolean nontrivialElimination(int x) {
         // TODO: Implement the nontrivial elimination check.
-        double maxFlow = maxFlow(x);
-        return false;
+        FordFulkerson maxFlow = maxFlow(x);
+        return flow > maxFlow.value();
     }
-
-    private double maxFlow(int x) {
-        int numVertices = nC2(numTeams - 1) + numTeams - 1;
+    
+    private FordFulkerson maxFlow(int x) {
+        int flow = 0;
+        // Excludes team x.
+        int numOtherTeams = numTeams - 1;
+        int numGameVertices = nC2(numOtherTeams);
+        // Game vertices + team vertices + source + sink.
+        int numVertices = numGameVertices + numOtherTeams + 2;
         FlowNetwork flowNetwork = new FlowNetwork(numVertices);
         int s = 0; // Source.
         int t = numVertices - 1; // Sink.
-        int k = 1;
+        int v = 1; // Game vertices start from 1.
         for (int i = 0; i < numTeams; i++) {
             if (i != x) {
                 for (int j = i + 1; j < numTeams; j++) {
                     if (j != x) {
-                        FlowEdge gameEdge = new FlowEdge(s, k, games[i][j]);
+                        // Connect source to game vertices.
+                        FlowEdge gameEdge = new FlowEdge(s, v, games[i][j]);
                         flowNetwork.addEdge(gameEdge);
-                        FlowEdge team1Edge = new FlowEdge(k, i + numVertices + 1, Double.POSITIVE_INFINITY);
+                        // Connect each game vertex with the two teams.
+                        FlowEdge team1Edge = new FlowEdge(v, i + numGameVertices + 1, Double.POSITIVE_INFINITY);
                         flowNetwork.addEdge(team1Edge);
-                        FlowEdge team2Edge = new FlowEdge(k, j + numVertices, Double.POSITIVE_INFINITY);
+                        FlowEdge team2Edge = new FlowEdge(v, j + numGameVertices + 1, Double.POSITIVE_INFINITY);
                         flowNetwork.addEdge(team2Edge);
+                        flow += games[i][j];
+                        v++;
                     }
                 }
             }
         }
         int maxWins = wins[x] + rem[x];
+        for (int i = numGameVertices; i < numVertices; i++) {
+            int possibleWins = maxWins - wins[i];
+            if (possibleWins < 0) {
+                return null;
+            }
+            FlowEdge sinkEdge = new FlowEdge(i, t, possibleWins);
+            flowNetwork.addEdge(sinkEdge);
+        }
         FordFulkerson maxFlow = new FordFulkerson(flowNetwork, s, t);
-        return maxFlow.value();
+        return maxFlow;
     }
 
     private int nC2(int n) {
@@ -165,14 +185,19 @@ public final class BaseballElimination {
         // TODO: Implement the certificate of elimination.
         validateTeams(team);
         int x = teams.get(team);
-        if (!isEliminated(team)) {
-            return null;
-        }
         List<String> subset = new ArrayList<>();
+        int numGameVertices = nC2(numTeams - 1);
+        FordFulkerson maxFlow = maxFlow(x);
         for (int i = 0; i < numTeams; i++) {
             if (x != i && wins[x] + rem[x] < wins[i]) {
                 subset.add(indices.get(i));
+            } else if (maxFlow.inCut(i + numGameVertices + 1)) {
+                subset.add(indices.get(i));
             }
+        }
+        if (subset.isEmpty()) {
+            elimination[x] = true;
+            return null;
         }
         return subset;
     }
