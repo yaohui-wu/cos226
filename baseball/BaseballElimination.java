@@ -1,5 +1,7 @@
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.StdOut;
@@ -13,6 +15,7 @@ import edu.princeton.cs.algs4.StdOut;
 public final class BaseballElimination {
     private final int numTeams; // Number of teams.
     private final Map<String, Integer> teams; // Team name to index.
+    private final Map<Integer, String> indices; // Index to team name.
     private final int[] wins; // Wins for each team.
     private final int[] losses; // Losses for each team.
     private final int[] rem; // Remaining games for each team.
@@ -97,13 +100,37 @@ public final class BaseballElimination {
      */
     public boolean isEliminated(String team) {
         validateTeams(team);
+        int x = teams.get(team);
+        return trivialElimination(x) || nontrivialElimination(x);
     }
+
+    private boolean trivialElimination(int x) {
+        for (int i = 0; i < numTeams; i++) {
+            if (x != i && wins[x] + rem[x] < wins[i]) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean nontrivialElimination(int x) {}
 
     /**
      * Subset R of teams that eliminates given team; null if not eliminated.
      */
     public Iterable<String> certificateOfElimination(String team) {
         validateTeams(team);
+        int x = teams.get(team);
+        if (!isEliminated(team)) {
+            return null;
+        }
+        Set<String> subset = new HashSet<>();
+        for (int i = 0; i < numTeams; i++) {
+            if (x != i && wins[x] + rem[x] < wins[i]) {
+                subset.add(indices.get(i));
+            }
+        }
+        return subset;
     }
 
     private void validateTeams(String... givenTeams) {
