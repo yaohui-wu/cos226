@@ -3,7 +3,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import edu.princeton.cs.algs4.FlowEdge;
 import edu.princeton.cs.algs4.FlowNetwork;
+import edu.princeton.cs.algs4.FordFulkerson;
 import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.StdOut;
 
@@ -103,13 +105,17 @@ public final class BaseballElimination {
      */
     public boolean isEliminated(String team) {
         validateTeams(team);
+        if (numTeams == 1) {
+            return false;
+        }
         int x = teams.get(team);
         return trivialElimination(x) || nontrivialElimination(x);
     }
 
     private boolean trivialElimination(int x) {
+        int maxWins = wins[x] + rem[x];
         for (int i = 0; i < numTeams; i++) {
-            if (x != i && wins[x] + rem[x] < wins[i]) {
+            if (x != i && maxWins < wins[i]) {
                 return true;
             }
         }
@@ -117,13 +123,46 @@ public final class BaseballElimination {
     }
 
     private boolean nontrivialElimination(int x) {
-        FlowNetwork flowNetwork = new FlowNetwork(numTeams);
+        // TODO: Implement the nontrivial elimination check.
+        double maxFlow = maxFlow(x);
+        return false;
+    }
+
+    private double maxFlow(int x) {
+        int numVertices = nC2(numTeams - 1) + numTeams - 1;
+        FlowNetwork flowNetwork = new FlowNetwork(numVertices);
+        int s = 0; // Source.
+        int t = numVertices - 1; // Sink.
+        int k = 1;
+        for (int i = 0; i < numTeams; i++) {
+            if (i != x) {
+                for (int j = i + 1; j < numTeams; j++) {
+                    if (j != x) {
+                        FlowEdge gameEdge = new FlowEdge(s, k, games[i][j]);
+                        flowNetwork.addEdge(gameEdge);
+                        FlowEdge team1Edge = new FlowEdge(k, i + numVertices + 1, Double.POSITIVE_INFINITY);
+                        flowNetwork.addEdge(team1Edge);
+                        FlowEdge team2Edge = new FlowEdge(k, j + numVertices, Double.POSITIVE_INFINITY);
+                        flowNetwork.addEdge(team2Edge);
+                    }
+                }
+            }
+        }
+        int maxWins = wins[x] + rem[x];
+        FordFulkerson maxFlow = new FordFulkerson(flowNetwork, s, t);
+        return maxFlow.value();
+    }
+
+    private int nC2(int n) {
+        // n choose 2.
+        return n * (n - 1) / 2;
     }
 
     /**
      * Subset R of teams that eliminates given team; null if not eliminated.
      */
     public Iterable<String> certificateOfElimination(String team) {
+        // TODO: Implement the certificate of elimination.
         validateTeams(team);
         int x = teams.get(team);
         if (!isEliminated(team)) {
