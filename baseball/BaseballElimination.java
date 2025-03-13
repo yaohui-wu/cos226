@@ -132,6 +132,7 @@ public final class BaseballElimination {
     }
     
     private FordFulkerson maxFlow(int x) {
+        flow = 0;
         // Excludes team x.
         int numOtherTeams = numTeams - 1;
         int numGameVertices = nC2(numOtherTeams);
@@ -160,7 +161,7 @@ public final class BaseballElimination {
             }
         }
         int maxWins = wins[x] + rem[x];
-        for (int i = numGameVertices; i < numVertices; i++) {
+        for (int i = 0; i < numTeams; i++) {
             int possibleWins = maxWins - wins[i];
             if (possibleWins < 0) {
                 return null;
@@ -188,11 +189,18 @@ public final class BaseballElimination {
         FordFulkerson maxFlow = maxFlow(x);
         int maxWins = wins[x] + rem[x];
         for (int i = 0; i < numTeams; i++) {
-            if (x != i && maxWins < wins[i]) {
-                subset.add(indices.get(i));
-            } else if (maxFlow.inCut(i + numGameVertices + 1)) {
-                subset.add(indices.get(i));
+            if (i != x) {
+                if (maxFlow == null) {
+                    if (maxWins - wins[i] < 0) {
+                        subset.add(indices.get(i));
+                    }
+                } else if (maxFlow.inCut(i + numGameVertices + 1)) {
+                    subset.add(indices.get(i));
+                }
             }
+        }
+        if (subset.isEmpty()) {
+            return null;
         }
         return subset;
     }
