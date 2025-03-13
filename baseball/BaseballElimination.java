@@ -134,10 +134,9 @@ public final class BaseballElimination {
     
     private FordFulkerson maxFlow(int x) {
         // Excludes team x.
-        int numOtherTeams = numTeams - 1;
-        int numGameVertices = nC2(numOtherTeams);
+        int numGameVertices = nC2(numTeams);
         // Game vertices + team vertices + source + sink.
-        int numVertices = numGameVertices + numOtherTeams + 2;
+        int numVertices = numGameVertices + numTeams + 2;
         FlowNetwork flowNetwork = new FlowNetwork(numVertices);
         int s = 0; // Source.
         int t = numVertices - 1; // Sink.
@@ -181,12 +180,9 @@ public final class BaseballElimination {
      */
     public Iterable<String> certificateOfElimination(String team) {
         validateTeams(team);
-        if (!isEliminated(team)) {
-            return null;
-        }
-        int x = indices.get(team);
         List<String> subset = new ArrayList<>();
-        int numGameVertices = nC2(numTeams - 1);
+        int x = indices.get(team);
+        int numGameVertices = nC2(numTeams);
         FordFulkerson maxFlow = maxFlow(x);
         int maxWins = wins[x] + rem[x];
         for (int i = 0; i < numTeams; i++) {
@@ -199,6 +195,9 @@ public final class BaseballElimination {
                     subset.add(teams[i]);
                 }
             }
+        }
+        if (subset.isEmpty()) {
+            return null;
         }
         return subset;
     }
