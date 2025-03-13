@@ -17,8 +17,8 @@ import edu.princeton.cs.algs4.StdOut;
  */
 public final class BaseballElimination {
     private final int numTeams; // Number of teams.
-    private final Map<String, Integer> teams; // Team name to index.
-    private final Map<Integer, String> indices; // Index to team name.
+    private final String[] teams; // Team names.
+    private final Map<String, Integer> indices; // Team name to index.
     private final int[] wins; // Wins for each team.
     private final int[] losses; // Losses for each team.
     private final int[] rem; // Remaining games for each team.
@@ -31,16 +31,17 @@ public final class BaseballElimination {
     public BaseballElimination(String filename) {
         In file = new In(filename);
         numTeams = file.readInt();
-        teams = new HashMap<>();
+        teams = new String[numTeams];
         indices = new HashMap<>();
         wins = new int[numTeams];
         losses = new int[numTeams];
         rem = new int[numTeams];
         games = new int[numTeams][numTeams];
+        flow = 0;
         for (int i = 0; i < numTeams; i++) {
             String team = file.readString();
-            teams.put(team, i);
-            indices.put(i, team);
+            teams[i] = team;
+            indices.put(team, i);
             wins[i] = file.readInt();
             losses[i] = file.readInt();
             rem[i] = file.readInt();
@@ -61,7 +62,7 @@ public final class BaseballElimination {
      * All teams.
      */
     public Iterable<String> teams() {
-        return teams.keySet();
+        return indices.keySet();
     }
 
     /**
@@ -69,7 +70,7 @@ public final class BaseballElimination {
      */
     public int wins(String team) {
         validateTeams(team);
-        int i = teams.get(team);
+        int i = indices.get(team);
         return wins[i];
     }
 
@@ -78,7 +79,7 @@ public final class BaseballElimination {
      */
     public int losses(String team) {
         validateTeams(team);
-        int i = teams.get(team);
+        int i = indices.get(team);
         return losses[i];
     }
 
@@ -87,7 +88,7 @@ public final class BaseballElimination {
      */
     public int remaining(String team) {
         validateTeams(team);
-        int i = teams.get(team);
+        int i = indices.get(team);
         return rem[i];
     }
 
@@ -96,8 +97,8 @@ public final class BaseballElimination {
      */
     public int against(String team1, String team2) {
         validateTeams(team1, team2);
-        int i = teams.get(team1);
-        int j = teams.get(team2);
+        int i = indices.get(team1);
+        int j = indices.get(team2);
         return games[i][j];
     }
 
@@ -109,7 +110,7 @@ public final class BaseballElimination {
         if (numTeams == 1) {
             return false;
         }
-        int x = teams.get(team);
+        int x = indices.get(team);
         return trivialElimination(x) || nontrivialElimination(x);
     }
 
@@ -126,13 +127,12 @@ public final class BaseballElimination {
     private boolean nontrivialElimination(int x) {
         FordFulkerson maxFlow = maxFlow(x);
         if (maxFlow == null) {
-            return false;
+            return true;
         }
         return flow > maxFlow.value();
     }
     
     private FordFulkerson maxFlow(int x) {
-        flow = 0;
         // Excludes team x.
         int numOtherTeams = numTeams - 1;
         int numGameVertices = nC2(numOtherTeams);
@@ -142,6 +142,7 @@ public final class BaseballElimination {
         int s = 0; // Source.
         int t = numVertices - 1; // Sink.
         int v = 1; // Game vertices start from 1.
+        flow = 0;
         for (int i = 0; i < numTeams; i++) {
             if (i != x) {
                 for (int j = i + 1; j < numTeams; j++) {
@@ -158,19 +159,16 @@ public final class BaseballElimination {
                         v++;
                     }
                 }
+                int maxWins = wins[x] + rem[x];
+                int possibleWins = maxWins - wins[i];
+                if (possibleWins < 0) {
+                    return null;
+                }
+                FlowEdge sinkEdge = new FlowEdge(i + numGameVertices + 1, t, possibleWins);
+                flowNetwork.addEdge(sinkEdge);
             }
         }
-        int maxWins = wins[x] + rem[x];
-        for (int i = 0; i < numTeams; i++) {
-            int possibleWins = maxWins - wins[i];
-            if (possibleWins < 0) {
-                return null;
-            }
-            FlowEdge sinkEdge = new FlowEdge(i, t, possibleWins);
-            flowNetwork.addEdge(sinkEdge);
-        }
-        FordFulkerson maxFlow = new FordFulkerson(flowNetwork, s, t);
-        return maxFlow;
+        return new FordFulkerson(flowNetwork, s, t);
     }
 
     private int nC2(int n) {
@@ -183,7 +181,10 @@ public final class BaseballElimination {
      */
     public Iterable<String> certificateOfElimination(String team) {
         validateTeams(team);
-        int x = teams.get(team);
+        if (!isEliminated(team)) {
+            return null;
+        }
+        int x = indices.get(team);
         List<String> subset = new ArrayList<>();
         int numGameVertices = nC2(numTeams - 1);
         FordFulkerson maxFlow = maxFlow(x);
@@ -191,23 +192,20 @@ public final class BaseballElimination {
         for (int i = 0; i < numTeams; i++) {
             if (i != x) {
                 if (maxFlow == null) {
-                    if (maxWins - wins[i] < 0) {
-                        subset.add(indices.get(i));
+                    if (maxWins < wins[i]) {
+                        subset.add(teams[i]);
                     }
                 } else if (maxFlow.inCut(i + numGameVertices + 1)) {
-                    subset.add(indices.get(i));
+                    subset.add(teams[i]);
                 }
             }
-        }
-        if (subset.isEmpty()) {
-            return null;
         }
         return subset;
     }
 
     private void validateTeams(String... givenTeams) {
         for (String team : givenTeams) {
-            if (!teams.containsKey(team)) {
+            if (!indices.containsKey(team)) {
                 String error = "Invalid team: " + team;
                 throw new IllegalArgumentException(error);
             }
