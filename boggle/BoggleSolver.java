@@ -1,26 +1,56 @@
+import java.util.HashSet;
+import java.util.Set;
+
 import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.StdOut;
 
-public class BoggleSolver {
+public final class BoggleSolver {
+    private final Set<String> dictionary;
+
     /**
      * Initializes the data structure using the given array of strings as the
      * dictionary. (Assume each word in the dictionary contains only the
      * uppercase letters A through Z.)
      */
-    public BoggleSolver(String[] dictionary) {}
+    public BoggleSolver(String[] dictionary) {
+        this.dictionary = new HashSet<>();
+        for (String word : dictionary) {
+            this.dictionary.add(word);
+        }
+    }
 
     /**
      * Returns the set of all valid words in the given Boggle board, as an
      * Iterable.
      */
-    public Iterable<String> getAllValidWords(BoggleBoard board) {}
+    public Iterable<String> getAllValidWords(BoggleBoard board) {
+        Set<String> words = new HashSet<>();
+        return words;
+    }
 
     /**
      * Returns the score of the given word if it is in the dictionary, zero
      * otherwise. (Assume the word contains only the uppercase letters A
      * through Z.)
      */
-    public int scoreOf(String word) {}
+    public int scoreOf(String word) {
+        if (!dictionary.contains(word)) {
+            return 0;
+        }
+        int length = word.length();
+        if (length == 3 || length == 4) {
+            return 1;
+        } else if (length == 5) {
+            return 2;
+        } else if (length == 6) {
+            return 3;
+        } else if (length == 7) {
+            return 5;
+        } else if (length >= 8) {
+            return 11;
+        }
+        return 0;
+    }
 
     /**
      * Test client takes the filename of a dictionary and the filename of a
