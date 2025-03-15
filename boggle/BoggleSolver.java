@@ -5,7 +5,7 @@ import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.StdOut;
 
 public final class BoggleSolver {
-    private final Set<String> dictionary;
+    private final Trie dictionary;
 
     /**
      * Initializes the data structure using the given array of strings as the
@@ -13,9 +13,9 @@ public final class BoggleSolver {
      * uppercase letters A through Z.)
      */
     public BoggleSolver(String[] dictionary) {
-        this.dictionary = new HashSet<>();
+        this.dictionary = new Trie();
         for (String word : dictionary) {
-            this.dictionary.add(word);
+            this.dictionary.insert(word, word);
         }
     }
 
@@ -27,13 +27,14 @@ public final class BoggleSolver {
         Set<String> words = new HashSet<>();
         int rows = board.rows();
         int cols = board.cols();
-        char[][] letters = new char[rows][cols];
-        for (int i = 0; i < rows; i++) {
-            for (int j = 0; j < cols; j++) {
-                letters[i][j] = board.getLetter(i, j);
-            }
-        }
+        boolean[][] visited = new boolean[rows][cols];
         return words;
+    }
+
+    private dfs(BoggleBoard board) {}
+
+    private boolean isValidIndex(int row, int col, int rows, int cols) {
+        return row > 0 && row < rows && col > 0 && col < cols;
     }
 
     /**
