@@ -25,6 +25,14 @@ public final class BoggleSolver {
      */
     public Iterable<String> getAllValidWords(BoggleBoard board) {
         Set<String> words = new HashSet<>();
+        int rows = board.rows();
+        int cols = board.cols();
+        char[][] letters = new char[rows][cols];
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                letters[i][j] = board.getLetter(i, j);
+            }
+        }
         return words;
     }
 
