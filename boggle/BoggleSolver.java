@@ -5,7 +5,8 @@ import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.StdOut;
 
 public final class BoggleSolver {
-    private final Trie dictionary;
+    private static final int[] dirs = {-1, 0, 1};
+    private final Node root;
 
     /**
      * Initializes the data structure using the given array of strings as the
@@ -13,9 +14,9 @@ public final class BoggleSolver {
      * uppercase letters A through Z.)
      */
     public BoggleSolver(String[] dictionary) {
-        this.dictionary = new Trie();
+        root = new Node();
         for (String word : dictionary) {
-            this.dictionary.insert(word, word);
+            insert(word, word);
         }
     }
 
@@ -28,13 +29,24 @@ public final class BoggleSolver {
         int rows = board.rows();
         int cols = board.cols();
         boolean[][] visited = new boolean[rows][cols];
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                dfs(board, visited, i, j, root, words);
+            }
+        }
         return words;
     }
 
-    private dfs(BoggleBoard board) {}
+    private void dfs(BoggleBoard board, boolean[][] visited, int i, int j, Node node, Set<String> words) {
+        int rows = board.rows();
+        int cols = board.cols();
+        if (isValid(i, j, rows, cols)) {
+            visited[i][j] = true;
+        }
+    }
 
-    private boolean isValidIndex(int row, int col, int rows, int cols) {
-        return row > 0 && row < rows && col > 0 && col < cols;
+    private boolean isValid(int i, int j, int rows, int cols) {
+        return i >= 0 && i < rows && j >= 0 && j < cols;
     }
 
     /**
@@ -43,7 +55,7 @@ public final class BoggleSolver {
      * through Z.)
      */
     public int scoreOf(String word) {
-        if (!dictionary.contains(word)) {
+        if (!contains(word)) {
             return 0;
         }
         int length = word.length();
@@ -77,5 +89,57 @@ public final class BoggleSolver {
             score += solver.scoreOf(word);
         }
         StdOut.println("Score = " + score);
+    }
+    
+    public void insert(String key, String value) {
+        insert(root, key, value);
+    }
+
+    private void insert(Node node, String key, String value) {
+        int length = key.length();
+        for (int i = 0; i < length; i++) {
+            int index = key.charAt(i) - 'A';
+            if (node.children[index] == null) {
+                node.children[index] = new Node();
+            }
+            node = node.children[index];
+        }
+        node.isTerminal = true;
+        node.value = value;
+    }
+
+    public boolean contains(String value) {
+        return search(value) != null;
+    }
+
+    public String search(String key) {
+        return search(root, key);
+    }
+
+    private String search(Node node, String key) {
+        int length = key.length();
+        for (int i = 0; i < length; i++) {
+            int index = key.charAt(i) - 'A';
+            if (node.children[index] == null) {
+                return null;
+            }
+            node = node.children[index];
+        }
+        return node.value;
+    }
+
+    private static final class Node {
+        private static final int ALPHABET_SIZE = 26;
+    
+        private final Node[] children;
+        
+        private boolean isTerminal;
+        private String value;
+        
+        public Node() {
+            children = new Node[ALPHABET_SIZE];
+            isTerminal = false;
+            value = null;
+        }
     }
 }
