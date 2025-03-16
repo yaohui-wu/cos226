@@ -20,6 +20,43 @@ public final class BoggleSolver {
         }
     }
 
+    public void insert(String key, String value) {
+        insert(root, key, value);
+    }
+
+    private void insert(Node node, String key, String value) {
+        int length = key.length();
+        for (int i = 0; i < length; i++) {
+            int index = key.charAt(i) - 'A';
+            if (node.children[index] == null) {
+                node.children[index] = new Node();
+            }
+            node = node.children[index];
+        }
+        node.isTerminal = true;
+        node.value = value;
+    }
+
+    public boolean contains(String value) {
+        return search(value) != null;
+    }
+
+    public String search(String key) {
+        return search(root, key);
+    }
+
+    private String search(Node node, String key) {
+        int length = key.length();
+        for (int i = 0; i < length; i++) {
+            int index = key.charAt(i) - 'A';
+            if (node.children[index] == null) {
+                return null;
+            }
+            node = node.children[index];
+        }
+        return node.value;
+    }
+
     /**
      * Returns the set of all valid words in the given Boggle board, as an
      * Iterable.
@@ -38,14 +75,31 @@ public final class BoggleSolver {
     }
 
     private void dfs(BoggleBoard board, boolean[][] visited, int i, int j, Node node, Set<String> words) {
-        int rows = board.rows();
-        int cols = board.cols();
-        if (isValid(i, j, rows, cols)) {
-            visited[i][j] = true;
+        if (node == null) {
+            return;
         }
+        if (node.isTerminal) {
+            words.add(node.value);
+            return;
+        }
+        if (isValid(board, i, j)) {
+            visited[i][j] = true;
+            for (int x : dirs) {
+                int row = i + x;
+                for (int y : dirs) {
+                    int col = j + y;
+                    if (isValid(board, row, col) && !visited[row][col]) {
+                        dfs(board, visited, row, col, node, words);
+                    }
+                }
+            }
+        }
+        visited[i][j] = false;
     }
 
-    private boolean isValid(int i, int j, int rows, int cols) {
+    private boolean isValid(BoggleBoard board, int i, int j) {
+        int rows = board.rows();
+        int cols = board.cols();
         return i >= 0 && i < rows && j >= 0 && j < cols;
     }
 
@@ -89,43 +143,6 @@ public final class BoggleSolver {
             score += solver.scoreOf(word);
         }
         StdOut.println("Score = " + score);
-    }
-    
-    public void insert(String key, String value) {
-        insert(root, key, value);
-    }
-
-    private void insert(Node node, String key, String value) {
-        int length = key.length();
-        for (int i = 0; i < length; i++) {
-            int index = key.charAt(i) - 'A';
-            if (node.children[index] == null) {
-                node.children[index] = new Node();
-            }
-            node = node.children[index];
-        }
-        node.isTerminal = true;
-        node.value = value;
-    }
-
-    public boolean contains(String value) {
-        return search(value) != null;
-    }
-
-    public String search(String key) {
-        return search(root, key);
-    }
-
-    private String search(Node node, String key) {
-        int length = key.length();
-        for (int i = 0; i < length; i++) {
-            int index = key.charAt(i) - 'A';
-            if (node.children[index] == null) {
-                return null;
-            }
-            node = node.children[index];
-        }
-        return node.value;
     }
 
     private static final class Node {
