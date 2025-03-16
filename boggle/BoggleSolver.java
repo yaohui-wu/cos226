@@ -1,12 +1,12 @@
-import java.util.HashSet;
 import java.util.Set;
+import java.util.TreeSet;
 
 import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.StdOut;
 
 public final class BoggleSolver {
-    private static final int[] dirs = {-1, 0, 1};
     private final Node root;
+    private final Set<String> words;
 
     /**
      * Initializes the data structure using the given array of strings as the
@@ -18,6 +18,7 @@ public final class BoggleSolver {
         for (String word : dictionary) {
             insert(word, word);
         }
+        words = new TreeSet<>();
     }
 
     public void insert(String key, String value) {
@@ -62,35 +63,38 @@ public final class BoggleSolver {
      * Iterable.
      */
     public Iterable<String> getAllValidWords(BoggleBoard board) {
-        Set<String> words = new HashSet<>();
+        words.clear();
         int rows = board.rows();
         int cols = board.cols();
         boolean[][] visited = new boolean[rows][cols];
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
-                dfs(board, visited, i, j, root, words);
+                dfs(board, visited, i, j, root);
             }
         }
         return words;
     }
 
-    private void dfs(BoggleBoard board, boolean[][] visited, int i, int j, Node node, Set<String> words) {
+    private void dfs(BoggleBoard board, boolean[][] visited, int i, int j, Node node) {
         if (node == null) {
             return;
         }
         if (node.isTerminal) {
-            words.add(node.value);
-            return;
+            String word = node.value;
+            if (word.length() >= 3) {
+                words.add(word);
+            }
         }
-        if (isValid(board, i, j)) {
-            visited[i][j] = true;
-            for (int x : dirs) {
-                int row = i + x;
-                for (int y : dirs) {
-                    int col = j + y;
-                    if (isValid(board, row, col) && !visited[row][col]) {
-                        dfs(board, visited, row, col, node, words);
-                    }
+        visited[i][j] = true;
+        char c = board.getLetter(i, j);
+        int index = c - 'A';
+        Node next = node.children[index];
+        for (int x = -1; x < 2; x++) {
+            int row = i + x;
+            for (int y = -1; y < 2; y++) {
+                int col = j + y;
+                if (isValid(board, row, col) && !visited[row][col]) {
+                    dfs(board, visited, row, col, next);
                 }
             }
         }
