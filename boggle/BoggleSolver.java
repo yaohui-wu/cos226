@@ -1,12 +1,12 @@
+import java.util.HashSet;
 import java.util.Set;
-import java.util.TreeSet;
 
 import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.StdOut;
 
 public final class BoggleSolver {
     private final Node root;
-    private final Set<String> words;
+    private Set<String> words;
 
     /**
      * Initializes the data structure using the given array of strings as the
@@ -18,7 +18,7 @@ public final class BoggleSolver {
         for (String word : dictionary) {
             insert(word, word);
         }
-        words = new TreeSet<>();
+        words = null;
     }
 
     public void insert(String key, String value) {
@@ -63,20 +63,26 @@ public final class BoggleSolver {
      * Iterable.
      */
     public Iterable<String> getAllValidWords(BoggleBoard board) {
-        words.clear();
+        words = new HashSet<>();
         int rows = board.rows();
         int cols = board.cols();
+        char[][] letters = new char[rows][cols];
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                letters[i][j] = board.getLetter(i, j);
+            }
+        }
         boolean[][] visited = new boolean[rows][cols];
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
-                dfs(board, visited, i, j, root);
+                dfs(letters, visited, i, j, root);
             }
         }
         return words;
     }
 
-    private void dfs(BoggleBoard board, boolean[][] visited, int i, int j, Node node) {
-        if (node == null) {
+    private void dfs(char[][] letters, boolean[][] visited, int i, int j, Node node) {
+        if (!isValid(letters, i, j) || visited[i][j] || node == null) {
             return;
         }
         if (node.isTerminal) {
@@ -86,24 +92,22 @@ public final class BoggleSolver {
             }
         }
         visited[i][j] = true;
-        char c = board.getLetter(i, j);
+        char c = letters[i][j];
         int index = c - 'A';
         Node next = node.children[index];
         for (int x = -1; x < 2; x++) {
             int row = i + x;
             for (int y = -1; y < 2; y++) {
                 int col = j + y;
-                if (isValid(board, row, col) && !visited[row][col]) {
-                    dfs(board, visited, row, col, next);
-                }
+                dfs(letters, visited, row, col, next);
             }
         }
         visited[i][j] = false;
     }
 
-    private boolean isValid(BoggleBoard board, int i, int j) {
-        int rows = board.rows();
-        int cols = board.cols();
+    private boolean isValid(char[][] letters, int i, int j) {
+        int rows = letters.length;
+        int cols = letters[0].length;
         return i >= 0 && i < rows && j >= 0 && j < cols;
     }
 
