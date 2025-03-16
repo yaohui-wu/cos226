@@ -39,23 +39,19 @@ public final class BoggleSolver {
     }
 
     public boolean contains(String value) {
-        return search(value) != null;
+        return contains(root, value);
     }
 
-    public String search(String key) {
-        return search(root, key);
-    }
-
-    private String search(Node node, String key) {
+    private boolean contains(Node node, String key) {
         int length = key.length();
         for (int i = 0; i < length; i++) {
             int index = key.charAt(i) - 'A';
             if (node.children[index] == null) {
-                return null;
+                return false;
             }
             node = node.children[index];
         }
-        return node.value;
+        return node.isTerminal;
     }
 
     /**
@@ -82,24 +78,26 @@ public final class BoggleSolver {
     }
 
     private void dfs(char[][] letters, boolean[][] visited, int i, int j, Node node) {
-        if (!isValid(letters, i, j) || visited[i][j] || node == null) {
-            return;
-        }
         if (node.isTerminal) {
             String word = node.value;
             if (word.length() >= 3) {
                 words.add(word);
             }
         }
-        visited[i][j] = true;
         char c = letters[i][j];
         int index = c - 'A';
         Node next = node.children[index];
+        if (next == null) {
+            return;
+        }
+        visited[i][j] = true;
         for (int x = -1; x < 2; x++) {
             int row = i + x;
             for (int y = -1; y < 2; y++) {
                 int col = j + y;
-                dfs(letters, visited, row, col, next);
+                if (isValid(letters, row, col) && !visited[row][col]) {
+                    dfs(letters, visited, row, col, next);
+                }
             }
         }
         visited[i][j] = false;
