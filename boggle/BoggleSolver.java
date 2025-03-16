@@ -1,12 +1,12 @@
-import java.util.HashSet;
 import java.util.Set;
+import java.util.TreeSet;
 
 import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.StdOut;
 
 public final class BoggleSolver {
-    private final Node root;
-    private Set<String> words;
+    private final Node root; // Root of trie.
+    private Set<String> words; // Set of current valid words.
 
     /**
      * Initializes the data structure using the given array of strings as the
@@ -59,7 +59,8 @@ public final class BoggleSolver {
      * Iterable.
      */
     public Iterable<String> getAllValidWords(BoggleBoard board) {
-        words = new HashSet<>();
+        // TODO: TreeSet for sorting and debugging, change to HashSet.
+        words = new TreeSet<>();
         int rows = board.rows();
         int cols = board.cols();
         char[][] letters = new char[rows][cols];
@@ -78,17 +79,20 @@ public final class BoggleSolver {
     }
 
     private void dfs(char[][] letters, boolean[][] visited, int i, int j, Node node) {
-        if (node.isTerminal) {
-            String word = node.value;
-            if (word.length() >= 3) {
-                words.add(word);
-            }
-        }
         char c = letters[i][j];
+        if (c == 'Q') {
+            c = 'U'; // Qu is treated as a single letter.
+        }
         int index = c - 'A';
         Node next = node.children[index];
         if (next == null) {
             return;
+        }
+        if (next.isTerminal) {
+            String word = next.value;
+            if (word.length() >= 3) {
+                words.add(word);
+            }
         }
         visited[i][j] = true;
         for (int x = -1; x < 2; x++) {
