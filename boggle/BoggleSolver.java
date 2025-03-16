@@ -80,11 +80,16 @@ public final class BoggleSolver {
 
     private void dfs(char[][] letters, boolean[][] visited, int i, int j, Node node) {
         char c = letters[i][j];
-        if (c == 'Q') {
-            c = 'U'; // Qu is treated as a single letter.
-        }
         int index = c - 'A';
         Node next = node.children[index];
+        if (next == null) {
+            return;
+        }
+        // Qu is treated as a single letter.
+        if (c == 'Q') {
+            index = 'U' - 'A';
+            next = next.children[index];
+        }
         if (next == null) {
             return;
         }
