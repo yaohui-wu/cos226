@@ -16,7 +16,7 @@ public class MoveToFront {
             char c = BinaryStdIn.readChar();
             boolean found = false;
             int i = 0;
-            while (!found || i < MAX_ASCII) {
+            while (!found && i < MAX_ASCII) {
                 if (seq[i] == c) {
                     found = true;
                     // Print the 8-bit index.
