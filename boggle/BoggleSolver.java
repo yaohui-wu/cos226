@@ -1,12 +1,11 @@
+import java.util.HashSet;
 import java.util.Set;
-import java.util.TreeSet;
 
 import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.StdOut;
 
 public final class BoggleSolver {
     private final Node root; // Root of trie.
-    private Set<String> words; // Set of current valid words.
 
     /**
      * Initializes the data structure using the given array of strings as the
@@ -18,10 +17,9 @@ public final class BoggleSolver {
         for (String word : dictionary) {
             insert(word, word);
         }
-        words = null;
     }
 
-    public void insert(String key, String value) {
+    private void insert(String key, String value) {
         insert(root, key, value);
     }
 
@@ -38,7 +36,7 @@ public final class BoggleSolver {
         node.value = value;
     }
 
-    public boolean contains(String value) {
+    private boolean contains(String value) {
         return contains(root, value);
     }
 
@@ -59,8 +57,7 @@ public final class BoggleSolver {
      * Iterable.
      */
     public Iterable<String> getAllValidWords(BoggleBoard board) {
-        // TODO: TreeSet for sorting and debugging, change to HashSet.
-        words = new TreeSet<>();
+        Set<String> words = new HashSet<>();
         int rows = board.rows();
         int cols = board.cols();
         char[][] letters = new char[rows][cols];
@@ -72,13 +69,13 @@ public final class BoggleSolver {
         boolean[][] visited = new boolean[rows][cols];
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
-                dfs(letters, visited, i, j, root);
+                dfs(letters, visited, i, j, root, words);
             }
         }
         return words;
     }
 
-    private void dfs(char[][] letters, boolean[][] visited, int i, int j, Node node) {
+    private void dfs(char[][] letters, boolean[][] visited, int i, int j, Node node, Set<String> words) {
         char c = letters[i][j];
         int index = c - 'A';
         Node next = node.children[index];
@@ -89,9 +86,9 @@ public final class BoggleSolver {
         if (c == 'Q') {
             index = 'U' - 'A';
             next = next.children[index];
-        }
-        if (next == null) {
-            return;
+            if (next == null) {
+                return;
+            }
         }
         if (next.isTerminal) {
             String word = next.value;
@@ -104,17 +101,17 @@ public final class BoggleSolver {
             int row = i + x;
             for (int y = -1; y < 2; y++) {
                 int col = j + y;
-                if (isValid(letters, row, col) && !visited[row][col]) {
-                    dfs(letters, visited, row, col, next);
+                int rows = letters.length;
+                int cols = letters[0].length;
+                if (isValid(row, col, rows, cols) && !visited[row][col]) {
+                    dfs(letters, visited, row, col, next, words);
                 }
             }
         }
         visited[i][j] = false;
     }
 
-    private boolean isValid(char[][] letters, int i, int j) {
-        int rows = letters.length;
-        int cols = letters[0].length;
+    private boolean isValid(int i, int j, int rows, int cols) {
         return i >= 0 && i < rows && j >= 0 && j < cols;
     }
 
@@ -160,7 +157,7 @@ public final class BoggleSolver {
         StdOut.println("Score = " + score);
     }
 
-    private static final class Node {
+    private final class Node {
         private static final int ALPHABET_SIZE = 26;
     
         private final Node[] children;
