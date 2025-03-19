@@ -4,8 +4,18 @@ import java.util.Set;
 import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.StdOut;
 
+/**
+ * Represents a Boggle solver that finds all valid words in a given Boggle
+ * board, using a given dictionary.
+ * 
+ * @author Yaohui Wu
+ */
 public final class BoggleSolver {
     private final Node root; // Root of trie.
+
+    private char[][] letters;
+    private int rows;
+    private int cols;
 
     /**
      * Initializes the data structure using the given array of strings as the
@@ -14,6 +24,9 @@ public final class BoggleSolver {
      */
     public BoggleSolver(String[] dictionary) {
         root = new Node();
+        letters = null;
+        rows = 0;
+        cols = 0;
         for (String word : dictionary) {
             insert(word, word);
         }
@@ -58,9 +71,9 @@ public final class BoggleSolver {
      */
     public Iterable<String> getAllValidWords(BoggleBoard board) {
         Set<String> words = new HashSet<>();
-        int rows = board.rows();
-        int cols = board.cols();
-        char[][] letters = new char[rows][cols];
+        rows = board.rows();
+        cols = board.cols();
+        letters = new char[rows][cols];
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
                 letters[i][j] = board.getLetter(i, j);
@@ -69,16 +82,23 @@ public final class BoggleSolver {
         boolean[][] visited = new boolean[rows][cols];
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
-                dfs(letters, visited, i, j, root, words);
+                dfs(visited, i, j, root, words);
             }
         }
         return words;
     }
 
-    private void dfs(char[][] letters, boolean[][] visited, int i, int j, Node node, Set<String> words) {
+    private void dfs(
+        boolean[][] visited,
+        int i,
+        int j,
+        Node node,
+        Set<String> words
+    ) {
         char c = letters[i][j];
         int index = c - 'A';
         Node next = node.children[index];
+        // Not a prefix of any word in the dictionary.
         if (next == null) {
             return;
         }
@@ -90,6 +110,7 @@ public final class BoggleSolver {
                 return;
             }
         }
+        // Found a valid word.
         if (next.isTerminal) {
             String word = next.value;
             if (word.length() >= 3) {
@@ -97,22 +118,23 @@ public final class BoggleSolver {
             }
         }
         visited[i][j] = true;
-        for (int x = -1; x < 2; x++) {
+        for (int x = -1; x <= 1; x++) {
             int row = i + x;
-            for (int y = -1; y < 2; y++) {
-                int col = j + y;
-                int rows = letters.length;
-                int cols = letters[0].length;
-                if (isValid(row, col, rows, cols) && !visited[row][col]) {
-                    dfs(letters, visited, row, col, next, words);
+            if (isValid(row, rows)) {
+                for (int y = -1; y <= 1; y++) {
+                    int col = j + y;
+                    if (isValid(col, cols) && !visited[row][col]) {
+                        dfs(visited, row, col, next, words);
+                    }
                 }
             }
         }
+        // Backtracking optimization.
         visited[i][j] = false;
     }
 
-    private boolean isValid(int i, int j, int rows, int cols) {
-        return i >= 0 && i < rows && j >= 0 && j < cols;
+    private boolean isValid(int index, int length) {
+        return index >= 0 && index < length;
     }
 
     /**
