@@ -16,6 +16,8 @@ import edu.princeton.cs.algs4.StdOut;
  * @author Yaohui Wu
  */
 public final class BaseballElimination {
+    private static final double INFINITY = Double.POSITIVE_INFINITY;
+    
     private final int numTeams; // Number of teams.
     private final String[] teams; // Team names.
     private final Map<String, Integer> indices; // Team name to index.
@@ -23,6 +25,7 @@ public final class BaseballElimination {
     private final int[] losses; // Losses for each team.
     private final int[] rem; // Remaining games for each team.
     private final int[][] games; // Remaining games between teams.
+
     private int flow;
     
     /**
@@ -141,30 +144,32 @@ public final class BaseballElimination {
         int s = 0; // Source.
         int t = numVertices - 1; // Sink.
         int v = 1; // Game vertices start from 1.
+        int first = numGameVertices + 1; // Team vertices start from first.
         flow = 0;
         for (int i = 0; i < numTeams; i++) {
             if (i != x) {
                 for (int j = i + 1; j < numTeams; j++) {
                     if (j != x) {
                         // Connect source to game vertices.
-                        FlowEdge gameEdge = new FlowEdge(s, v, games[i][j]);
-                        flowNetwork.addEdge(gameEdge);
-                        // Connect each game vertex with the two teams.
-                        FlowEdge team1Edge = new FlowEdge(v, i + numGameVertices + 1, Double.POSITIVE_INFINITY);
-                        flowNetwork.addEdge(team1Edge);
-                        FlowEdge team2Edge = new FlowEdge(v, j + numGameVertices + 1, Double.POSITIVE_INFINITY);
-                        flowNetwork.addEdge(team2Edge);
+                        FlowEdge game = new FlowEdge(s, v, games[i][j]);
+                        flowNetwork.addEdge(game);
+                        // Connect game vertices to team vertices.
+                        int w = i + first;
+                        FlowEdge team1 = new FlowEdge(v, w, INFINITY);
+                        flowNetwork.addEdge(team1);
+                        w = j + first;
+                        FlowEdge team2 = new FlowEdge(v, w, INFINITY);
+                        flowNetwork.addEdge(team2);
                         flow += games[i][j];
                         v++;
                     }
                 }
-                int maxWins = wins[x] + rem[x];
-                int possibleWins = maxWins - wins[i];
-                if (possibleWins < 0) {
+                int maxWins = wins[x] + rem[x] - wins[i];
+                if (maxWins < 0) {
                     return null;
                 }
-                FlowEdge sinkEdge = new FlowEdge(i + numGameVertices + 1, t, possibleWins);
-                flowNetwork.addEdge(sinkEdge);
+                FlowEdge sink = new FlowEdge(i + first, t, maxWins);
+                flowNetwork.addEdge(sink);
             }
         }
         return new FordFulkerson(flowNetwork, s, t);
