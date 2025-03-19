@@ -13,9 +13,11 @@ import edu.princeton.cs.algs4.StdOut;
 public final class BoggleSolver {
     private final Node root; // Root of trie.
 
-    private char[][] letters;
     private int rows;
     private int cols;
+    private char[][] letters;
+    private boolean[][] visited;
+
 
     /**
      * Initializes the data structure using the given array of strings as the
@@ -24,9 +26,10 @@ public final class BoggleSolver {
      */
     public BoggleSolver(String[] dictionary) {
         root = new Node();
-        letters = null;
         rows = 0;
         cols = 0;
+        letters = null;
+        visited = null;
         for (String word : dictionary) {
             insert(word, word);
         }
@@ -79,17 +82,16 @@ public final class BoggleSolver {
                 letters[i][j] = board.getLetter(i, j);
             }
         }
-        boolean[][] visited = new boolean[rows][cols];
+        visited = new boolean[rows][cols];
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
-                dfs(visited, i, j, root, words);
+                dfs(i, j, root, words);
             }
         }
         return words;
     }
 
     private void dfs(
-        boolean[][] visited,
         int i,
         int j,
         Node node,
@@ -124,7 +126,7 @@ public final class BoggleSolver {
                 for (int y = -1; y <= 1; y++) {
                     int col = j + y;
                     if (isValid(col, cols) && !visited[row][col]) {
-                        dfs(visited, row, col, next, words);
+                        dfs(row, col, next, words);
                     }
                 }
             }
