@@ -145,10 +145,13 @@ public final class BoggleSolver {
      * through Z.)
      */
     public int scoreOf(String word) {
+        int length = word.length();
+        if (length < 3) {
+            return 0;
+        }
         if (!contains(word)) {
             return 0;
         }
-        int length = word.length();
         if (length == 3 || length == 4) {
             return 1;
         } else if (length == 5) {
