@@ -1,5 +1,5 @@
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.StdOut;
@@ -17,6 +17,7 @@ public final class BoggleSolver {
     private int cols;
     private char[][] letters;
     private boolean[][] visited;
+    private int id;
 
 
     /**
@@ -30,6 +31,7 @@ public final class BoggleSolver {
         cols = 0;
         letters = null;
         visited = null;
+        id = 0;
         for (String word : dictionary) {
             insert(word, word);
         }
@@ -73,7 +75,7 @@ public final class BoggleSolver {
      * Iterable.
      */
     public Iterable<String> getAllValidWords(BoggleBoard board) {
-        Set<String> words = new HashSet<>();
+        List<String> words = new ArrayList<>();
         rows = board.rows();
         cols = board.cols();
         letters = new char[rows][cols];
@@ -83,6 +85,7 @@ public final class BoggleSolver {
             }
         }
         visited = new boolean[rows][cols];
+        id += 1;
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
                 dfs(i, j, root, words);
@@ -95,7 +98,7 @@ public final class BoggleSolver {
         int i,
         int j,
         Node node,
-        Set<String> words
+        List<String> words
     ) {
         char c = letters[i][j];
         int index = c - 'A';
@@ -113,11 +116,12 @@ public final class BoggleSolver {
             }
         }
         // Found a valid word.
-        if (next.isTerminal) {
+        if (next.isTerminal && id != next.id) {
             String word = next.value;
             if (word.length() >= 3) {
                 words.add(word);
             }
+            next.id = id;
         }
         visited[i][j] = true;
         for (int x = -1; x <= 1; x++) {
@@ -160,10 +164,9 @@ public final class BoggleSolver {
             return 3;
         } else if (length == 7) {
             return 5;
-        } else if (length >= 8) {
-            return 11;
         }
-        return 0;
+        // Length >= 8.
+        return 11;
     }
 
     /**
@@ -184,18 +187,19 @@ public final class BoggleSolver {
         StdOut.println("Score = " + score);
     }
 
-    private final class Node {
+    private class Node {
         private static final int ALPHABET_SIZE = 26;
     
-        private final Node[] children;
-        
+        private Node[] children;
         private boolean isTerminal;
         private String value;
+        private int id;
         
         public Node() {
             children = new Node[ALPHABET_SIZE];
             isTerminal = false;
             value = null;
+            id = 0;
         }
     }
 }
