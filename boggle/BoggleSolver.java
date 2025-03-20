@@ -121,7 +121,7 @@ public final class BoggleSolver {
             if (word.length() >= 3) {
                 words.add(word);
             }
-            next.id = id;
+            next.setId(id);
         }
         visited[i][j] = true;
         for (int x = -1; x <= 1; x++) {
@@ -187,10 +187,11 @@ public final class BoggleSolver {
         StdOut.println("Score = " + score);
     }
 
-    private class Node {
+    private final class Node {
         private static final int ALPHABET_SIZE = 26;
     
-        private Node[] children;
+        private final Node[] children;
+
         private boolean isTerminal;
         private String value;
         private int id;
@@ -200,6 +201,10 @@ public final class BoggleSolver {
             isTerminal = false;
             value = null;
             id = 0;
+        }
+
+        public void setId(int nodeId) {
+            this.id = nodeId;
         }
     }
 }
