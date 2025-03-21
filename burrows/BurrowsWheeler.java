@@ -54,7 +54,7 @@ public class BurrowsWheeler {
     private static int[] next(char[] t) {
         int length = t.length;
         // Compute the frequency counts.
-        int[] counts = new int[MAX_ASCII];
+        int[] counts = new int[MAX_ASCII + 1];
         for (int i = 0; i < length; i++) {
             int index = t[i] + 1;
             counts[index] += 1;

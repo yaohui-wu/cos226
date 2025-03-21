@@ -10,7 +10,7 @@ public class MoveToFront {
      * to standard output.
      */
     public static void encode() {
-        char[] seq = ascii_sequence();
+        char[] seq = asciiSequence();
         while (!BinaryStdIn.isEmpty()) {
             // Read an 8-bit character.
             char c = BinaryStdIn.readChar();
@@ -36,7 +36,7 @@ public class MoveToFront {
      * to standard output.
      */
     public static void decode() {
-        char[] seq = ascii_sequence();
+        char[] seq = asciiSequence();
         while (!BinaryStdIn.isEmpty()) {
             // Read an 8-bit index.
             int i = (int) BinaryStdIn.readChar();
@@ -53,7 +53,7 @@ public class MoveToFront {
      * Initialize an ordered sequence of 256 characters, where the ith
      * character in the sequence equal to the ith extended ASCII character.
      */
-    private static char[] ascii_sequence() {
+    private static char[] asciiSequence() {
         char[] seq = new char[MAX_ASCII];
         for (int i = 0; i < MAX_ASCII; i++) {
             seq[i] = (char) i;
