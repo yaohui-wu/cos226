@@ -27,6 +27,7 @@ public class MoveToFront {
                 i += 1;
             }
         }
+        BinaryStdIn.close();
         BinaryStdOut.close();
     }
 
@@ -44,6 +45,7 @@ public class MoveToFront {
             // Move the character to the front of the sequence.
             moveToFront(seq, i);
         }
+        BinaryStdIn.close();
         BinaryStdOut.close();
     }
 
