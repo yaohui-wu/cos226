@@ -9,7 +9,7 @@ public class MoveToFront {
      * Apply move-to-front encoding, reading from standard input and writing
      * to standard output.
      */
-    public static void endcode() {
+    public static void encode() {
         char[] seq = ascii_sequence();
         while (!BinaryStdIn.isEmpty()) {
             // Read an 8-bit character.
@@ -81,7 +81,7 @@ public class MoveToFront {
     public static void main(String[] args) {
         String arg = args[0];
         if (arg.equals("-")) {
-            endcode();
+            encode();
         } else if (arg.equals("+")) {
             decode();
         }
